@@ -42,7 +42,6 @@ A roadmap following the needs of FLI and TU Berlin has been proposed.
 Several tasks have already been defined for the development of the code.
 
 * Simulation Capability
-<<<<<<< HEAD
 	  * At the moment (Beginning of April 2017) the behavior of the market is determined by some very simple rules, leading to some kind of worst case scenario. In order to come up with more realistic results, a better market model based on loyalties between premises will be implemented.
 	  * The biggest amount of time is used by the market for the process of choosing cattle to put them into the offer and demands driven market and doing the matchmaking. Making this part of the simulation thread safe and doing it in N threads should increase the performance of the code significantly.
 * Output
@@ -50,6 +49,7 @@ Several tasks have already been defined for the development of the code.
 	  * Including support for CSV file output
 	  * Supporting turning on and off different output data (to minimize data size)
 * Tests
+	* I'll be writing several tests during the next months (starting in late October 2017) utilizing the [framework Catch](https://github.com/philsquared/Catch)
 	  * Since the code's size has grown in the course of writing multiple theses, the code needs to be tested properly
 * usability 
 	  * Make it possible to generate makefiles which exclude certain files if for example HDF5 support is not needed.
@@ -60,19 +60,7 @@ Several tasks have already been defined for the development of the code.
 		* clean up system
 		* move all options to BVDSettings
   
-=======
-** At the moment (Beginning of April 2017) the behavior of the market is determined by some very simple rules, leading to some kind of worst case scenario. In order to come up with more realistic results, a better market model based on loyalties between premises will be implemented.
-** The biggest amount of time is used by the market for the process of choosing cattle to put them into the offer and demands driven market and doing the matchmaking. Making this part of the simulation thread safe and doing it in N threads should increase the performance of the code significantly.
-* Output
-** Fixing of the SQLite output 
-** Including support for CSV file output
-** Supporting turning on and off different output data (to minimize data size)
-* Tests
-** Since the code's size has grown in the course of writing multiple theses, the code needs to be tested properly
-* usability 
-** The code was not build with users in mind who are not as experienced with C++ or unix administration. One of the goals would be to include autogen in order to generate proper make files to ease up the building process. 
 
->>>>>>> parent of 0c61c7a... Update Readme.md
 ## Contribute
 You can easily contribute to this project by forking it and starting pull requests. If you are interested in the corresponding research, feel to reach out to one of the main developers of this package. Note that we're trying to stick to the infimous [git flow](https://danielkummer.github.io/git-flow-cheatsheet/). 
 
@@ -84,7 +72,7 @@ The code was started in November 2015 by Thomas Isele, PhD and then continued by
 Jason Bassett is going to be the guy mainly responsible for the code on the site of TU Berlin, while Pascal Blunk is still going to contribute to this project. 
 
 ## Includes from other projects
-The directory `projectImports` includes those libraries provided by other sources. By now it only contains a project called `inih` [https://github.com/benhoyt/inih](https://github.com/benhoyt/inih). It's license is the BSD License and can be found in the corresponding folder.
+The directory `projectImports` includes those libraries provided by other sources. By now it contains a project called `inih` [https://github.com/benhoyt/inih](https://github.com/benhoyt/inih) (BSD License) and a good [Catch2](https://github.com/catchorg/Catch2)(Boost License) for testingas well as [Fake It](https://github.com/eranpeer/FakeIt) (MIT License) for mocking objects during tests.
 
 # Research 
 Different papers will be published on basis of this project. They will be listed here.

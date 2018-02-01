@@ -21,12 +21,13 @@ BVDSettings::BVDSettings(const BVDSettings&){
 
 void BVDSettings::initializeStrategies(){
     std::string strategyNamesString = this->reader->Get("containment", "strategies", "");
-
+    std::cout << strategyNamesString << std::endl;
     this->strategies = StrategyQueue();
     if(strategyNamesString.compare("") != 0){//there are strings
         //split up the string on every ,
         std::vector<std::string> stratNames;
         std::stringstream ss;
+
         ss.str(strategyNamesString);
         std::string item;
         while (std::getline(ss, item, ',')) {

@@ -66,6 +66,8 @@ class System
 	void scheduleFutureCowIntros();
 
 	void addCow(Cow* c);
+  //Testing relevant methods
+  Event_queue getEventQueue();
  private:
 
  	void scheduleContainmentEvents();
@@ -87,10 +89,10 @@ class System
 	static void handleSystemError(int sig);
 	static System* _instance;
 
+  //Initializer Stuff
 	System(double start_time , double dt_log = 1 , double dt_write=10, double dt_manage = bvd_const::tradingTimeIntervall.MONTHLY );//Done
-
+  ~System();
     BVDSettings* mySettings;
-	~System();
 
 	class CGuard
 	{

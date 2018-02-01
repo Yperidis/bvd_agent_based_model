@@ -51,7 +51,7 @@ Initializer::Initializer(INIReader* inireader)
 	int maxFarmSize = reader->GetInteger("modelparam", "farmsize_max", 500);
 	set_default_farm_size_distribution(minFarmSize, maxFarmSize);
 	
-	percentageOfPreviouslyInfected = reader->GetInteger("modelparam", "previouslyInfectedPercentageOfFarms", 0.02);
+	percentageOfPreviouslyInfected = reader->GetReal("modelparam", "previouslyInfectedPercentageOfFarms", 0.02);
 	
 	int slaughterHouseNum = reader->GetInteger("modelparam", "numberOfSlaughterHouses", 0);
 	if(percPI + percTI > 1.0){
@@ -138,6 +138,7 @@ void Initializer::set_number_of_farms( int N )
   if ( N < 1 )
     N=1;
   number_of_farms = N;
+	std::cout << "pct previously infected is " << this->percentageOfPreviouslyInfected;
   
   for (int i=0 ; i < N ; i++ )
     {
@@ -277,14 +278,23 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
 	FarmInitialConditionsType type = initialTypes[farm_idx];
 	InitialFarmData dat = Initializer::InitialFarmConditionToFarmData.at(type);
 	
-	if(i < (int) (dat.PIs * number + 0.5)){
+//	if(i < (int) (dat.PIs * number + 0.5)){
+//		c->infection_status = Infection_Status::PERSISTENTLY_INFECTED;
+//	}else if(i < (int) (dat.TIs * number + 0.5)){
+//		c->infection_status = Infection_Status::TRANSIENTLY_INFECTED;
+//	}else if(i < (int) (dat.Rs * number + 0.5)){
+//		c->infection_status = Infection_Status::IMMUNE;
+//	}else{
+//		c->infection_status =  Infection_Status::SUSCEPTIBLE;
+//	}
+	if(i < (int) (dat.PIs * ceil(number))){
 		c->infection_status = Infection_Status::PERSISTENTLY_INFECTED;
-	}else if(i < (int) (dat.TIs * number + 0.5)){
+	}else if(i < (int) (dat.TIs * ceil(number))){
 		c->infection_status = Infection_Status::TRANSIENTLY_INFECTED;
-	}else if(i < (int) (dat.Rs * number + 0.5)){
+	}else if(i < (int) (dat.Rs * ceil(number))){
 		c->infection_status = Infection_Status::IMMUNE;
 	}else{
-		c->infection_status =  Infection_Status::SUSCEPTIBLE;		
+		c->infection_status =  Infection_Status::SUSCEPTIBLE;
 	}
 	//(5) put animal into farm
 	f->push_cow( c );

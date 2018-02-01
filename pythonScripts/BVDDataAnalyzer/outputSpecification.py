@@ -17,7 +17,8 @@ cowFirstCalvingTimeIndex = 6
 cowBirthTimeIndex = 7
 knownStateIndex = 8
 numberOfVaccinations = 9
-
+firstTestTime = 10
+lastTestTime = 11
 
 cowTableDict = {}
 cowTableDict["id"] = cowIDIndex
@@ -30,6 +31,8 @@ cowTableDict["firstCalvingTime"] =cowFirstCalvingTimeIndex
 cowTableDict["birthTime"] =cowBirthTimeIndex
 cowTableDict["knownState"] =knownStateIndex
 cowTableDict["numberOfVaccinations"] =numberOfVaccinations
+cowTableDict["firstTestTime"] =firstTestTime
+cowTableDict["lastTestTime"] =lastTestTime
 
 tradingTableName = "BVD_Trades"
 tradeDateIndex = 0

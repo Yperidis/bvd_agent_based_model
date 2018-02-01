@@ -23,6 +23,7 @@ class HDF5FileHandler: public TableBasedOutput{
 		void writeTestData(const hid_t& file);
 		void writeInfectionResultData(const hid_t& file);
 		void writeTradeData(const hid_t& file);
+		void writeVaccinationData(const hid_t& file);
 		template<typename T>
 		void writeTemplateSaveToFile(const hid_t& file, std::vector<T>* save,const std::string tableName);
 

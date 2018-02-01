@@ -415,6 +415,9 @@ void System::_execute_event( Event* e )
 			this->activeStrategy = this->mySettings->strategies.top();
 			this->mySettings->strategies.pop();
 			schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
+			if(this->activeStrategy->usesJungtierFenster){
+				schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit,Event_Type::JUNGTIER_EXEC));
+			}
 		}
 		break;
     case Event_Type::STOP:
@@ -466,8 +469,11 @@ System::CGuard::~CGuard(){
 	}
 }
 
-
-
 void System::addCow(Cow* c){
 	this->output->logBirth(c);
+}
+
+//Testing
+Event_queue System::getEventQueue(){
+	return this->queue;
 }

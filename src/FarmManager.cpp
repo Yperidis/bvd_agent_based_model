@@ -368,6 +368,7 @@ FarmManagerSellChoosingStrategy FarmManager::iniInputToSellingStrategy(std::stri
 }
 
 void FarmManager::registerCowForSale(const Cow* cow){
+	if(this->myFarm->myType == SLAUGHTERHOUSE){return;}
 	this->system->getMarket()->sellDirectlyToSlaughterHouse(cow);
 }
 

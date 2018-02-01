@@ -106,7 +106,6 @@ void HDF5FileHandler::writeTestData(const hid_t& file_id){
 
 
 	if(this->testStorage->size() > 0){
-		std::cout << "trying to write test data" << std::endl;
 		const int rank = 2;
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->testStorage->size()), static_cast<hsize_t>(TestDataPoint::size) };
 
@@ -127,6 +126,29 @@ void HDF5FileHandler::writeTestData(const hid_t& file_id){
 
 }
 
+void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
+
+
+	if(this->vaccDataSave->size() > 0){
+		const int rank = 2;
+		hsize_t dims[rank] = { static_cast<hsize_t>(this->vaccDataSave->size()), static_cast<hsize_t>(VaccinationDataPoint::size) };
+
+
+		int * data = NULL;
+		this->createWritableData(this->vaccDataSave, &data);
+		int success = H5LTmake_dataset_int( file_id ,
+						  HDF5FileHandler::vaccinationsTableName.c_str(),
+						  rank,
+						  dims,
+						  data);
+		if(success < 0){
+			std::cerr << "Failed to create test dataset" << std::endl;
+			exit(12);
+		}
+		delete[] data;
+	}
+
+}
 void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
 	if(this->infectionResultSave->size() <= 0) return;
 	const int rank = 2;
@@ -307,6 +329,7 @@ void HDF5FileHandler::write_to_file(const double time){
 	this->writeFarmData(file);
 	this->writeCowData(file);
 	this->writeTestData(file);
+  this->writeVaccinationData(file);
 	this->writeInfectionResultData(file);
 	H5Fclose( file );
     std::system((BVDSettings::sharedInstance()->outputSettings.postFileWriteCall + " " + filename).c_str());

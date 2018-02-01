@@ -47,7 +47,7 @@ class Random_Number_Generator
 	double       duration_of_infection();
 	double         duration_of_pregnancy();
 	int          number_of_calvings();
-	bool         is_calf_female();
+	virtual bool         is_calf_female();
 	//  double         lifetime_male_calves();
 	double       first_insemination_age();
 	double       lifetime_PI();
@@ -68,13 +68,13 @@ class Random_Number_Generator
 	void getNRandomNumbersInRange(int n, int rangeLeft, int rangeRight, int* resultArray);
 	double cowWellTimeOfBirth(double time);
 	bool bloodTestRightResult();
-	
+
 	double removeTimeAfterSecondTest();
 	double retestTime();
 	unsigned int getSeed();
 	bool 		 cowGetsASecondChance();
 	double 		timeOfFirstTest();
-	bool 		vaccinationWorks();
+	virtual bool 		vaccinationWorks();
  private:
   gsl_rng * generator;
 unsigned int seed ;

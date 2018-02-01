@@ -8,7 +8,7 @@
 #include "projectImports/inih/cpp/INIReader.h"
 #include "Utilities.h"
 Offer::Offer(Cow::UnorderedSet* cows, Farm* src):cows(cows),src(src){
-	
+
 }
 Offer::~Offer(){
 	delete this->cows;
@@ -31,15 +31,15 @@ Market::Market(System* system):s(system){
 	cowQs = new cowQvec();
 	demandQs = new cowDvec();
 	lastID = -1;
-	
+
 	std::string slaughterhousetype = System::reader->Get("trade", "slaughterHouseType" , "dump");
 	if(slaughterhousetype.compare("dump") == 0)
 		dump = true;
 	else
 		dump = false;
 	slaughterHouses = new std::vector<Slaughterhouse*>() ;
-	sources = new std::vector<CowWellFarm*>();	
-	
+	sources = new std::vector<CowWellFarm*>();
+
 	filters = new std::vector<TradingFilter*>();
 	filters->push_back( new WellSlaughterhouseFilter());
 	filters->push_back( new SameFarmFilter() );
@@ -69,7 +69,7 @@ Market::Market(System* system):s(system){
 			demandQs->push_back(demandl);
 		}
 	}
-		
+
 }
 
 Market::~Market(){
@@ -111,8 +111,8 @@ void Market::register_offer( Offer * offer){
 			default:{
 				std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair= this->getRelevantQueues(cow->getCowTradeCriteria());
 				offerQueue = pair.first;
-				demandQueue = pair.second;	
-					
+				demandQueue = pair.second;
+
 				Demand *d = nullptr;
 				bool pushOnOfferQueue = true;
 				int i = 0;
@@ -133,15 +133,15 @@ void Market::register_offer( Offer * offer){
 								pushOnOfferQueue = false;
 							}
 						}
-						
+
 					}
 					this->cleanUpBufferQueue(demandQueue,dbuffQ);
 				}
 				if(pushOnOfferQueue) offerQueue->push(cow);
-				
+
 			}
 			break;
-			
+
 		}
 	#ifdef _MARKET_DEBUG_
 		std::cout << "Market: handled offer with " << cows->size() << " cows" << std::endl;
@@ -157,7 +157,7 @@ void Market::register_demand( Demand * demand){
 		return;
 	}
 
-	std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues(demand->crit);	
+	std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues(demand->crit);
 	std::queue<Cow*>* offerQueue = pair.first;
 	std::queue<Demand*>* demandQueue = pair.second;
 	//this->getRelevantQueues(demand->crit, offerQueue, demandQueue);
@@ -171,9 +171,9 @@ void Market::register_demand( Demand * demand){
 	#endif
 }
 void Market::flushQueues(){
-	
+
 	for(int i=0; i< NUMBEROFTYPES; i++){
-		std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues(static_cast<Cow_Trade_Criteria>(i));	
+		std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues(static_cast<Cow_Trade_Criteria>(i));
 		while(!pair.first->empty()){
 			if(this->dump){
 				if(this->slaughterHouses->size() <= 0){
@@ -182,7 +182,7 @@ void Market::flushQueues(){
 				}
 				Cow* c = pair.first->front();
 				this->scheduleTradeToSlaughterHouse(c);
-				
+
 			}
 			pair.first->pop();
 		}
@@ -191,7 +191,7 @@ void Market::flushQueues(){
 			Demand *d = demandQueue->front();
 			if(this->dump && this->sources->size() > 0){
 				while(d->numberOfDemandedCows > 0){//fill up the needs in the farms
-					
+
 					Trade_Event *e = new Trade_Event(this->s->getCurrentTime()+bvd_const::standard_trade_execution_time,(*this->sources)[0]->getACowId(),d->src);
 					if(!this->scheduleTrade(e)){
 						std::cerr << "for some reason filling the holes didn't work" << std::endl;
@@ -230,12 +230,12 @@ void Market::matchDemandToOfferQueue(Demand* demand, cowqueue* offerQueue){
 		Cow* cow = offerQueue->front();
 		offerQueue->pop();
 
-		if(!this->doTheTrading(cow, demand)){ 
+		if(!this->doTheTrading(cow, demand)){
 			bufferQueue->push(cow);
 		}
 	}
 	this->cleanUpBufferQueue(offerQueue,bufferQueue);
-	
+
 }
 template<typename T>
 void Market::cleanUpBufferQueue(std::queue<T>* trueQ, std::queue<T>* bufferQ){
@@ -248,17 +248,17 @@ void Market::cleanUpBufferQueue(std::queue<T>* trueQ, std::queue<T>* bufferQ){
 	delete bufferQ;
 }
 inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelevantQueues(const Cow_Trade_Criteria crit){
-	
+
 	std::pair<Market::cowqueue*, Market::demandqueue*> retPair = std::pair<cowqueue*, demandqueue*>();
 	if(ignoreTypeOfDemand){
 		retPair.second = (*demandQs)[0];
-		retPair.first = (*cowQs)[0];	
+		retPair.first = (*cowQs)[0];
 	}else{
 		retPair.second = (*demandQs)[crit];
-		retPair.first = (*cowQs)[crit];	
+		retPair.first = (*cowQs)[crit];
 	}
 	return retPair;
-	
+
 }
 bool Market::doTheTrading(Cow* cow, Demand* d){
 	Trade_Event *e = new Trade_Event(this->s->getCurrentTime()+bvd_const::standard_trade_execution_time,cow->id(),d->src);
@@ -267,10 +267,10 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
 		#ifdef _MARKET_DEBUG_
 			std::cout << "Market: schedule new trade" << std::endl;
 		#endif
-		
+
 	}else{
 		delete e;
-	}	
+	}
 	(d->numberOfDemandedCows)--;
 	return ret;
 }
@@ -280,12 +280,13 @@ bool Market::scheduleTrade(Trade_Event* event){
 			return false;
 	}
 	if(this->lastID == event->id){
+		std::cerr << "I don't remember, why I'm doing this" <<std::endl;
 		Utilities::printStackTrace(15);
 		//exit(234234);
 	}
 	lastID = event->id;
-	
-	s->schedule_event((Trade_Event*) event );		
+
+	s->schedule_event((Trade_Event*) event );
 	return true;
 }
 void Market::registerFarm(Farm * f){

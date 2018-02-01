@@ -135,7 +135,7 @@ class Cow
 
 
 		void scheduleNextTest();
-		void scheduleVaccination(const double& time);
+		void scheduleVaccination(const double& time) const;
 		void runVaccination(const double& time);
 		static std::unordered_map< int , Cow* > all_living_cows;
 		static int cow_id_counter;

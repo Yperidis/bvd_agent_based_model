@@ -284,14 +284,18 @@ void Farm::execute_TRADE_event( Event* e )
    		source = c->herd->farm;
 	else
 		source = NULL;
-  if (source == this )
+  if (source == this  )
     {
-      std::cerr << " Encountered trade with source==destination. This should not happen. Aborting. " << std::endl;
-		std::cout << this->myType << std::endl;
-		std::cout << source->id << std::endl;
-      Utilities::printStackTrace(15);
-		std::cout << e << std::endl;
-      exit(1);
+			if(source->myType != SLAUGHTERHOUSE){//it's quite hacky to disable the trade at this position, but it will fix issue #6
+      	std::cerr << " Encountered trade with source==destination. This should not happen. Aborting. " << std::endl;
+				std::cout << this->myType << std::endl;
+				std::cout << source->id << std::endl;
+      	Utilities::printStackTrace(15);
+				std::cout << e << std::endl;
+      	exit(1);
+			}else{
+				return;
+			}
     }
 
   // The pull_cow and push_cow methods ensure that the number or S,TI,PI and R in both farms are correct,

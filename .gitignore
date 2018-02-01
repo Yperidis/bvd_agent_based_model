@@ -19,8 +19,12 @@ lib/*
 *.o
 bvd_agent_simulation
 *dSYM
-
+*.pyc
 
 
 #OS specific
 *.DS_STORE
+
+#test output
+output_
+/.vs

@@ -1,9 +1,21 @@
 cmake_minimum_required(VERSION 3.9)
-project(bvd_agent_based_model_develop)
+project(bvd_agent_based_model)
+
+#set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
+find_package(GSL REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+set(CMAKE_BUILD_TYPE DEBUG)
 
-add_executable(bvd_agent_based_model_develop
+set(CMAKE_C_FLAGS_DEBUG "-Wall -g -pedantic -fopenmp -D_DEBUG_ -D _OUTPUT_DEBUG_ -D_FARM_MANAGER_DEBUG_ -D_INITIALIZER_DEBUG_ -D_HERD_DEBUG_ -D_MARKET_DEBUG_")
+set(CMAKE_C_FLAGS_RELEASE "-Wall -g -pedantic -fopenmp")
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
+
+add_executable(bvd_agent_based_model
         include/AdvancedOutput.h
         include/BVD_Random_Number_Generator.h
         include/BVDContainmentStrategy.h
@@ -41,12 +53,6 @@ add_executable(bvd_agent_based_model_develop
         projectImports/FakeIt/fakeit.hpp
         projectImports/inih/cpp/INIReader.cpp
         projectImports/inih/cpp/INIReader.h
-        projectImports/inih/examples/ini_dump.c
-        projectImports/inih/examples/ini_example.c
-        projectImports/inih/examples/ini_xmacros.c
-        projectImports/inih/examples/INIReaderExample.cpp
-        projectImports/inih/tests/unittest.c
-        projectImports/inih/tests/unittest_string.c
         projectImports/inih/ini.c
         projectImports/inih/ini.h
         src/AdvancedOutput.cpp
@@ -82,16 +88,17 @@ add_executable(bvd_agent_based_model_develop
         src/TableBasedOutput.cpp
         src/TradeFilter.cpp
         src/Utilities.cpp
-        tests/test_cow.cpp
-        tests/test_csv_reader.cpp
-        tests/test_event.cpp
-        tests/test_herd.cpp
-        tests/test_initializer.cpp
-        tests/test_market.cpp
-        tests/test_output.cpp
-        tests/test_system.cpp
-        tests/tests.cpp
         config.h)
+
+#tests/test_cow.cpp
+#tests/test_csv_reader.cpp
+#tests/test_event.cpp
+#tests/test_herd.cpp
+#tests/test_initializer.cpp
+#tests/test_market.cpp
+#tests/test_output.cpp
+#tests/test_system.cpp
+#tests/tests.cpp
 
 include_directories(include
         /usr/include/hdf5/serial
@@ -99,3 +106,32 @@ include_directories(include
         projectImports/inih
         projectImports/inih/cpp
         .)
+
+# This needs to account for platform-specific names of libraries, like HDF5
+find_program(LSB_RELEASE lsb_release)
+execute_process(COMMAND ${LSB_RELEASE} -is
+        OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+message(STATUS "System identified as ${LSB_RELEASE_ID_SHORT}")
+
+if(LSB_RELEASE_ID_SHORT STREQUAL "Ubuntu" OR LSB_RELEASE_ID_SHORT STREQUAL "Debian")
+    find_library(HDF5 "hdf5_serial")
+    find_library(HDF5_HL "hdf5_serial_hl")
+else()
+    find_library(HDF5 "hdf5")
+    find_library(HDF5_HL "hdf5_hl")
+endif()
+if(NOT HDF5 OR NOT HDF5_HL)
+    message(FATAL_ERROR "hdf5 library not found")
+endif()
+
+find_library(M "m")
+
+
+find_library(SQLITE3 "sqlite3")
+if(NOT SQLITE3)
+    message(FATAL_ERROR "sqlite3 library not found")
+endif()
+
+target_link_libraries(bvd_agent_based_model GSL::gsl GSL::gslcblas ${M} ${SQLITE3} ${HDF5} ${HDF5_HL})

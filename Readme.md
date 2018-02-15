@@ -3,11 +3,14 @@ This program is a simulation code written in C++ which is used to simulate the b
 
 # Use of the code
 ## Compilation
-Like most open source projects, this projects has not been build for users who do not already posses some knowledge in building C++ code on a Unix platform (I am not an expert at all). As you can see in the roadmap, making the code more accessible is a goal, but to be honest, it has to priority to me (Pascal Blunk) at the moment. If you are running windows, I have to tell you right now, that even I would not have any idea how to get this running on Windows. 
+Like most open source projects, this projects has not been build for users who do not already posses some knowledge in building C++ code on a UNIX platform. As you can see in the roadmap, making the code more accessible is a main aim. As for Windows, the project might be possible to build under [Cygwin](https://www.cygwin.com/), but this has not been tested yet. Furthermore, the cmake implementation should make it easier in principle to build a solution in [Visual Studio](https://www.visualstudio.com/), but this has also not been tested yet.
+
 ### Step by Step Guide
 First you need to install the packages listed here. Unfortunately at this point in time it is still mandatory to have all libraries such as HDF5 and SQLite included, even if you're just using CSV export. In the future this might change. 
+
 #### Packages
 Depending on your platform different steps have to be taken.
+
 ##### macOS
 * Use macports or home-brew to install
 	* git
@@ -28,10 +31,10 @@ Depending on your platform different steps have to be taken.
 	* autoconf
 	* hdf5
 #### Cloning and Building
-* Clone this repository via `git clone git@github.com:Gerungofulus/bvd_agent_based_model.git` and change into it using `cd bvd_agent_based_model`.
+* Clone this repository via `git clone https://github.com/Yperidis/bvd_agent_based_model.git` and change into it using `cd bvd_agent_based_model`.
 * Run the `./configure` script in the directory
 * Run `Make`
-* If you're experiencing problems in the build process, try running `autoreconf -i`. If this does not work, feel free to write me a mail.
+* If you're experiencing problems in the build process, try running `autoreconf -i`. If this does not work, feel free to write me an e-mail.
 
 ## Running the code
 After successful compilation an executable called 'bvd_agent_based_simulation' can be found in the `build`-directory. So far it only has two options which can be added on the command line `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies the behavior of the simulated system. Some ini files can be found in `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_simulation --ini iniFiles/Test.ini` (if your current working directory is indeed the main directory of the the repository).

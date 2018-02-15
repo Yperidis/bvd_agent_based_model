@@ -46,6 +46,7 @@ class Random_Number_Generator
 	//Duration of an infection with BVD ( time that the infection state 'transiently infected' lasts )
 	double       duration_of_infection();
 	double         duration_of_pregnancy();
+	double staggering_first_inseminations();
 	int          number_of_calvings();
 	virtual bool         is_calf_female();
 	//  double         lifetime_male_calves();
@@ -66,7 +67,7 @@ class Random_Number_Generator
 	double       conception_result( double age_of_mother , Infection_Status is_of_mother , bool* birth );
 
 	void getNRandomNumbersInRange(int n, int rangeLeft, int rangeRight, int* resultArray);
-	double cowWellTimeOfBirth(double time);
+	//double cowWellTimeOfBirth(double time);
 	bool bloodTestRightResult();
 
 	double removeTimeAfterSecondTest();

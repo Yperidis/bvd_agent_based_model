@@ -92,9 +92,9 @@ void Herd::execute_event(const Event* )
 */
 
 int Herd::getNumTI(){return this->number_of_TI;}
-int Herd::getNumPI(){return this->number_of_PI;};
-int Herd::getNumR(){return this->number_of_R;};
-int Herd::getNumS(){return this->number_of_S;};
+int Herd::getNumPI(){return this->number_of_PI;}
+int Herd::getNumR(){return this->number_of_R;}
+int Herd::getNumS(){return this->number_of_S;}
 int Herd::total_number()
 {
   return   this->number_of_PI +

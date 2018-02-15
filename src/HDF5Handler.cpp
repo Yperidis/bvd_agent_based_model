@@ -10,6 +10,8 @@
 
 void HDF5FileHandler::writeLivingPIsToFile(const hid_t& file){
 
+#ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
     const std::string tablePrefix = "PIs_LIVING_t";
 	for(int i=0; i < piStorage->size(); i++){
 		CowDataSave * currentSave = (*piStorage)[i];
@@ -20,9 +22,13 @@ void HDF5FileHandler::writeLivingPIsToFile(const hid_t& file){
 		this->writeSaveToFile(file, currentSave,tableName);
 
 	}
+#endif
+#endif
 }
 void HDF5FileHandler::writeFarmData(const hid_t& file){
 
+#ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if(this->farmData->size() <= 0 || this->farmDataTimes->size() <= 0){
 		return;
 	}
@@ -38,7 +44,7 @@ void HDF5FileHandler::writeFarmData(const hid_t& file){
 			Utilities::printStackTrace(15);
 			exit(14);
 	}
-
+#endif
 
 
 	const int rank = 2;//FarmDataPoint::size;
@@ -70,12 +76,13 @@ void HDF5FileHandler::writeFarmData(const hid_t& file){
 		delete[] data;
 	}
 
-
+#endif
 
 }
 
 void HDF5FileHandler::writeCowData(const hid_t& file_id){
-
+#ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if( this->intermediateCalvingTimes->size() > 0){
 		double *calvingTimeData;// = &((*this->intermediateCalvingTimes)[0]);
 		this->createWritableData(this->intermediateCalvingTimes, &calvingTimeData);
@@ -97,6 +104,8 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 	this->writeSaveToFile(file_id,this->InfectionData, "BVD_Cows_Infections");
 	this->writeSaveToFile(file_id,this->PIDeathSave, "BVD_Dead_PIs");
 	this->writeLivingPIsToFile(file_id);
+#endif
+#endif
 }
 
 
@@ -104,7 +113,7 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 
 void HDF5FileHandler::writeTestData(const hid_t& file_id){
 
-
+#ifndef _SUPPRESS_OUTPUT_
 	if(this->testStorage->size() > 0){
 		const int rank = 2;
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->testStorage->size()), static_cast<hsize_t>(TestDataPoint::size) };
@@ -123,12 +132,12 @@ void HDF5FileHandler::writeTestData(const hid_t& file_id){
 		}
 		delete[] data;
 	}
-
+#endif
 }
 
 void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 
-
+#ifndef _SUPPRESS_OUTPUT_
 	if(this->vaccDataSave->size() > 0){
 		const int rank = 2;
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->vaccDataSave->size()), static_cast<hsize_t>(VaccinationDataPoint::size) };
@@ -147,9 +156,12 @@ void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 		}
 		delete[] data;
 	}
-
+#endif
 }
+
 void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
+#ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if(this->infectionResultSave->size() <= 0) return;
 	const int rank = 2;
 	hsize_t dims[rank] = { static_cast<hsize_t>(this->infectionResultSave->size()), static_cast<hsize_t>(InfectionResultDataPoint::size) };
@@ -168,10 +180,12 @@ void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
 		std::cerr << "Failed to create infection result dataset" << std::endl;
 		exit(12);
 	}
-
+#endif
+#endif
 }
 
 void HDF5FileHandler::writeTradeData(const hid_t& file_id){
+#ifndef _SUPPRESS_OUTPUT_
 	const int rank = 2;
 	hsize_t dims[rank] = { this->trades->size(), (hsize_t) TradeDataPoint::size};
 	double * data;
@@ -189,16 +203,15 @@ void HDF5FileHandler::writeTradeData(const hid_t& file_id){
 
 		for(auto it = this->trades->begin(); it != this->trades->end(); it++){
 			double tRead = (*it).date;
-				if((*it).srcFarmID == -1) continue;
 
-				if((int) tRead != (int) tTemp ){//if there is a new timestep
+			if((int) tRead != (int) tTemp ){//if there is a new timestep
 
-					tTemp = tRead;
-					tradingTimes->push_back(tRead);
-					tradeMatrix = new int[this->farmNum * this->farmNum];
-					std::fill_n(tradeMatrix, this->farmNum*this->farmNum, 0);
-					tradeMatrices->push_back(tradeMatrix);
-				}
+				tTemp = tRead;
+				tradingTimes->push_back(tRead);
+				tradeMatrix = new int[this->farmNum * this->farmNum];
+				std::fill_n(tradeMatrix, this->farmNum*this->farmNum, 0);
+				tradeMatrices->push_back(tradeMatrix);
+			}
 			double* tradeDP = ((double *) (*it));
 //			std::cout << "aha " << std::endl;
 
@@ -210,8 +223,8 @@ void HDF5FileHandler::writeTradeData(const hid_t& file_id){
 
 				data[index] = tradeDP[i];
 			}
-			 delete[] tradeDP;
-			 tradeDP = nullptr;
+			delete[] tradeDP;
+			tradeDP = nullptr;
 			//std::cout << std::endl;
 		}
 		int success = H5LTmake_dataset_double( file_id ,
@@ -224,9 +237,9 @@ void HDF5FileHandler::writeTradeData(const hid_t& file_id){
 			exit(12);
 		}
 		delete[] data;
-		const int tradeMatRank = 2;
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 		const std::string tablePrefix = "Trades_t";
-
+        const int tradeMatRank = 2;
 		for(int i = 0; i < tradeMatrices->size();i++){
 			const int * mat = (*tradeMatrices)[i];
 			hsize_t num =  static_cast<hsize_t>(this->farmNum );
@@ -259,15 +272,13 @@ void HDF5FileHandler::writeTradeData(const hid_t& file_id){
 			std::cerr << "Failed to create trade time dataset" << std::endl;
 			exit(12);
 		}
-
+#endif
 		for(auto mat : *tradeMatrices){delete[] mat;}
 		delete tradeMatrices;
 		delete tradingTimes;
 
-
-
 	}
-
+#endif
 }
 
 template<typename T>
@@ -276,7 +287,7 @@ void HDF5FileHandler::writeTemplateSaveToFile(const hid_t& file, std::vector<T>*
 #pragma mark -
 #pragma mark - Basic File Management
 hid_t HDF5FileHandler::open_file( std::string filename , bool overwrite){
-
+#ifndef _SUPPRESS_OUTPUT_
   hid_t file_id = H5Fcreate( filename.c_str() ,
 					  overwrite ? H5F_ACC_TRUNC : H5F_ACC_EXCL ,
 					  H5P_DEFAULT,
@@ -287,9 +298,11 @@ hid_t HDF5FileHandler::open_file( std::string filename , bool overwrite){
       exit(1);
     }
   return file_id;
+#endif
 }
-void HDF5FileHandler::write_to_file(const double time){
 
+void HDF5FileHandler::write_to_file(const double time){
+#ifndef _SUPPRESS_OUTPUT_
 //typedef std::vector<TradeDataPoint*> TradeDataSave;
 
 
@@ -315,31 +328,52 @@ void HDF5FileHandler::write_to_file(const double time){
 				this->deleteList = false;
 			}
 
+            //std::cout << "ready to write to listfilename" << std::endl;
   			outfile.open(listfilename.c_str(), std::ios_base::app);
  			outfile << this->fileprefix + "_time_" + std::to_string((int) time) + this->fileExtension << std::endl;
  			outfile.close();
+            //std::cout << "done writing to listfilename" << std::endl;
 //			std::cerr << "Multifile output is not yet supported. Exiting" << std::endl;
 //			exit(5);
 			break;
 
 	}
+	//std::cout << "ready to write to filename" << std::endl;
 	file = this->open_file(filename, this->overwrite);
+	//std::cout << "done writing to filename" << std::endl;
 //		Utilities::printStackTrace(15);
+	//std::cout << "Trade data.. ";
 	this->writeTradeData(file);
+	//std::cout << "Farm data.. ";
 	this->writeFarmData(file);
+	//std::cout << "Cow data.. ";
 	this->writeCowData(file);
+	//std::cout << "Test data.. ";
 	this->writeTestData(file);
-  this->writeVaccinationData(file);
+	//std::cout << "Vaccination data.. ";
+    this->writeVaccinationData(file);
+	//std::cout << "Infection data.. ";
 	this->writeInfectionResultData(file);
+	//std::cout << "Closing File.. " << std::endl;
 	H5Fclose( file );
-    std::system((BVDSettings::sharedInstance()->outputSettings.postFileWriteCall + " " + filename).c_str());
-	if(flush)
+	//std::cout << "After HDF5 close" << std::endl;
+
+	if (BVDSettings::sharedInstance()->outputSettings.postFileWriteCall != "") {
+		std::system((BVDSettings::sharedInstance()->outputSettings.postFileWriteCall + " " + filename).c_str());
+	}
+	//std::cout << "After weird voodoo command" << std::endl;
+	if(flush) {
+		//std::cout << "Flush called!" << std::endl;
 		this->flushStorages();
+	}
+#endif
 }
 
 void HDF5FileHandler::writeSaveToFile(const hid_t& file, CowDataSave* save, const std::string tableName){
-
-	if(save->size() <= 0 ) return;
+#ifndef _SUPPRESS_OUTPUT_
+	if(save->empty()) {
+        return;
+    }
 
 	const int rank = 2;//CowDataPoint::size;
 
@@ -358,11 +392,15 @@ void HDF5FileHandler::writeSaveToFile(const hid_t& file, CowDataSave* save, cons
 		exit(12);
 	}
 
-	if(data != NULL)
-		delete[] data;
-	else
-		std::cout << "data should not be NULL, it has a size of " << save->size() << std::endl;
+	if(data != NULL) {
+        delete[] data;
+    }
+	else {
+        std::cout << "data should not be NULL, it has a size of " << save->size() << std::endl;
+    }
+#endif
 }
+
 template<typename T, typename returnType>
 void HDF5FileHandler::createWritableData(std::vector<T>* save, returnType** data){
 	*data = new returnType[save->size()*T::size];
@@ -386,6 +424,7 @@ void HDF5FileHandler::createWritableData(std::vector<T>* save, returnType** data
 
 
 HDF5FileHandler::HDF5FileHandler():TableBasedOutput(){
+
 	this->fileExtension = ".h5";
 	this->deleteList = this->overwrite;
 

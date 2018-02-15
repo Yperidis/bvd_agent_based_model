@@ -50,6 +50,8 @@ Market::Market(System* system):s(system){
 		cowQs->push_back(cowl);
 		demandQs->push_back(demandl);
 
+		//In the implementation below, if more trading criteria are added they will need to be included in the
+		//following list for the market to ignore the registered types of demand.
 		buyingQueueTradeCriteriaPriorities = new std::vector<Cow_Trade_Criteria>();
 		buyingQueueTradeCriteriaPriorities->push_back(PREGNANT);
 		buyingQueueTradeCriteriaPriorities->push_back(DAIRY_COW);
@@ -152,7 +154,7 @@ void Market::register_offer( Offer * offer){
 
 }
 void Market::register_demand( Demand * demand){
-	if(dump && demand->src->getType() == SLAUGHTERHOUSE){//dont accept demand from slaughterhouses when dumping
+	if(dump && demand->src->getType() == SLAUGHTERHOUSE){//don't accept demand from slaughterhouses when dumping
 		delete demand;
 		return;
 	}
@@ -240,7 +242,8 @@ void Market::matchDemandToOfferQueue(Demand* demand, cowqueue* offerQueue){
 template<typename T>
 void Market::cleanUpBufferQueue(std::queue<T>* trueQ, std::queue<T>* bufferQ){
 	while(bufferQ->size() > 0){
-		//this is not optimal when it comes to timing, but should work for now. TODO: when timing problems arise: solve that problem
+		//this is not optimal when it comes to timing, but should work for now.
+		// FIXME: when timing problems arise: solve that problem
 		T thing = bufferQ->front();
 		trueQ->push(thing);
 		bufferQ->pop();

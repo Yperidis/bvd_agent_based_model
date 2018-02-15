@@ -41,9 +41,9 @@ int   Cow::id() const { return _id; }
 
 Cow::Cow( double time , Cow* my_mother )
 {
-
 	init(time, my_mother,  system->rng.is_calf_female());
 }
+
 Cow::Cow( double time, Cow* my_mother, bool isFemale){
 	init(time, my_mother,  isFemale);
 }
@@ -51,9 +51,10 @@ Cow::Cow( double time, Cow* my_mother, bool isFemale){
 Cow::Cow(std::string cowName){
 
 	double introTime = System::reader->GetReal(cowName, "introductiontime", 500);
-	double t = introTime - System::reader->GetReal(cowName, "cowAge", 500);
+    double cowAge = System::reader->GetReal(cowName, "cowAge", 500);
+	double t = introTime - cowAge;
 
-	init(t, NULL, true);
+	init(t, nullptr, true);
 
 	std::string infection_statusString = System::reader->Get(cowName, "infection_status", "SUSCEPTIBLE");
 	std::string calf_statusString = System::reader->Get(cowName, "calf_status", "SUSCEPTIBLE");
@@ -61,7 +62,6 @@ Cow::Cow(std::string cowName){
 	infection_status = stringToInfectionStatus(infection_statusString);
 
 	if(calf_status != Calf_Status::NO_CALF){
-
 		Cow::system->schedule_event( new Event( introTime , Event_Type::CONCEPTION , id() ) );
 	}
 
@@ -76,14 +76,16 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 	last_conception_time = -1;
 	calving_number       =  Cow::system->rng.number_of_calvings();
 	has_been_pregnant_at_all_so_far = false;
+    planned_birth_event = nullptr;
 
 	calf_status          =  Calf_Status::NO_CALF;
 	mother               =  my_mother;
 
-	if (my_mother != NULL )
+	if (my_mother != NULL ){
 		herd                 =  my_mother->herd;
-	else
+	} else {
 		herd = NULL;
+	}
 	all_living_cows[ _id ]= this;
 	birthTimesOfCalves = new double[calving_number+1]; //using one more entry to have a END for the output class to look for
 	for(int i=0; i < calving_number+1; i++){
@@ -114,48 +116,51 @@ void Cow::execute_event( Event* e )
 {
 	Farm * f = herd->farm;  // We have to store this at this place, because after executing an eventual DEATH event, the cow is already deleted..
 	future_irc_events_that_move.erase((Event*)e); // Same reason for doing this here.
-  if(f->myType == SLAUGHTERHOUSE && !( e->type == Event_Type::SLAUGHTER || e->type == Event_Type::SLAUGHTER || e->type == Event_Type::SLAUGHTER)){ return; }
-	switch ( e->type )
-	{
+	//TODO why triple querry in the condition?
+	if(f->myType == SLAUGHTERHOUSE && !( e->type == Event_Type::SLAUGHTER || e->type == Event_Type::SLAUGHTER || e->type == Event_Type::SLAUGHTER)){
+		return;
+	}
+	switch ( e->type ){
 		case Event_Type::VACCINATE		:
 			this->runVaccination(e->execution_time);
 			break;
 		case Event_Type::END_OF_VACCINATION		:
-		if(this->end_of_vaccination_event != NULL && this->end_of_vaccination_event == e)//find out if it is actually the end of vaccination
-			this->execute_END_OF_VACCINATION(e->execution_time);
+			if(this->end_of_vaccination_event != NULL && this->end_of_vaccination_event == e){
+				//find out if it is actually the end of vaccination
+				this->execute_END_OF_VACCINATION(e->execution_time);
+			}
 			break;
 		case Event_Type::BIRTH        :
-			  execute_BIRTH( e->execution_time );
-			  break;
+			execute_BIRTH( e->execution_time );
+			break;
 		case Event_Type::ABORTION     :
-			  execute_ABORTION( e->execution_time );
-			  break;
+			execute_ABORTION( e->execution_time );
+			break;
 		case Event_Type::REMOVECOW:
 			this->herd->farm->manager->registerCowForSale(this);
 			break;
 		case Event_Type::INSEMINATION :
 //			if(e->execution_time - this->birth_time < 200.)
 //  	std::cout << "insem\t" <<  this->birth_time << "\t" << e->execution_time << "\t" << this->id() << "\t" << e->id<<  std::endl;
-			  execute_INSEMINATION( e->execution_time );
-			  break;
+			execute_INSEMINATION( e->execution_time );
+			break;
 		case Event_Type::CONCEPTION   :
-
-			  execute_CONCEPTION( e->execution_time );
-			  break;
+			execute_CONCEPTION( e->execution_time );
+			break;
 		case Event_Type::SLAUGHTER	  :
 		case Event_Type::CULLING	  :
 		case Event_Type::DEATH        :
-			  execute_DEATH( e->execution_time );
-			  break;
+			execute_DEATH( e->execution_time );
+			break;
 		case Event_Type::END_OF_MA    :
-			  execute_END_OF_MA( e->execution_time );
-			  break;
+			execute_END_OF_MA( e->execution_time );
+			break;
 		case Event_Type::INFECTION    :
-			  execute_INFECTION( e->execution_time );
-			  break;
+			execute_INFECTION( e->execution_time );
+			break;
 		case Event_Type::RECOVERY     :
-			  execute_RECOVERY( e->execution_time );
-			  break;
+			execute_RECOVERY( e->execution_time );
+			break;
 		case Event_Type::VIRUSTEST:
 		case Event_Type::ANTIBODYTEST:
 		case Event_Type::TEST:
@@ -163,17 +168,17 @@ void Cow::execute_event( Event* e )
 			break;
 
 		default:
-			  std::cerr << "Unknown event type for Cow: " << Utilities::Event_tostr.at (e->type) << ". Exiting." <<std::endl ;
-			  exit(1);
+			std::cerr << "Unknown event type for Cow: " << Utilities::Event_tostr.at (e->type) << ". Exiting." <<std::endl ;
+			exit(1);
 	}
 	if ( e->is_infection_rate_changing_event() ){
 		//std::cout << "infection rate change event of type " << (int) (e->type) << std::endl;
 		f->infection_rate_has_changed( e );
-
 	}
 }
+
 Cow_Trade_Criteria Cow::getCowTradeCriteria(){
-	double date = this->herd->farm->system->getCurrentTime();
+	double date = this->system->getCurrentTime();
 	double age = date - this->birth_time;
 	static double calfMaxAge = bvd_const::age_threshold_calf;
 	if(!this->female){
@@ -210,189 +215,211 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 }
 void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 {
-  double execution_time = time + system->rng.time_of_rest_after_calving(calving_number);
-  if ( calving_number <= 0 )
-    {/// Die Kuh hat ausgedient und wird auf Suppenkuh umgeschult.
-	    this->herd->farm->manager->registerCowForSale(this);
-      //system->schedule_event( new Event(  execution_time , Event_Type::DEATH , id() ) ); // This should be changed to a new type of event, notifying the farm/herd of the cow's age..
-    }
-  else
-    {/// Die Kuh hat noch nicht ausgedient und kann ihre Position als Gebär- und Milchmaschine behalten.
-      // Der nächste Gebärauftrag wird aufgegeben
-      double vaccTime = -1.0;
-      this->scheduleInsemination(execution_time,vaccTime);
-    }
+	double execution_time = time + system->rng.time_of_rest_after_calving(calving_number);
+	// TODO calving number is used subtractively.
+	if ( calving_number <= 0 ){
+		//The cow's cycle ends and it is sent to the slaughterhouse
+		/// Die Kuh hat ausgedient und wird auf Suppenkuh umgeschult.
+		this->herd->farm->manager->registerCowForSale(this);
+	}
+	else
+	{
+		/// Die Kuh hat noch nicht ausgedient und kann ihre Position als Gebär- und Milchmaschine behalten.
+		//The cow has not yet fulfilled its usage cycle and thus retains its position as a birth and milk machine
+		// Der nächste Gebärauftrag wird aufgegeben
+		//
+		// TODO why was vaccTime reset here?
+		double vaccTime;
+		if (this->end_of_vaccination_event == nullptr) {
+			vaccTime = -1.0;
+		} else{
+			vaccTime = this->end_of_vaccination_event->execution_time;
+		}
+		this->scheduleInsemination(execution_time,vaccTime);
+	}
 }
 
+//TODO check if this accounts only for abortions and stillbirths or if there is something else going on
 void Cow::execute_BIRTH( const double& time  )
 {
-  if ( calf_status == Calf_Status::NO_CALF || time-last_conception_time < bvd_const::minimum_pregnancy_duration ) /// This should only happen if there has been an abortion.
-    return;
-  calving_number--;
-  bool first_birth = !has_been_pregnant_at_all_so_far;
-  has_been_pregnant_at_all_so_far = true;
-  double vaccinationTime = -1.0;
-  handle_rest_time_after_ABORTION_or_BIRTH( time );
-
-  /// Will the newborn calf be living? (This depends on the age of the mother).
-  if ( !system->rng.is_this_a_deadbirth( first_birth ) )
-    { // Determine status of new calf
-      Infection_Status is;
-      switch ( calf_status )
-	{
-	case Calf_Status::SUSCEPTIBLE:
-	  is = Infection_Status::SUSCEPTIBLE;
-	  break;
-	case Calf_Status::IMMUNE:
-	  is = Infection_Status::IMMUNE;
-	  break;
-	case Calf_Status::PERSISTENTLY_INFECTED:
-	  is = Infection_Status::PERSISTENTLY_INFECTED;
-	  break;
-	case Calf_Status::CRIPPLE:
-	  calf_status = Calf_Status::NO_CALF;
-	  return; /// Culled right away in this model.
-	default: /// We will never land here, because NO_CALF has been excluded already.
-	  calf_status = Calf_Status::NO_CALF;
-	  return;
-	}//switch
-
-      calf_status = Calf_Status::NO_CALF;
-
-      /// Welcome to this world little calf.
-      Cow* calf = new Cow( time , this ); // The sex of the calf is determined in the constructor
-
-      double time_of_death = std::numeric_limits<double>::max();
-      // If this stays infinite, the cow will die anyway at some point,
-      //  because either it is male or if it is female it has a finite number of calvings
-      if ( is == Infection_Status::PERSISTENTLY_INFECTED )
-	{ //PI animals will die earlier than others.
-	  time_of_death = time + system->rng.lifetime_PI();
-
+	if ( calf_status == Calf_Status::NO_CALF || (time - last_conception_time) < bvd_const::minimum_pregnancy_duration ) {
+		/// This should only happen if there has been an abortion.
+		if (calf_status == Calf_Status::NO_CALF) {
+			std::cout << "WARNING! CALF STATUS NOCALF CALLED AT BIRTH! DEBUG ME" << std::endl;
+		}
+		return;
 	}
-      else
-	{
-	  time_of_death =  time + system->rng.time_of_death_as_calf(); // If this returns -1, newborn will not die as calf.
-	  if ( time_of_death <= time )
-	    time_of_death = std::numeric_limits<double>::max();
-	}
-	system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
-      double execution_time;
-      if ( calf->female )
-	{/// Female cow: schedule first insemination if it doesn't die before.
-	  execution_time = time + system->rng.first_insemination_age();
-	  if ( time_of_death > execution_time ) {
-		  this->scheduleInsemination(execution_time, vaccinationTime, calf);
+
+	calving_number--;
+	bool first_birth = !has_been_pregnant_at_all_so_far;
+	has_been_pregnant_at_all_so_far = true;
+	double calfVaccinationTime = -1.0;
+	handle_rest_time_after_ABORTION_or_BIRTH( time );
+
+	/// Will the newborn calf be living? (This depends on the age of the mother).
+	if ( !system->rng.is_this_a_deadbirth( first_birth ) )
+	{ // Determine status of new calf
+		Infection_Status is;
+		switch ( calf_status )
+		{
+			case Calf_Status::SUSCEPTIBLE:
+				is = Infection_Status::SUSCEPTIBLE;
+				break;
+			case Calf_Status::IMMUNE:
+				is = Infection_Status::IMMUNE;
+				break;
+			case Calf_Status::PERSISTENTLY_INFECTED:
+				is = Infection_Status::PERSISTENTLY_INFECTED;
+				break;
+			case Calf_Status::CRIPPLE:
+				calf_status = Calf_Status::NO_CALF;
+				return; /// Culled right away in this model.
+			default: /// We will never land here, because NO_CALF has been excluded already.
+				calf_status = Calf_Status::NO_CALF;
+				return;
+		}//switch
+
+		calf_status = Calf_Status::NO_CALF;
+
+		/// Welcome to this world little calf.
+		Cow* calf = new Cow( time , this ); // The sex of the calf is determined in the constructor
+
+		double time_of_death = std::numeric_limits<double>::max();
+		// If this stays infinite, the cow will die anyway at some point,
+		//  because either it is male or if it is female it has a finite number of calvings
+		if ( is == Infection_Status::PERSISTENTLY_INFECTED ){ //PI animals will die earlier than others.
+			time_of_death = time + system->rng.lifetime_PI();
+		} else {
+			time_of_death =  time + system->rng.time_of_death_as_calf(); // If this returns -1, newborn will not die as calf.
+			if ( time_of_death <= time ) {
+				time_of_death = std::numeric_limits<double>::max();
+			}
+		}
+		system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
+		double execution_time;
+		if ( calf->female ){/// Female cow: schedule first insemination if it doesn't die before.
+			execution_time = time + system->rng.first_insemination_age();
+			if ( time_of_death > execution_time ) {
+				this->scheduleInsemination(execution_time, calfVaccinationTime, calf);
+			}
+		}
+		else {/// Male cow: schedule culling if it doesn't die before.
+			execution_time = time + system->rng.life_expectancy_male_cow();
+			if ( time_of_death > execution_time ) {
+				system->schedule_event( new Event( execution_time , Event_Type::DEATH       , calf->id() ) );
+			}
+		}
+		if ( infection_status == Infection_Status::IMMUNE && is == Infection_Status::SUSCEPTIBLE ) // If the mother is IMMUNE, then calf is protected by Maternal antibodies for a while
+		{
+			is = Infection_Status::IMMUNE;
+			double ma_end = time+system->rng.duration_of_MA();
+			if ( time_of_death > ma_end ){
+				system->schedule_event( new Event( ma_end , Event_Type::END_OF_MA , calf->id() ) );
+			}
+		}
+		calf->infection_status = is;
+
+		children.insert( calf );
+		herd->farm->push_cow( calf );
+		herd->reevaluateGroup(this);
+		//log time of birth to mother cow in order to use it in output
+		int index = 0;
+		while(birthTimesOfCalves[index] != -1.0) index++;
+		birthTimesOfCalves[index] = time;
+		if(system->activeStrategy->usesEartag){
+			double firstTestAge = system->rng.timeOfFirstTest();
+			system->schedule_event( new Event( system->getCurrentTime()+firstTestAge , Event_Type::TEST      , calf->id() )) ;
 
 		}
-	}
-      else
-	{/// Male cow: schedule culling if it doesn't die before.
-	  // [DEATH Event should be replaced by a new Event "DEPORTATION" or something similar..]
-// 	  execution_time = time + herd->farm->rng.life_expectancy_male_cow();
-	  execution_time = time + system->rng.life_expectancy_male_cow();
-	  if ( time_of_death > execution_time ) { system->schedule_event( new Event( execution_time , Event_Type::DEATH       , calf->id() ) ); }
-	}
-
-      if ( infection_status == Infection_Status::IMMUNE && is == Infection_Status::SUSCEPTIBLE ) // If the mother is IMMUNE, then calf is protected by Maternal antibodies for a while
-	{
-	  is = Infection_Status::IMMUNE;
-	  double ma_end = time+system->rng.duration_of_MA();
-	  if ( time_of_death > ma_end ){
-	    	system->schedule_event( new Event( ma_end , Event_Type::END_OF_MA , calf->id() ) );
-	    }
-	}
-      calf->infection_status = is;
-
-      children.insert( calf );
-      herd->farm->push_cow( calf );
-      herd->reevaluateGroup(this);
-      //log time of birth to mother cow in order to use it in output
-      int index = 0;
-      while(birthTimesOfCalves[index] != -1.0) index++;
-      birthTimesOfCalves[index] = time;
-      if(system->activeStrategy->usesEartag){
-	      double firstTestAge = system->rng.timeOfFirstTest();
-	      system->schedule_event( new Event( system->getCurrentTime()+firstTestAge , Event_Type::TEST      , calf->id() )) ;
-
-     }
-     this->timeOfLastCalving = time;
-     System::getInstance(NULL)->addCow(calf);
+		this->timeOfLastCalving = time;
+		System::getInstance(NULL)->addCow(calf);
 
 //      if(time - this->birth_time < 200)
 //      	std::cout << time << "\t" << this->birth_time << std::endl;
-    }// END if not deadbirth.
+	}// END if not deadbirth.
 
 }
 
 
 void Cow::execute_ABORTION( const double& time )
 {
-  if (calf_status == Calf_Status::NO_CALF ) // Can this actually happen?
-    return;
-  calf_status = Calf_Status::NO_CALF;
-
-  if ( time - last_conception_time > bvd_const::threshold_abortion_counts_as_calving )
-    {
-      calving_number--;
-      has_been_pregnant_at_all_so_far = true;
-    }
-  handle_rest_time_after_ABORTION_or_BIRTH( time );
+	if (!female) {
+		std::cout << "WARNING! ABORTION ON MALE HEAD! DEBUG ME" << std::endl;
+		// Can this actually happen?
+		return;
+	}
+	calf_status = Calf_Status::NO_CALF;
+	if (planned_birth_event != nullptr) {
+		System::getInstance(NULL)->invalidate_event(planned_birth_event);
+		planned_birth_event = nullptr;
+	}
+	if ( time - last_conception_time > bvd_const::threshold_abortion_counts_as_calving )
+	{
+		calving_number--;
+		has_been_pregnant_at_all_so_far = true;
+	}
+	handle_rest_time_after_ABORTION_or_BIRTH( time );
 }
 
 void Cow::execute_INSEMINATION( const double& time )
 {
-  bool conception;
-  double execution_time = time + system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception );
+	if (!female){
+		return; // ;)
+	}
+	bool conception;
+	double execution_time = time + system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception );
 
-  if (conception) // The cow will become pregnant.
-    system->schedule_event( new Event( execution_time , Event_Type::CONCEPTION , id() ) );
-  else{ // The cow won't become pregnant -> Cull it.
-  		//TODO Send it to slaughterhouse?!
-  		//TODO Test again for insamination for another time/multiple times?
-    //system->schedule_event( new Event( execution_time , Event_Type::DEATH      , id() ) )
-    	this->calf_status = Calf_Status::INFERTILE;
-    	this->herd->farm->manager->registerCowForSale(this);
-    };
+	if (conception) {
+		// The cow will become pregnant.
+		system->schedule_event( new Event( execution_time , Event_Type::CONCEPTION , id() ) );
+	} else{ // The cow won't become pregnant -> Cull it
+		this->calf_status = Calf_Status::INFERTILE;
+		this->herd->farm->manager->registerCowForSale(this);
+	}
 }
 
 void Cow::execute_CONCEPTION(const double& time )
 {
-  last_conception_time            = time;
-  double execution_time ;
+	last_conception_time = time;
+	double execution_time ;
 
-  switch( infection_status )
-    {
-    case Infection_Status::TRANSIENTLY_INFECTED:
-      calf_status = system->rng.calf_outcome_from_infection ( 0 );
-      break;
-    case Infection_Status::PERSISTENTLY_INFECTED:
-      calf_status = Calf_Status::PERSISTENTLY_INFECTED;          // p=1 for the birth of a PI calf by a PI mother.
-      break;
-    default:
-      calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
-      break;
-    }
-  if ( calf_status == Calf_Status::ABORT )
-    {
-      execution_time = time + system->rng.time_of_abortion_due_to_infection( 0 );
-      system->schedule_event( new Event( execution_time , Event_Type::ABORTION , id() ) );
-      return;
-    }
+	switch( infection_status )
+	{
+		case Infection_Status::TRANSIENTLY_INFECTED:
+			calf_status = system->rng.calf_outcome_from_infection ( 0 );
+			break;
+		case Infection_Status::PERSISTENTLY_INFECTED:
+			calf_status = Calf_Status::PERSISTENTLY_INFECTED;          // p=1 for the birth of a PI calf by a PI mother.
+			break;
+		default:
+			calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
+			break;
+	}
+	if ( calf_status == Calf_Status::ABORT )
+	{
+		execution_time = time + system->rng.time_of_abortion_due_to_infection( 0 );
+		system->schedule_event( new Event( execution_time , Event_Type::ABORTION , id() ) );
+		return;
+	}
 
-  //At this point, the infection status of the mother can be anything.
-  bool birth;
-  execution_time = time + system->rng.conception_result( time - birth_time , infection_status , &birth );
+	//At this point, the infection status of the mother can be anything.
+	bool birth;
+	execution_time = time + system->rng.conception_result( time - birth_time , infection_status , &birth );
+	if (calf_status == Calf_Status::NO_CALF) {
+		std::cout << "HELLO" << std::endl;
+	}
+	if ( birth ) {
+		system->schedule_event( new Event( execution_time , Event_Type::BIRTH, id() ) );
+	} else {
+		system->schedule_event( new Event( execution_time , Event_Type::ABORTION, id() ) );
+	}
 
-  if ( birth )
-    system->schedule_event( new Event( execution_time , Event_Type::BIRTH    , id() ) );
-  else
-    system->schedule_event( new Event( execution_time , Event_Type::ABORTION , id() ) );
 }
 
 void Cow::execute_DEATH( const double& time )
 {
-
+	//TODO not implemented
+	std::cout << "WARNING! Tried to execute DEATH but not implemented" << std::endl;
 }
 
 void Cow::execute_END_OF_MA( const double& time )
@@ -408,55 +435,55 @@ void Cow::execute_END_OF_MA( const double& time )
 
 void Cow::execute_INFECTION( const double& time )
 {
-  if ( infection_status !=Infection_Status::SUSCEPTIBLE )
-    {
-      std::cerr << "Non S cow getting infected.. @t=" <<time<< std::endl;
-      std::cerr << "IS = " << Utilities::IS_tostr.at( infection_status ) << std::endl;
-      return;
-      exit(1);
-    }
-    this->timeOfInfection = time;
-  double execution_time;
-  if ( time-birth_time < bvd_const::age_threshold_calf ) //It's a calf!
-    {
-      if (system->rng.will_TI_calf_die() )
+    //TODO the conditional here should never take place. Occurred in job887817 at t=15738.2. Check
+	if ( infection_status !=Infection_Status::SUSCEPTIBLE )
 	{
-	  execution_time = time + system->rng.time_of_death_infected_calf() ;
-	  system->schedule_event( new Event( execution_time , Event_Type::DEATH , id() ) );
+		std::cerr << "Non S cow getting infected.. @t=" <<time<< std::endl;
+		std::cerr << "IS = " << Utilities::IS_tostr.at( infection_status ) << std::endl;
+		return;
+		exit(1);
 	}
-      else //Calf will not die
+	this->timeOfInfection = time;
+	double execution_time;
+	if ( time-birth_time < bvd_const::age_threshold_calf ) //It's a calf!
 	{
-	  execution_time = time + system->rng.duration_of_infection();
-	  system->schedule_event( new Event( execution_time , Event_Type::RECOVERY , id() ) );
+		if (system->rng.will_TI_calf_die())	{
+			execution_time = time + system->rng.time_of_death_infected_calf() ;
+			system->schedule_event( new Event( execution_time , Event_Type::DEATH , id() ) );
+		} else {
+			//Calf will not die
+			execution_time = time + system->rng.duration_of_infection();
+			system->schedule_event( new Event( execution_time , Event_Type::RECOVERY , id() ) );
+		}
 	}
-    }
-  else //It's not a calf.
-    {// At this point, the calf status can only be NO_CALF or SUSCEPTIBLE (because the infection status before this event must have been SUSCEPTIBLE).
-      if ( calf_status == Calf_Status::SUSCEPTIBLE ) // The cow is pregnant
-	{
-	  double time_of_pregnancy = time-last_conception_time;
-	  calf_status = system->rng.calf_outcome_from_infection ( time_of_pregnancy );
-	  if (calf_status == Calf_Status::ABORT )
-	    {
-	      execution_time = time + system->rng.time_of_abortion_due_to_infection( time_of_pregnancy );
-	      system->schedule_event( new Event( execution_time , Event_Type::ABORTION , id() ) );
-	    }
-	}
-      else // The cow is not pregnant
-	{
-	}
-      //At this point it's still not a calf.
-      //And it could be pregnant or not
-      execution_time = time + system->rng.duration_of_infection();
-      system->schedule_event( new Event( execution_time , Event_Type::RECOVERY , id() ) );
-      /// NOTE: The reason to do schedule the RECOVERY separately for calves and non calves is not within the BVD model,
-      ///        There is just no other way to get the right program flow.
-    }
-  // At this point, it can be a calf or not and pregnant or not.
-  infection_status = Infection_Status::TRANSIENTLY_INFECTED;
-  herd->remove_cow_from_susceptible( this );
+	else //It's not a calf.
+	{// At this point, the calf status can only be NO_CALF or SUSCEPTIBLE (because the infection status before this event must have been SUSCEPTIBLE).
+		if ( female && calf_status == Calf_Status::SUSCEPTIBLE ) // The cow is pregnant
+		{
+			double time_of_pregnancy = time-last_conception_time;
+			calf_status = system->rng.calf_outcome_from_infection ( time_of_pregnancy );
+			if (calf_status == Calf_Status::NO_CALF) {
+				std::cout << "SOME ERROR HERE" << std::endl;
+			}
+			if (calf_status == Calf_Status::ABORT ){
+				execution_time = time + system->rng.time_of_abortion_due_to_infection( time_of_pregnancy );
+				system->schedule_event( new Event( execution_time , Event_Type::ABORTION , id() ) );
+			}
+		}
+	 // The cow is not pregnant
 
-  herd->add_ti_cow(this);
+		//At this point it's still not a calf.
+		//And it could be pregnant or not
+		execution_time = time + system->rng.duration_of_infection();
+		system->schedule_event( new Event( execution_time , Event_Type::RECOVERY , id() ) );
+		/// NOTE: The reason to do schedule the RECOVERY separately for calves and non calves is not within the BVD model,
+		///        There is just no other way to get the right program flow.
+
+	}
+	// At this point, it can be a calf or not and pregnant or not.
+	infection_status = Infection_Status::TRANSIENTLY_INFECTED;
+	herd->remove_cow_from_susceptible( this );
+	herd->add_ti_cow(this);
 }
 
 void Cow::execute_RECOVERY( const double& time )
@@ -530,6 +557,7 @@ inline void Cow::scheduleVaccination(const double& time) const{
 
 	system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
 }
+
 inline void Cow::runVaccination(const double& time){
 	if( this->infection_status == Infection_Status::SUSCEPTIBLE && system->rng.vaccinationWorks()){
 		this->infection_status = Infection_Status::IMMUNE;
@@ -538,16 +566,17 @@ inline void Cow::runVaccination(const double& time){
 		this->herd->add_r_cow(this);
 //		if(this->herd->farm->next_infection_event != nullptr && this->herd->farm->next_infection_event->id == this->id() && this->herd->farm->next_infection_event->execution_time < time + bvd_const::timeOfVaccinationPersistance)
 //			this->herd->farm->invalidate_next_infection_event();
-    if(this->end_of_vaccination_event != nullptr){
-      system->invalidate_event(this->end_of_vaccination_event);
-      this->end_of_vaccination_event = nullptr;
-    }
-    this->end_of_vaccination_event = new Event( system->getCurrentTime()+ System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
+		if(this->end_of_vaccination_event != nullptr){
+			system->invalidate_event(this->end_of_vaccination_event);
+			this->end_of_vaccination_event = nullptr;
+		}
+		this->end_of_vaccination_event = new Event( system->getCurrentTime()+ System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
 		system->schedule_event(this->end_of_vaccination_event) ;
 	}
 	this->scheduleVaccination(time + bvd_const::timeOfVaccinationPersistance);
 	this->numberOfVaccinations++;
 }
+
 bool Cow::testCow(const Event* e){
 	if(firstTestTime <= 0.0)
 		this->firstTestTime = system->getCurrentTime();
@@ -613,46 +642,54 @@ inline void Cow::scheduleNextTest(){
 	system->schedule_event( new Event( system->getCurrentTime()+retestTime , Event_Type::TEST      , this->id() )) ;
 }
 
- void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* c){
+void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* c){
 	if(c == nullptr)
 		c = this;
 	system->schedule_event( new Event( time , Event_Type::INSEMINATION, c->id() ) );
-std::cout << "vaccination enabled: "<< system->activeStrategy->usesVaccination << std::endl; 
-  if(system->activeStrategy->usesVaccination){//vaccination
+#ifdef _VACCINATION_DEBUG_
+	std::cout << "vaccination enabled: "<< system->activeStrategy->usesVaccination << std::endl;
+#endif
 
+	if(system->activeStrategy->usesVaccination){
+		//vaccination
 		vaccTime = time - System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination;
 
-    //cow has been vaccinated before
+		//Check if the cow has been vaccinated before
+		//see if the vaccination will take place within the time till the vaccinationTimeBeforeInsemination before the
+		//insemination else invalidate it and schedule a new one
+		//till now it's sufficient to check if the approximate end of the vaccination is in the given time frame
+		//TODO if distributions for the time of a working vaccination are introduced, another test to check if a cow has been vaccinated before needs to be introduced
+		if(c->end_of_vaccination_event != nullptr){
+			// this needs to be bigger than 0 and smaller than vaccinationTimeBeforeInsemination
+			const double diff = c->end_of_vaccination_event->execution_time - vaccTime;
 
-    //see if the vaccination will take place within the time till the vaccinationTimeBeforeInsemination before the insemination else invalidate it and schedule a new one
-    //till now it's sufficient to check if the approximate end of the vaccination is in the given time frame
-    if(c->end_of_vaccination_event != nullptr){//TODO if distributions for the time of a working vaccination are introduced, another test to check if a cow has been vaccinated before needs to be introduced
-        const double diff = c->end_of_vaccination_event->execution_time - vaccTime; // this needs to be bigger than 0 and smaller than vaccinationTimeBeforeInsemination
-        if(diff >= 0.0 && diff <= System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination){//vaccination is happening in the desired time frame
-          //leave everything
-          return;
-        }
-    }else{
-      //the cow has not been vaccinated before and will therefore get a vaccination at the right time
-      //no need to change the time above
+			if(diff >= 0.0 && diff <= System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination){
+				//vaccination is happening in the desired time frame
+				//leave everything
+				return;
+			}
+		}else{
+			//the cow has not been vaccinated before and will therefore get a vaccination at the right time
+			//no need to change the time above
+			c->scheduleVaccination(vaccTime);
+		}
 
-    }
-    c->scheduleVaccination(vaccTime);
 	}
 
 }
+
 void Cow::setGroup(Cow::UnorderedSet* set){
 	if(set == this->Group)
 		return;
 	Cow::UnorderedSet::iterator myIterator;
-	if(this->Group != nullptr && (myIterator = this->Group->find(this)) != this->Group->end())	{
-
+	if(this->Group != nullptr && (myIterator = this->Group->find(this)) != this->Group->end()){
 		this->Group->erase(myIterator);
 	}
 	this->Group = set;
 
-	if(this->Group != nullptr  && (myIterator = this->Group->find(this)) == this->Group->end())
-		this->Group->insert(this);
+	if(this->Group != nullptr  && (myIterator = this->Group->find(this)) == this->Group->end()) {
+        this->Group->insert(this);
+    }
 }
 Cow::UnorderedSet* Cow::getGroup(){
 	return this->Group;

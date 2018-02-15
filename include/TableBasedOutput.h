@@ -28,6 +28,7 @@ struct TradeDataPoint: public DataPoint<double>{
 	double cowID;
 	double cowAge;
 	double cowSex;
+	double cowStatus;
 
 	double operator[] (int i);
 	operator const double*();
@@ -93,6 +94,9 @@ struct VaccinationDataPoint: public DataPoint<int>{
 	int time;
 	int age;
 	int sex;
+	int number_of_vaccinations;
+	int infection_status;
+	int known_status;
 	int operator[] (int i);
 	operator int*();
 	operator const int*();

@@ -29,7 +29,7 @@ enum Cow_Trade_Criteria{
 	MALE_CALF = 7,
 	YOUNG_BULL = 8,
 	OLD_BULL = 9,
-	NUMBEROFTYPES = 10//if you add more cow trade criteria, you need to change this number according to the number of criterias
+	NUMBEROFTYPES = 10//if you add more cow trade criteria, you need to change this number according to the number of criteria
 };
 
 /// The possible states of an embryo. (NO_CALF meaning that there is no embryo at the moment)
@@ -99,6 +99,7 @@ class Cow
 		double *birthTimesOfCalves;
 
 		bool hasBeenTestedPositiveYet;
+        Event* planned_birth_event;
 
 		double age() const;
 		KnownStatus knownStatus;
@@ -120,6 +121,7 @@ class Cow
 
 	private:
 		Event* end_of_vaccination_event;
+
 		void init(const double& birth_time, Cow *mother, bool female);
 		int _id;
 		void execute_BIRTH(        const double& time   );//Done

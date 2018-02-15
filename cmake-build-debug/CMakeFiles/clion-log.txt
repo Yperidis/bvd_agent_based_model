@@ -1,0 +1,6 @@
+/home/jbassett/Program_files/clion-2017.3.2/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/jbassett/bvd_agent_based_model_develop
+-- Cmake EXECUTABLE OUTPUT DIR is /home/jbassett/bvd_agent_based_model_develop/build
+-- System identified as Linux, version Debian
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jbassett/bvd_agent_based_model_develop/cmake-build-debug

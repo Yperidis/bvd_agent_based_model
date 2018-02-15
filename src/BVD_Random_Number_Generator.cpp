@@ -94,9 +94,11 @@ int Random_Number_Generator::ran_triangular_int(double lo,double hi,double mod)
 bool Random_Number_Generator::will_TI_calf_die()
 {
   int index = ran_unif_int(100, 0);
-  if (index < bvd_const::lethality_TI_calf)
-    	return true;
-  return false;
+  if (index < bvd_const::lethality_TI_calf) {
+      return true;
+  } else {
+      return false;
+  }
 }
 
 Calf_Status Random_Number_Generator::calf_outcome_from_infection( double time_of_pregnancy )
@@ -283,70 +285,58 @@ double Random_Number_Generator::duration_of_pregnancy()
                           bvd_const::pregnancy_duration.min);
 }
 
+double Random_Number_Generator::staggering_first_inseminations() {
+    return ran_unif_double(bvd_const::pregnancy_duration.min, 0.0);
+}
+
 double Random_Number_Generator::insemination_result( bool first_pregnancy , bool* conception)
 {
-  double index = ran_unif_double(100,0);  // Andersrum aufbauen und mehrfach aus der Dreiecksverteilung ziehen.
-  auto time_between_two_inseminations = [this](){return ran_triangular_double(bvd_const::time_between_inseminations.min,
-									      bvd_const::time_between_inseminations.max,
-									      bvd_const::time_between_inseminations.mod);};
-
-  if ( first_pregnancy )
-    {
-      if (index < bvd_const::number_inseminations_heifer.zero)
-	{
-	  *conception = true;
-	  return 0.0;
-	}
-      else if (index < bvd_const::number_inseminations_heifer.one)
-	{
-	  *conception = true;
-	  return time_between_two_inseminations();
-	}
-      else if (index< bvd_const::number_inseminations_heifer.two)
-	{
-	  *conception = true;
-	  return (time_between_two_inseminations()
-		  + time_between_two_inseminations()); //Dreiechsverteilung 2 mal ausgeführt
-	}
-      else if (index < bvd_const::number_inseminations_heifer.three)
-	{
-	  *conception = true;
-	  return (time_between_two_inseminations()
-		  + time_between_two_inseminations()
-		  + time_between_two_inseminations());
-	}
-    }
-  else
-    {
-      if (index < bvd_const::number_inseminations_cow.zero)
-	{
-	  *conception = true;
-	  return 0.0;
-	}
-      else if (index < bvd_const::number_inseminations_cow.one)
-	{
-	  *conception = true;
-	  return time_between_two_inseminations();
-	}
-      else if (index < bvd_const::number_inseminations_cow.two)
-	{
-	  *conception = true;
-	  return (time_between_two_inseminations()
-		  + time_between_two_inseminations());
-	}
-      else if (index < bvd_const::number_inseminations_cow.three)
-	{
-	  *conception = true;
-	  return (time_between_two_inseminations()
-		  + time_between_two_inseminations()
-		  + time_between_two_inseminations());
-	}
-      else
-	{
-	  *conception = false;
-	  return ran_unif_double(bvd_const::time_till_death_takes_place,0);     //time till death takes place 0-14 days
-	  // Not right, I think. The waiting times between the inseminations have been neglected.
-	}
+    double index = ran_unif_double(100,0);  // Andersrum aufbauen und mehrfach aus der Dreiecksverteilung ziehen.
+    auto time_between_two_inseminations = [this](){return ran_triangular_double(bvd_const::time_between_inseminations.min,
+                                                                                bvd_const::time_between_inseminations.max,
+                                                                                bvd_const::time_between_inseminations.mod);};
+    if ( first_pregnancy ){
+        if (index < bvd_const::number_inseminations_heifer.zero){
+            *conception = true;
+            return 0.0;
+        } else if (index < bvd_const::number_inseminations_heifer.one){
+            *conception = true;
+            return time_between_two_inseminations();
+        } else if (index< bvd_const::number_inseminations_heifer.two){
+            *conception = true;
+            return (time_between_two_inseminations()
+                    + time_between_two_inseminations()); //Dreiechsverteilung 2 mal ausgeführt
+        } else if (index < bvd_const::number_inseminations_heifer.three){
+            *conception = true;
+            return (time_between_two_inseminations()
+                    + time_between_two_inseminations()
+                    + time_between_two_inseminations());
+        } else {
+            //time till death takes place 0-14 days
+            // Not right, I think. The waiting times between the inseminations have been neglected.
+            // Cannot occur with the present model constants
+            *conception = false;
+            return ran_unif_double(bvd_const::time_till_death_takes_place,0);
+        }
+    } else {
+        if (index < bvd_const::number_inseminations_cow.zero) {
+            *conception = true;
+            return 0.0;
+        } else if (index < bvd_const::number_inseminations_cow.one){
+            *conception = true;
+            return time_between_two_inseminations();
+        } else if (index < bvd_const::number_inseminations_cow.two){
+            *conception = true;
+            return (time_between_two_inseminations() + time_between_two_inseminations());
+        } else if (index < bvd_const::number_inseminations_cow.three){
+            *conception = true;
+            return (time_between_two_inseminations() + time_between_two_inseminations() + time_between_two_inseminations());
+        } else {
+            //time till death takes place 0-14 days
+            // Not right, I think. The waiting times between the inseminations have been neglected.
+            *conception = false;
+            return ran_unif_double(bvd_const::time_till_death_takes_place,0);
+        }
     }
 }
 
@@ -450,9 +440,9 @@ int Random_Number_Generator::number_of_calvings()
                             bvd_const::number_of_calvings.mod);
 }
 
-double Random_Number_Generator::cowWellTimeOfBirth(double time){
-
-}
+//double Random_Number_Generator::cowWellTimeOfBirth(double time){
+//
+//}
 
 bool Random_Number_Generator::bloodTestRightResult(){
 	double rndNum = this->ran_unif_double( 1.0, 0.0);

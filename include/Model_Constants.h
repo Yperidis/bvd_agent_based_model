@@ -74,8 +74,8 @@ namespace bvd_const
     double mod=7.;
   } duration_of_infection;
   struct{
-    double min=30.;
-    double max=60.;
+    double min=180.;
+    double max=270.;
   } duration_of_MA;
   struct{
     double min=480.;
@@ -97,13 +97,13 @@ namespace bvd_const
     double one=9.05 + 90.48;
     double two=0.45 + 9.05 + 90.48;
     double three=0.02 + 0.45 + 9.05 + 90.48;
-  } number_inseminations_heifer;
+  } number_inseminations_heifer; // Sums to 100, no possibility of not remaining pregnant
   struct{
     double zero=67.03;
     double one=26.81+67.03;
     double two=5.36+26.81+67.03;
     double three=0.72+5.36+26.81+67.03;
-  } number_inseminations_cow;
+  } number_inseminations_cow;// TODO Sums to 99.92, so 0.08 pct probability of infertility
   struct{
     double second_month=7.;
     double third_month=2.+7.;

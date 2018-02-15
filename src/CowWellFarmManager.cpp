@@ -14,6 +14,8 @@ CowWellFarmManager::CowWellFarmManager(Farm *f, System* s):FarmManager(f,s){
 		this->pis = 0.0;
 	}
 }
+
+
 void CowWellFarmManager::calculateDemand(std::set<Demand*>* requests){}//the farm doesn't have any demand
 int CowWellFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria crit,int overallNumber,int groupNum, Cow::UnorderedSet* cows){
 	if(crit == PREGNANT)
@@ -57,3 +59,13 @@ int CowWellFarmManager::getACowId(){
 	return c->id();
 }
 void CowWellFarmManager::registerCowForSale(const Cow* cow){}
+
+
+void CowWellFarmManager::changeInfectionReplacement(double ti, double pi) {
+		this->tis = ti;
+		this->pis = pi;
+}
+
+std::string CowWellFarmManager::printInfectionValues() {
+    return "PI: " + std::to_string(this->pis) + ",TI: " + std::to_string(this->tis);
+}

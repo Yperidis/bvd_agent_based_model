@@ -88,10 +88,10 @@ void Farm::delete_infection_rate_change_event( Event* e){
 }
 void Farm::invalidate_next_infection_event()
 {
-  if ( next_infection_event == NULL )
+  if ( next_infection_event == nullptr )
     return;
   system->invalidate_event( next_infection_event );
-  next_infection_event = NULL;
+  next_infection_event = nullptr;
 }
 
 void Farm::getManaged(){
@@ -273,53 +273,56 @@ void Farm::execute_event( Event *e )
 
 void Farm::execute_TRADE_event( Event* e )
 {
-
-  // The farm that executes this event is the destination farm of the trade.
-  Cow* c = Cow::get_address( e->id );
-  if ( c == NULL ) //Dead cows are not traded. Only dead parrots are.
-    return;
-
-  Farm* source;
-  	if (c->herd != NULL)
-   		source = c->herd->farm;
-	else
-		source = NULL;
-  if (source == this  )
-    {
-			if(source->myType != SLAUGHTERHOUSE){//it's quite hacky to disable the trade at this position, but it will fix issue #6
-      	std::cerr << " Encountered trade with source==destination. This should not happen. Aborting. " << std::endl;
-				std::cout << this->myType << std::endl;
-				std::cout << source->id << std::endl;
-      	Utilities::printStackTrace(15);
-				std::cout << e << std::endl;
-      	exit(1);
-			}else{
-				return;
-			}
+    // The farm that executes this event is the destination farm of the trade.
+    Cow* c = Cow::get_address( e->id );
+    if ( c == NULL ) {
+        //Dead cows are not traded. Only dead parrots are.
+        return;
     }
 
-  // The pull_cow and push_cow methods ensure that the number or S,TI,PI and R in both farms are correct,
-  //  the list of susceptible cows are up to date and the cows get the pointer to the right herd..
-  if(source != NULL){
-  	source->pull_cow( c );
-  	source->invalidate_next_infection_event();
-  	source->infection_rate_has_changed( e );
-  }
-  push_cow( c );
+    Farm* source;
+    if (c->herd != NULL) {
+        source = c->herd->farm;
+    } else {
+        // TODO should the source be null in the case of external introductions?
+        source = NULL;
+    }
 
-  // If there is an infection event in either of the farms (which can happen if the trade has been scheduled after the infection has been scheduled)
-  // This infection event has to be invalidated because a trade is an infection rate changing event (for both farms) and there should never be an infection event
-  // after an infection rate changing event in the queue.
+    if (source == this  )
+    {
+        if(source->myType != SLAUGHTERHOUSE){//it's quite hacky to disable the trade at this position, but it will fix issue #6
+            std::cerr << " Encountered trade with source==destination. This should not happen. Aborting. " << std::endl;
+            std::cout << this->myType << std::endl;
+            std::cout << source->id << std::endl;
+            Utilities::printStackTrace(15);
+            std::cout << e << std::endl;
+            exit(1);
+        }else{
+            return;
+        }
+    }
+
+    // The pull_cow and push_cow methods ensure that the number or S,TI,PI and R in both farms are correct,
+    //  the list of susceptible cows are up to date and the cows get the pointer to the right herd..
+    if(source != NULL){
+        source->pull_cow( c );
+        source->invalidate_next_infection_event();
+        source->infection_rate_has_changed( e );
+    }
+    push_cow( c );
+
+    // If there is an infection event in either of the farms (which can happen if the trade has been scheduled after the infection has been scheduled)
+    // This infection event has to be invalidated because a trade is an infection rate changing event (for both farms) and there should never be an infection event
+    // after an infection rate changing event in the queue.
+
+    this->invalidate_next_infection_event();
 
 
-  this->invalidate_next_infection_event();
+    for ( auto c_e : c->future_irc_events_that_move )
+        future_infection_rate_changing_events.push( c_e );
 
 
-  for ( auto c_e : c->future_irc_events_that_move )
-    future_infection_rate_changing_events.push( c_e );
-
-
-  this->infection_rate_has_changed( e );
+    this->infection_rate_has_changed( e );
 
 }
 
@@ -355,12 +358,12 @@ Farm* Farm::farm_of_event(const Event* e)
 		f=NULL; // Happens if the cow is null, which means that the event pertains to a dead cow and thus won't be executed.
 	}
 	return f;
-};
+}
 //Find first event with executiontime > current time and farm==this
 bool Farm::its_the_one(const Event *e,const Event* current )
 {
 	return ((e->execution_time >= current->execution_time) && (this->farm_of_event(e)==this) && (e != current ));
-};
+}
 void Farm::executeQuarantineEndEvent(const Event* e){
 	if(e == this->lastQuarantineEndEvent){
 		this->quarantine = false;
@@ -370,7 +373,7 @@ void Farm::executeQuarantineEndEvent(const Event* e){
 
 void Farm::jungtierCheck(){//This thing is so quick and dirty that even your mum feels clean
 	if(this->myType == SLAUGHTERHOUSE || this->myType == WELL) return;
-	//TODO verallgemeinern des Testmechanismus auf beliebig viele Herden
+	//TODO Gerneralise the test mechanisms of any herds
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
 	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){

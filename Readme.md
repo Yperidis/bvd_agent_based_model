@@ -37,7 +37,7 @@ Depending on your platform different steps have to be taken.
 * If you're experiencing problems in the build process, try running `autoreconf -i`. If this does not work, feel free to write me an e-mail.
 
 ## Running the code
-After successful compilation an executable called 'bvd_agent_based_simulation' can be found in the `build`-directory. So far it only has two options which can be added on the command line `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies the behavior of the simulated system. Some ini files can be found in `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_simulation --ini iniFiles/Test.ini` (if your current working directory is indeed the main directory of the the repository).
+After successful compilation an executable called 'bvd_agent_based_model' can be found in the `build`-directory. So far it only has two options which can be added on the command line `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies the behavior of the simulated system. Some ini files can be found in `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (if your current working directory is indeed the main directory of the the repository).
 
 # Development
 A roadmap following the needs of FLI and TU Berlin has been proposed. 

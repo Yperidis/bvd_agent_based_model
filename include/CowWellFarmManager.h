@@ -13,6 +13,8 @@ class CowWellFarmManager: public FarmManager{
 		void chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows);
 		int getACowId();
 		void registerCowForSale(const Cow* cow);
+	    void changeInfectionReplacement(double ti, double pi);
+	    std::string printInfectionValues();
 	private:
 		int numberOfCowsToTrade;
 		double tis;

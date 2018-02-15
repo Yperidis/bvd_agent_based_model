@@ -153,13 +153,15 @@ void TableBasedOutput::logVaccination(const Event* e, const Cow* c){
 	p.age = (int)c->age();
 	p.sex = (int)c->female;
 	p.time = (int)e->execution_time;
+	p.infection_status = (int)c->infection_status;
+	p.known_status = (int)c->knownStatus;
+	p.number_of_vaccinations = c->numberOfVaccinations;
 	this->vaccDataSave->push_back(p);
 
 }
 
 
 inline void TableBasedOutput::logTest(const Event *e, const Cow* c){
-
 	TestDataPoint p = this->testEventToDataPoint(e, c);
 	this->testStorage->push_back(p);
 }
@@ -179,6 +181,7 @@ void TableBasedOutput::logTrade(const Trade_Event* event){
 		srcFarmID = -1.0;
 //	std::cout << " g" << std::endl;
 	double cowID =  (double) c->id();
+	double cowStatus = (double) c->infection_status;
 	double CowSex = (double) c->female;
 //	std::cout << " f" << std::endl;
 	TradeDataPoint point{};// = {event->execution_time, srcFarmID, destFarmID, cowID, event->execution_time - c->birth_time, CowSex};
@@ -189,6 +192,7 @@ void TableBasedOutput::logTrade(const Trade_Event* event){
 	point.cowID = cowID;
 	point.cowAge = event->execution_time - c->birth_time;
 	point.cowSex = CowSex;
+	point.cowStatus = cowStatus;
 	this->trades->push_back(point);
 //	std::cout << " amoll amoll c c g" << std::endl;
 }
@@ -476,6 +480,15 @@ int VaccinationDataPoint::operator[] (int i){
 		case 3:
 			retVal = this->sex;
 			break;
+		case 4:
+			retVal = this->number_of_vaccinations;
+			break;
+		case 5:
+			retVal = this->infection_status;
+			break;
+		case 6:
+			retVal = this->known_status;
+			break;
 		default:
 			std::cerr << "Error: Asked infection result data point for index " << i << std::endl;
 			break;
@@ -483,7 +496,7 @@ int VaccinationDataPoint::operator[] (int i){
 	}
 	return retVal;
 }
-const int VaccinationDataPoint::size = 4;
+const int VaccinationDataPoint::size = 7;
 VaccinationDataPoint::operator int*(){
 
 	int *dat = new int[VaccinationDataPoint::size];
@@ -516,6 +529,9 @@ double TradeDataPoint::operator[] (int i){
 		case 5:
 			retVal = this->cowSex;
 			break;
+        case 6:
+            retVal = this->cowStatus;
+            break;
 		default:
 			std::cerr << "Error: Asked TradeDataPoint for index " << i << std::endl;
 			break;
@@ -523,7 +539,7 @@ double TradeDataPoint::operator[] (int i){
 	return retVal;
 }
 
-const int TradeDataPoint::size = 6; //number of data points given in a tradeDataPoint
+const int TradeDataPoint::size = 7; //number of data points given in a tradeDataPoint
 TradeDataPoint::operator const double*(){
 
 	double *dat = new double[TradeDataPoint::size];
@@ -572,7 +588,7 @@ double TestDataPoint::operator[] (int i){
 			retVal = this->knownState;
 			break;
 		default:
-			std::cerr << "Error: Asked TradeDataPoint for index " << i << std::endl;
+			std::cerr << "Error: Asked TestDataPoint for index " << i << std::endl;
 			break;
 	}
 	return retVal;

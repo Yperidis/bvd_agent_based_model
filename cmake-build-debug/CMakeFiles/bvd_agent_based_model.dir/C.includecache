@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.c
+stdio.h
+-
+ctype.h
+-
+string.h
+-
+ini.h
+/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.h
+stdlib.h
+-
+
+/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.h
+stdio.h
+-
+

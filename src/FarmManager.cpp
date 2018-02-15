@@ -112,17 +112,16 @@ void FarmManager::manage(){
 	Cow::UnorderedSet* cowsToSell = new Cow::UnorderedSet();
 	this->chooseCowsToOffer(cowsToSell);
 	if(!this->myFarm->isUnderQuarantine()){
-
-
 		this->postOffer(cowsToSell);
 	}else{
-		//TODO: this is actually just a quick fix for a problem occuring when quarantine is used. Make this nice code!
-
+		//TODO: this is actually just a quick fix for a problem occurring when quarantine is used. Make this nice code!
 		for(auto cow : *cowsToSell){
 			this->system->getMarket()->sellDirectlyToSlaughterHouse(cow);
 		}
 	}
-		//delete cowsToSell; //don't delete this here. It will be deleted in the market, when the offer has been processed
+
+#ifdef _FARM_MANAGER_DEBUG_
+	//delete cowsToSell; //don't delete this here. It will be deleted in the market, when the offer has been processed
 	//std::cout << "bought: " << requests->size() << " sold: " << cowsToSell->size() << " state: " << this->myFarm->total_number() << std::endl;
 //	std::vector<Herd*>* herds = this->myFarm->getHerds();
 //	if((*herds)[0]->total_number() < this->plannedNumberOfCows[0]){
@@ -131,6 +130,7 @@ void FarmManager::manage(){
 //		}
 //		std::cout << "trying to sell " << cowsToSell->size() << " cows" << std::endl;
 //	}
+#endif
 	delete requests;
 	#ifdef _FARM_MANAGER_DEBUG_
 		std::cout << "FarmManager: finished managing" << std::endl;
@@ -223,9 +223,9 @@ void FarmManager::chooseCowsToOffer(Cow::UnorderedSet* cowsToSell){
 }
 
 void FarmManager::standardCalculateDemand(std::set<Demand*>* requests){
-	//ideally you would want to buy the differnece between the number of cows you want to own and the number of Cows that you own
+	//Ideally you would want to buy the difference between the number of cows you want to own and the number of Cows that you own
 	//I thought this should be split up on the different groups in terms of age, but
-	//most farms just buy pregnant cows in that step so we will just buy pregnant cows
+	//most farms just buy pregnant cows on that step so we will just buy pregnant cows
 
 	int numberOfMissingCows = this->standardCalculateOverallNumberToBuy();
 	if(numberOfMissingCows > this->buyingMargin ){
@@ -237,7 +237,7 @@ void FarmManager::standardCalculateDemand(std::set<Demand*>* requests){
 int FarmManager::standardCalculateOverallNumberToSell(){
 	int numberOfCowsToSell = 0;
 	int difference = 0;
-	int numberOfAnimalsWithType = 0;
+	//int numberOfAnimalsWithType = 0;
 	double tmp = this->replacementPercentage;
 	if(this->myFarm->isUnderQuarantine()){
 		this->replacementPercentage = 0.0;

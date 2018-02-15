@@ -1,4 +1,6 @@
 
+#include <FarmManager.h>
+#include <CowWellFarmManager.h>
 #include "System.h"
 #include "Events.h"
 #include "Farm.h"
@@ -14,7 +16,7 @@
 System* System::_instance = 0;
 INIReader* System::reader = 0;
 System* System::getInstance(INIReader* reader){
-	static CGuard g;   // Speicherbereinigung
+	static CGuard g;   // Garbage Collection (Speicherbereinigung)
 	if (!_instance){
 		System::reader = reader;
 		BVDSettings::sharedInstance(reader);
@@ -22,21 +24,20 @@ System* System::getInstance(INIReader* reader){
 
 		double dt_log  = reader->GetReal("simulation", "dt_log", 1.0);
 		double dt_output = reader->GetReal("simulation", "dt_output", 100.0);
+		bool dynamic_reintroduction = reader->GetBoolean("modelparam", "PercentagesShallBeAppliedOnWellsDynamically", false);
 		std::string dtmanage = reader->Get("trade" , "tradeRegularity", "DAILY");
-		double dt_manage;
-		if(dtmanage.compare("DAILY") == 0){
-			dt_manage = bvd_const::tradingTimeIntervall.DAILY;
-		}else if(dtmanage.compare("WEEKLY") == 0){
+		double dt_manage = bvd_const::tradingTimeIntervall.DAILY;
+		if(dtmanage == "WEEKLY"){
 			dt_manage = bvd_const::tradingTimeIntervall.WEEKLY;
-		}else if(dtmanage.compare("BIWEEKLY") == 0){
+		}else if(dtmanage == "BIWEEKLY"){
 			dt_manage = bvd_const::tradingTimeIntervall.BIWEEKLY;
-		}else if(dtmanage.compare("MONTHLY") == 0){
+		}else if(dtmanage == "MONTHLY"){
 			dt_manage = bvd_const::tradingTimeIntervall.MONTHLY;
-		}else if(dtmanage.compare("QUARTERLY") == 0){
+		}else if(dtmanage == "QUARTERLY"){
 			dt_manage = bvd_const::tradingTimeIntervall.QUARTERYEARLY;
-		}else if(dtmanage.compare("HALFYEARLY") == 0){
+		}else if(dtmanage == "HALFYEARLY"){
 			dt_manage = bvd_const::tradingTimeIntervall.HALFYEARLY;
-		}else if(dtmanage.compare("YEARLY") == 0){
+		}else if(dtmanage == "YEARLY"){
 			dt_manage = bvd_const::tradingTimeIntervall.YEARLY;
 		}
 
@@ -45,6 +46,7 @@ System* System::getInstance(INIReader* reader){
 	   	//Step 4: Set custom log and write intervals (if desired) and start the simulation
 		_instance->set_log_interval(dt_log);
 		_instance->set_write_interval(dt_output);
+		_instance->set_dynamic_reintroduction(dynamic_reintroduction);
 		_instance->mySettings = BVDSettings::sharedInstance(reader);
 		Cow::set_system(_instance);
 	}
@@ -58,6 +60,12 @@ System::System(double start_time , double dt_log , double dt_write, double dt_ma
 	#endif
 	_current_time = start_time;
 	queue        = Event_queue();
+
+    //Here an unsigned integer is used so as to select a large seed number.
+    //For the default case (-1), the outcome depends on the architecture
+    //of the computer where the simulation will be run. For instance, in
+    //a 32 bit architecture the complement of two for the number will be
+    //generated, i.e. 2^32-1.
 	unsigned int seed = System::reader->GetInteger("rng", "seed", -1);
 	if(seed != -1){
 		rng = Random_Number_Generator( seed );
@@ -73,21 +81,22 @@ System::System(double start_time , double dt_log , double dt_write, double dt_ma
 	market = new Market(this);
   	#ifdef _DEBUG_
   		signal(SIGSEGV, handleSystemError);
-  	#endif
+      #endif
+	_firstCowWellFarm = nullptr;
 	this->activeStrategy = new BVDContainmentStrategy(BVDContainmentStrategyFactory::defaultStrategy);
 }
 
 System::~System()
 {
-
-  delete output;
-  std::cout << "Instance of system is going to be deleted. Stats: " << no_of_events_processed ;
-  std::cout << " events processed, " << Cow::total_number();
-  std::cout << " cows went through the system." << std::endl;
-  std::cout << "seed: " << this->rng.getSeed() << std::endl;
-  delete market;
-  for(auto farm: this->farms)
-  	delete farm;
+	delete output;
+	std::cout << "Instance of system is going to be deleted. Stats: " << no_of_events_processed ;
+	std::cout << " events processed, " << Cow::total_number();
+	std::cout << " cows went through the system." << std::endl;
+	std::cout << "seed: " << this->rng.getSeed() << std::endl;
+	delete market;
+	for(auto farm: this->farms) {
+		delete farm;
+	}
 	delete this->activeStrategy;
 
 //  delete output;
@@ -96,60 +105,73 @@ double System::current_time(){ return _current_time; }
 
 void System::schedule_event( Event* e )
 {
+    if (e->type == Event_Type::BIRTH) {
+        Cow* c = Cow::get_address( e->id );
+        if ( c != NULL ) //Actually, at this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
+        {
+            c->planned_birth_event = e;
+        }
+    }
 
-  // (1) put the event into the main queue
-  queue.push( e );
-  // (2) find the farm that this event pertains to and register the event there if it is an infection rate changing event.
+    Cow* c = Cow::get_address(e->id);
+	if (e->type == Event_Type::ABORTION && c->calf_status == Calf_Status::NO_CALF) {
+		std::cout << "Unreasonable situation" << std::endl;
+	}
+
+	if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr) {
+        std::cout << "Unreasonable situation" << std::endl;
+    }
+	// (1) put the event into the main queue
+	queue.push( e );
+	// (2) find the farm that this event pertains to and register the event there if it is an infection rate changing event.
 	if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){ //the event just being processed is from
 		this->output->logResultingEventOfInfection(e);
-
 	}
-  if ( e->is_trade_event() )
-    {
-
-      Cow* c = Cow::get_address( e->id );
-      if ( c != NULL ) //Actually, at this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
+	if ( e->is_trade_event() )
 	{
+		Cow* c = Cow::get_address( e->id );
+		if ( c != NULL ) //Actually, at this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
+		{
 
-	  e->farm->register_future_infection_rate_changing_event( e );
-	  if(c->herd != NULL && c->herd->farm != NULL)
-	  	c->herd->farm->register_future_infection_rate_changing_event( e );
+			e->farm->register_future_infection_rate_changing_event( e );
+			if(c->herd != NULL && c->herd->farm != NULL)
+				c->herd->farm->register_future_infection_rate_changing_event( e );
 
+		}
 	}
-    }
-  else if ( e->is_infection_rate_changing_event() )
-    { // So far, all infection_rate_changing events have dest == COW
-      Cow* c = Cow::get_address( e->id );
-      if ( c != NULL ) //Actually, at this point, c==NULL should NEVER happen!!
-	{
-
-		if(c->herd != NULL && c->herd->farm != NULL)
-	  c->herd->farm->register_future_infection_rate_changing_event( e );
-	  c->register_future_infection_rate_changing_event( e );
+	else if ( e->is_infection_rate_changing_event() )
+	{ // So far, all infection_rate_changing events have dest == COW
+		Cow* c = Cow::get_address( e->id );
+		if ( c != nullptr ) //Actually, at this point, c==NULL should NEVER happen!!
+		{
+			if(c->herd != nullptr && c->herd->farm != nullptr) {
+				c->herd->farm->register_future_infection_rate_changing_event( e );
+			}
+			c->register_future_infection_rate_changing_event( e );
+		}
 	}
-    }
-
-
 }
 void System::scheduleFutureCowIntros(){
 	int num = System::reader->GetInteger("modelparam","inputCowNum", 0);
 	int no;
-  	std::ostringstream oss;
-  	std::string cowName;
-  	Cow *c;
-  	Farm* f;
-  	std::vector<Farm*>::iterator it;
-  	int farmID;
-  	double intTime;
+
 
   	std::cout << "scheduling intros of " << num << " cows"<< std::endl;
 	for(int a=0;a < num;++a){
+		std::ostringstream oss;
+		std::string cowName;
+		Cow *c;
+		Farm* f;
+		std::vector<Farm*>::iterator it;
+		int farmID;
+		double intTime;
 		f = NULL;
 		no = a + 1;
 		oss << "inputCow" << no;
 		cowName = oss.str();
 		c = new Cow(cowName);
-		intTime = System::reader->GetReal(cowName, "introductiontime", 500);
+
+		intTime = (double) System::reader->GetInteger(cowName, "introductiontime", 500);
 		farmID = System::reader->GetInteger(cowName, "farmID", 1);
 		if(farmID >= this->farms.size() || farmID < 0){
 			std::cout << "the farm you wanted input cow " << no << "to(" << farmID << ") doesn't exist" << std::endl;
@@ -159,7 +181,6 @@ void System::scheduleFutureCowIntros(){
 		for(it = this->farms.begin(); it != this->farms.end(); it++){
 			f = *it;
 			if(f->id +1 == farmID){//zero based hier, 1 based in der menschenwelt
-
 				break;
 			}
 
@@ -171,7 +192,6 @@ void System::scheduleFutureCowIntros(){
 			Trade_Event *e = new Trade_Event(intTime,c->id(),f);
 
 			this->schedule_event(e);
-
 
 		}else{
 			delete c;
@@ -187,92 +207,90 @@ void System::scheduleFutureCowIntros(){
   }*/
 void System::execute_next_event()
 {
-  if (queue.empty())
-    {
-      std::cout << "No more events in queue!" << std::endl << std::endl;
-      return;
+    if (queue.empty()){
+        std::cout << "No more events in queue!" << std::endl << std::endl;
+        return;
     }
 
-  no_of_events_processed++;
+    no_of_events_processed++;
 
-  Event* e = queue.top();
+    Event* e = queue.top();
 
-  queue.pop();
-  if (e->execution_time < _current_time){
-    std::cerr << "Error, got an event that is earlier than the current time. Exiting" << std::endl;
-  	Utilities::pretty_print(e, std::cout);
+    queue.pop();
+    if (e->execution_time < _current_time){
+        std::cerr << "Error, got an event that is earlier than the current time. Exiting" << std::endl;
+        Utilities::pretty_print(e, std::cout);
 
-  }
-//  Cow* c = Cow::get_address( e->id );
-//  Farm *f = NULL;
-//  if(c != NULL)
-//	f = c->herd->farm;
-//  std::unordered_set< Event*>::const_iterator got_it = invalidated_events.find( e );
-//  if ( got_it != invalidated_events.end() ) // => e is invalid.
-//      invalidated_events.erase( got_it );
-  if(e->valid) // => e is valid.
-    {
-	  Cow* c = Cow::get_address( e->id );
-      _current_time = e->execution_time;
-     if(e->is_trade_event())
-		this->output->logEvent(e);
-      switch ( e->dest )
-	{
-	case Destination_Type::COW:
-	  {
-
-	    if ( c != NULL  && c->id() == e->id){
-		    c->execute_event( e );
-  		} //Event is not pertaining to a dead cow. Could  this happen?
-	    break;
-	  }
-	case Destination_Type::HERD:
-	  e->herd->execute_event( e );
-	  break;
-	case Destination_Type::FARM:
-	  e->farm->execute_event( e );
-	  break;
-	case Destination_Type::SYSTEM:
-	  _execute_event( e );
-	}
-	if(!e->is_trade_event())
-		this->output->logEvent(e);
-	if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER )
-		delete c;
     }
-//   if(f != NULL &&e->is_infection_rate_changing_event())
-//    	f->delete_infection_rate_change_event(e);
-	if(e->is_infection_rate_changing_event())
-		memorySaveQ.push(e);
-	else
-		delete e;
 
+    if(e->valid) // => e is valid.
+    {
+        Cow* c = Cow::get_address( e->id );
+        _current_time = e->execution_time;
+        this->output->logEvent(e);
+        if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
+            delete c;
+        } else {
+            switch ( e->dest )
+            {
+                case Destination_Type::COW:
+                {
+                    if ( c != nullptr  && c->id() == e->id){
+                        c->execute_event( e );
+                    } //Event is not pertaining to a dead cow. Could  this happen?
+                    break;
+                }
+                case Destination_Type::HERD:
+                    e->herd->execute_event( e );
+                    break;
+                case Destination_Type::FARM:
+                    e->farm->execute_event( e );
+                    break;
+                case Destination_Type::SYSTEM:
+                    _execute_event( e );
+            }
+        }
+    } else {
+		if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH) {
+			std::cerr << "Error, got an event that is invalid. Exiting" << std::endl;
+			Utilities::pretty_print(e, std::cout);
+		}
+    }
 
-	Event* event;
-	while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) &&(event->execution_time + 500. < this->_current_time )){
-		delete event;
-		memorySaveQ.pop();
-	}
+    if(e->is_infection_rate_changing_event()) {
+        memorySaveQ.push(e);
+    }
+    else {
+        delete e;
+    }
+
+    Event* event;
+    while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) &&(event->execution_time + 500. < this->_current_time )){
+        delete event;
+        memorySaveQ.pop();
+    }
 
 }
 
 void System::invalidate_event( Event* e )
 {
 	e->valid = false;
-  //invalidated_events.insert( e );
-  if(memorySaveQ.size() > 10000000){
-  	std::cout << (int) e->type << std::endl;
-  		Utilities::printStackTrace(15);
-  	}
+	//invalidated_events.insert( e );
+	if(memorySaveQ.size() > 10000000){
+		std::cout << (int) e->type << std::endl;
+		Utilities::printStackTrace(15);
+	}
 }
 
 void System::register_farm( Farm* f )
 {
   farms.push_back( f );
-  if(f->getType() == WELL)
-  	this->market->registerSourceFarm((CowWellFarm*) f);
-  else if(f->getType() == SLAUGHTERHOUSE)
-  	this->market->registerSlaughterHouse((Slaughterhouse*) f);
+  if(f->getType() == WELL) {
+	  _firstCowWellFarm = (CowWellFarmManager*) f->manager;
+	  this->market->registerSourceFarm((CowWellFarm*) f);
+  } else if(f->getType() == SLAUGHTERHOUSE) {
+	  this->market->registerSlaughterHouse((Slaughterhouse*) f);
+  }
   //output->set_number_of_farms( farms.size() );
 
 }
@@ -357,9 +375,9 @@ void System::run_until( double end_time )
   if(this->mySettings->strategies.size() > 0)
 	schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
   stop=false;
-  while( !(stop || queue.empty())  )
-    execute_next_event();
-
+  while( !(stop || queue.empty())){
+	  execute_next_event();
+  }
 }
 
 void System::set_log_interval( double dt_log )
@@ -433,11 +451,25 @@ void System::_execute_event( Event* e )
 			std::cout << "Writing file after " << _current_time << " days:\t" ;
 			output->write_to_file(_current_time);
 			std::cout << "Done. " << std::endl;
+#ifdef _RUNNING_DEBUG_
+            std::cout << "Total number of heads is " << this->countCows() << std::endl;
+			std::cout << "Farm demands met: " << this->countHappyFarms() << std::endl;
+            std::cout << "Event queue size is " << this->queue.size() << std::endl;
+            std::cout << "PI prevalence at reintroduction is now " << this->getFirstWell()->printInfectionValues() << std::endl;
+#endif
 			schedule_event(new System_Event( _current_time + _dt_write , Event_Type::WRITE_OUTPUT ) );
 
 			break;
     case Event_Type::MANAGE:
     	for (auto farm : farms){
+
+			if (this->_dynamic_reintroduction) {
+				CowWellFarmManager* ptr =  dynamic_cast<CowWellFarmManager*> (farm->manager);
+				if (ptr != nullptr) {
+					std::tuple<double, double> res = calculatePrevalence();
+					ptr->changeInfectionReplacement(std::get<0>(res), std::get<1>(res));
+				}
+			}
 
 	    	farm->getManaged();
 
@@ -476,4 +508,90 @@ void System::addCow(Cow* c){
 //Testing
 Event_queue System::getEventQueue(){
 	return this->queue;
+}
+
+void System::set_dynamic_reintroduction(bool dynamic_reintroduction) {
+	_dynamic_reintroduction = dynamic_reintroduction;
+}
+
+std::tuple<double, double> System::calculatePrevalence() {
+	int num_pi = 0;
+	int num_ti = 0;
+	int num_heads = 0;
+	std::vector<Farm*>::iterator it;
+	Farm * f;
+
+	for(it = this->farms.begin(); it != this->farms.end(); it++){
+		f = *it;
+		num_heads += f->total_number();
+		num_pi += f->number_of_PI();
+		num_ti += f->number_of_TI();
+	}
+
+	double ti;
+	double pi;
+	if (num_heads > 0) {
+		ti = num_ti / (double) num_heads;
+		pi = num_pi / (double) num_heads;
+	} else {
+		ti = 0.0;
+		pi = 0.0;
+	}
+
+    #ifdef _MARKET_DEBUG_
+        std::cout << "System: prevalence of ti is " << ti << "; pi prevalence is " << pi << std::endl;
+    #endif
+
+	return {ti, pi};
+}
+
+std::vector<Farm *> System::getFarms() {
+	return this->farms;
+}
+
+int System::countCows() {
+    int cows = 0;
+    for (auto f : this->farms){
+        if (f->myType != SLAUGHTERHOUSE) {
+            cows += f->total_number();
+        }
+    }
+    return cows;
+}
+
+std::string System::countHappyFarms() {
+    int less_than = 0;
+    int more_than = 0;
+    int satisfied_farms = 0;
+    int moreorless = 0;
+    for (auto f : this->farms){
+        if (f->myType != SLAUGHTERHOUSE) {
+            int wanted_cows = *f->manager->plannedNumberOfCows;
+            if (wanted_cows == f->total_number()) {
+                satisfied_farms++;
+            } else if (f->total_number() < (wanted_cows * 0.90)) {
+                less_than++;
+            } else if (f->total_number() > wanted_cows * 1.10) {
+                more_than++;
+            } else {
+                moreorless++;
+            }
+        }
+    }
+    return "under: " + std::to_string(less_than) + ", OK: " + std::to_string(satisfied_farms) + ", over: " + std::to_string(more_than) + ", more or less OK: " + std::to_string(moreorless);
+}
+
+//Calls the existing well farm out of the farm list. If it doesn't exist
+//the system gets nothing (null pointer).
+CowWellFarmManager* System::getFirstWell() {
+    if (_firstCowWellFarm == nullptr) {
+        for(auto f: this->farms) {
+            if (f->myType == WELL) {
+                _firstCowWellFarm = dynamic_cast<CowWellFarmManager *> (f->manager);
+            }
+            return _firstCowWellFarm;
+        }
+    } else {
+        return _firstCowWellFarm;
+    }
 }

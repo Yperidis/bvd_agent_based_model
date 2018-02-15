@@ -11,13 +11,15 @@ Plots_Testfarm/
 Rinder-Statistiken/
 Statistiken_Cattle/
 
-
+#iniFiles
+FLI_Scenarios/
 
 #build
 build/*
 lib/*
 *.o
 bvd_agent_simulation
+bvd_agent_based_model
 *dSYM
 *.pyc
 

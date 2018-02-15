@@ -20,7 +20,7 @@ enum FarmManagerSellChoosingStrategy{
 class FarmManager{
 	public:
 		FarmManager(Farm* farm,System *s);
-
+        int *plannedNumberOfCows;
 
 		~FarmManager();
 		void manage();
@@ -42,7 +42,7 @@ class FarmManager{
 		Farm* myFarm;
 		System* system;
 		FarmManagerSellChoosingStrategy sellingStrategy;
-		int *plannedNumberOfCows;
+
 		int buyingMargin;
 		int sellingMargin;
 		GroupPriorityList* sellingPriorityList;

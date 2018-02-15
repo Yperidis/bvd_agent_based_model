@@ -73,7 +73,7 @@ void SQLiteHandler::logEvent(const Event* e){
 
 		this->runSQLQuery(sql);
 }
-void SQLiteHandler::logResultingEventOfInfection(const Event* e){};
+void SQLiteHandler::logResultingEventOfInfection(const Event* e){}
 void SQLiteHandler::logBirth(const Cow *c){
 	if(c == NULL) return;
 

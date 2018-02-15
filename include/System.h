@@ -17,6 +17,7 @@ class AdvancedOutput;
 class Farm;	   //Forward declaration. Real declaration in Farm.h
 class Market;      //Forward declaration. Real declaration in Market.h
 class INIReader;
+class CowWellFarmManager; //Forward declaration.
 class Cow;
 
 class Event;
@@ -53,6 +54,10 @@ class System
   void set_log_interval( double dt_log );
   void set_write_interval( double dt_write );
 
+  int countCows();
+  CowWellFarmManager* getFirstWell();
+  std::vector<Farm *> getFarms();
+  std::string countHappyFarms();
 
   void log_state();
 
@@ -69,11 +74,11 @@ class System
   //Testing relevant methods
   Event_queue getEventQueue();
  private:
-
  	void scheduleContainmentEvents();
  	void scheduleEartagEvents();
  	void scheduleVaccinationEvents();
  	void scheduleJungtierfensterEvents();
+	CowWellFarmManager* _firstCowWellFarm;
 	Event_queue queue;
 	Event_queue memorySaveQ;
 	double _current_time;
@@ -83,6 +88,7 @@ class System
 	void _execute_event(Event* e );
 	double _dt_log;
 	double _dt_write;
+    bool _dynamic_reintroduction;
 
 	bool stop;
 	unsigned int no_of_events_processed;
@@ -101,5 +107,8 @@ class System
 
 	};
 
+    void set_dynamic_reintroduction(bool dynamic_reintroduction);
+
+    std::tuple<double, double> calculatePrevalence();
 };
 #endif

@@ -22,7 +22,11 @@ installLinuxManual.txt or installMacManual for further information.
 After compiling the programm a vast amount of parameters can be configured usign an ini file. Some examples
 are given in the inifiles directory. To start of with the example you can run the programm like
 
-./bvd_agent_simulation --ini iniFiles/example.ini  
+./bvd_agent_based_model --ini iniFiles/example.ini  
+
+The bvd_agent_based_model executable should be located in the project's /bin directory.
+There is also an executable called bvd_agent_simulation from older builds of the project. 
+That version is not guaranteed to work, and if it does it will have a lot of output.
 
 Some things can not (yet) be changed using the ini file. Those constant can be found in the file
 Model_Constants.h and may be set there. If you do so, you need to recompile by using the

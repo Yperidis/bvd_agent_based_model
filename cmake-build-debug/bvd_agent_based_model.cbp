@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="bvd_agent_based_model"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bvd_agent_based_model">
+				<Option output="/home/jbassett/bvd_agent_based_model_develop/build/bvd_agent_based_model" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jbassett/bvd_agent_based_model_develop/build"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/include"/>
+					<Add directory="/usr/include/hdf5/serial"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/cpp"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/."/>
+					<Add directory="/usr/include/c++/6"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/6"/>
+					<Add directory="/usr/include/c++/6/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 bvd_agent_based_model"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bvd_agent_based_model/fast">
+				<Option output="/home/jbassett/bvd_agent_based_model_develop/build/bvd_agent_based_model" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jbassett/bvd_agent_based_model_develop/build"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/include"/>
+					<Add directory="/usr/include/hdf5/serial"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/cpp"/>
+					<Add directory="/home/jbassett/bvd_agent_based_model_develop/."/>
+					<Add directory="/usr/include/c++/6"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/6"/>
+					<Add directory="/usr/include/c++/6/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 bvd_agent_based_model/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/jbassett/bvd_agent_based_model_develop/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/config.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/AdvancedOutput.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/BVDContainmentStrategy.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/BVDOptions.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/BVDSettings.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/BVD_Random_Number_Generator.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/CSVFileHandler.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/CSV_Reader.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/CommandlineOptions.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Cow.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/CowWellFarm.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/CowWellFarmManager.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Events.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Farm.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/FarmManager.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/FileHandler.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/HDF5Handler.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Herd.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Initializer.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Market.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Model_Constants.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Output.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/OutputTable.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/SQLiteHandler.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/SimpleFarmManager.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Simple_One_Herd_Farm.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/SlaughterHouseManager.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Slaughterhouse.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/SmallFarmManager.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Small_One_Herd_Farm.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/System.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/TableBasedOutput.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/TradeFilter.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/Utilities.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/projectImports/Catch/catch.hpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/projectImports/FakeIt/fakeit.hpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/cpp/INIReader.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/cpp/INIReader.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.c">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.h">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/AdvancedOutput.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/BVDContainmentStrategy.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/BVDOptions.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/BVDSettings.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/BVD_Random_Number_Generator.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Breeding_module_parameter_gnu.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/CSVFileHandler.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/CommandlineOptions.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Cow.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/CowWellFarm.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/CowWellFarmManager.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Events.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Farm.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/FarmManager.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/FileHandler.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/HDF5Handler.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Herd.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Initializer.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Market.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Output.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/OutputTable.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/SQLiteHandler.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/SimpleFarmManager.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Simple_One_Herd_Farm.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/SlaughterHouseManager.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Slaughterhouse.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/SmallFarmManager.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Small_One_Herd_Farm.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/System.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/TableBasedOutput.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/TradeFilter.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/Utilities.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/src/programm.cpp">
+			<Option target="bvd_agent_based_model"/>
+		</Unit>
+		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

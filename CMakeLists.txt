@@ -1,16 +1,22 @@
 cmake_minimum_required(VERSION 3.9)
 project(bvd_agent_based_model)
 
+get_filename_component(PARENTDIR ${CMAKE_BINARY_DIR} DIRECTORY)
+set(EXECUTABLE_OUTPUT_PATH ${PARENTDIR}/build)
+message(STATUS "Cmake EXECUTABLE OUTPUT DIR is ${EXECUTABLE_OUTPUT_PATH}")
+
 #set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 find_package(GSL REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
-set(CMAKE_BUILD_TYPE DEBUG)
 
-set(CMAKE_C_FLAGS_DEBUG "-Wall -g -pedantic -fopenmp -D_DEBUG_ -D _OUTPUT_DEBUG_ -D_FARM_MANAGER_DEBUG_ -D_INITIALIZER_DEBUG_ -D_HERD_DEBUG_ -D_MARKET_DEBUG_")
-set(CMAKE_C_FLAGS_RELEASE "-Wall -g -pedantic -fopenmp")
+#set(CMAKE_BUILD_TYPE DEBUG)
+set(CMAKE_BUILD_TYPE RELEASE)
+
+set(CMAKE_C_FLAGS_DEBUG "-Wall -g -pedantic -fopenmp -D_SUPPRESS_OUTPUT_ -D_DEBUG_ -D_FARM_INITIALIZER_DEBUG_ -D_OUTPUT_DEBUG_ -D_FARM_MANAGER_DEBUG_ -D_INITIALIZER_DEBUG_ -D_HERD_DEBUG_ -D_MARKET_DEBUG_")
+set(CMAKE_C_FLAGS_RELEASE "-Wall -g -pedantic -fopenmp -D_FARM_INITIALIZER_DEBUG_ -D_SUPPRESS_MINOR_OUTPUT_")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
@@ -108,30 +114,52 @@ include_directories(include
         .)
 
 # This needs to account for platform-specific names of libraries, like HDF5
+find_program(UNAME uname)
+execute_process(COMMAND ${UNAME} -s
+        OUTPUT_VARIABLE OS_IDENTIFICATION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
 find_program(LSB_RELEASE lsb_release)
 execute_process(COMMAND ${LSB_RELEASE} -is
         OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-message(STATUS "System identified as ${LSB_RELEASE_ID_SHORT}")
+message(STATUS "System identified as ${OS_IDENTIFICATION}, version ${LSB_RELEASE_ID_SHORT}")
 
-if(LSB_RELEASE_ID_SHORT STREQUAL "Ubuntu" OR LSB_RELEASE_ID_SHORT STREQUAL "Debian")
+
+# TODO check the GSL package for Mac, I'm not sure it uses the custom path for homebrew/macports
+
+if(OS_IDENTIFICATION STREQUAL "Darwin")
+    find_library(HDF5 "hdf5" PATHS /opt/local/lib)
+    find_library(HDF5_HL "hdf5_hl" PATHS /opt/local/lib)
+    if(NOT HDF5 OR NOT HDF5_HL)
+        message(FATAL_ERROR "hdf5 library not found")
+    endif()
+
+    find_library(M "m" PATHS /opt/local/lib)
+
+    find_library(SQLITE3 "sqlite3" PATHS /opt/local/lib)
+    if(NOT SQLITE3)
+        message(FATAL_ERROR "sqlite3 library not found")
+    endif()
+else()
+    if(LSB_RELEASE_ID_SHORT STREQUAL "Ubuntu" OR LSB_RELEASE_ID_SHORT STREQUAL "Debian")
     find_library(HDF5 "hdf5_serial")
     find_library(HDF5_HL "hdf5_serial_hl")
-else()
+    else()
     find_library(HDF5 "hdf5")
     find_library(HDF5_HL "hdf5_hl")
-endif()
-if(NOT HDF5 OR NOT HDF5_HL)
+    endif()
+    if(NOT HDF5 OR NOT HDF5_HL)
     message(FATAL_ERROR "hdf5 library not found")
-endif()
+    endif()
 
-find_library(M "m")
+    find_library(M "m")
 
-
-find_library(SQLITE3 "sqlite3")
-if(NOT SQLITE3)
+    find_library(SQLITE3 "sqlite3")
+    if(NOT SQLITE3)
     message(FATAL_ERROR "sqlite3 library not found")
+    endif()
 endif()
 
 target_link_libraries(bvd_agent_based_model GSL::gsl GSL::gslcblas ${M} ${SQLITE3} ${HDF5} ${HDF5_HL})

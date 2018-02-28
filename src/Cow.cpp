@@ -126,7 +126,7 @@ void Cow::execute_event( Event* e )
 			break;
 		case Event_Type::END_OF_VACCINATION		:
 			if(this->end_of_vaccination_event != NULL && this->end_of_vaccination_event == e){
-				//find out if it is actually the end of vaccination
+				//TODO find out if it is actually the end of vaccination
 				this->execute_END_OF_VACCINATION(e->execution_time);
 			}
 			break;
@@ -206,7 +206,7 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 	}else{
 		if(age <= calfMaxAge){
 			return CALF;
-		}else if(age <= 527.){//527*17*31//TODO implement radnom distribution when breeding begins
+		}else if(age <= 527.){//527*17*31//TODO implement random distribution when breeding begins
 			return HEIFER_PRE_BREEDING;
 		}else
 			return HEIFER_RDY_BREEDING;
@@ -645,6 +645,7 @@ inline void Cow::scheduleNextTest(){
 void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* c){
 	if(c == nullptr)
 		c = this;
+    //TODO check the status of the cow (inseminate only if at the right age). This should be done in the scheduleFutureEventsForCow (Initializer.cpp)
 	system->schedule_event( new Event( time , Event_Type::INSEMINATION, c->id() ) );
 #ifdef _VACCINATION_DEBUG_
 	std::cout << "vaccination enabled: "<< system->activeStrategy->usesVaccination << std::endl;

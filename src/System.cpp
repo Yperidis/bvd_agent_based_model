@@ -24,6 +24,7 @@ System* System::getInstance(INIReader* reader){
 
 		double dt_log  = reader->GetReal("simulation", "dt_log", 1.0);
 		double dt_output = reader->GetReal("simulation", "dt_output", 100.0);
+        //TODO Does this feature work as it should when set to true in parallel to PercentagesShallBeAppliedonWells? See CowWellFarmManager.cpp
 		bool dynamic_reintroduction = reader->GetBoolean("modelparam", "PercentagesShallBeAppliedOnWellsDynamically", false);
 		std::string dtmanage = reader->Get("trade" , "tradeRegularity", "DAILY");
 		double dt_manage = bvd_const::tradingTimeIntervall.DAILY;

@@ -38,6 +38,8 @@ class Initializer
   void set_default_percentage_of_PI_animals_in_farm( double no_of_PI=0.0 );
   void set_default_percentage_of_TI_animals_in_farm( double no_of_PI=0.0 );
 
+    void set_STRP(double previnfS, double previnfT, double previnfR, double previnfP,
+                  double cleanS, double cleanT, double cleanR, double cleanP);
 
   	void set_number_of_farms( int N );
   	void set_number_of_slaughterhouses( int N );
@@ -69,13 +71,12 @@ class Initializer
   std::vector< int >         no_animal;
   simulationType simType;
 	std::vector <FarmInitialConditionsType> initialTypes;
-	static const std::map< FarmInitialConditionsType , const InitialFarmData > InitialFarmConditionToFarmData;
+	std::map< FarmInitialConditionsType , InitialFarmData > InitialFarmConditionToFarmData;
 	
 	double percentageOfPreviouslyInfected;
   static std::string noinifilestring;
-  static const InitialFarmData previouslyInfected;
-  static const InitialFarmData clean;
-//  double hi,lo;
+  InitialFarmData previouslyInfected;
+  InitialFarmData clean;
 };
 #endif
 /*

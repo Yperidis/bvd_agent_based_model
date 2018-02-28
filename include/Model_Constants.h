@@ -45,7 +45,7 @@ namespace bvd_const
     double abort=90. + 10.;
     double cripple=0.;
     double immune=0.;
-  } first_period_of_pregnancy;
+  } first_period_of_pregnancy; //There are biological grounds for the chosen values of 1st to 4th pregnancies.
   struct{
     double PI=45.;
     double abort=15.+45.;
@@ -130,7 +130,7 @@ namespace bvd_const
     double min=3.;
     double max=5.;
     double mod=4.;
-  } number_of_calvings;
+  } number_of_calvings; //Have to be positive doubles (effectively integers)
   struct{
     double min=18.;
     double max=24.;

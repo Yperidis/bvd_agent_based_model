@@ -17,13 +17,13 @@
 
 std::string Initializer::noinifilestring = "NONE";
 
-const InitialFarmData Initializer::previouslyInfected = {0.02, 0.46, 0.06, 0.46 };
-const InitialFarmData Initializer::clean = {0.00, 0.205, 0.005, 0.79 };
-const std::map< FarmInitialConditionsType ,const InitialFarmData > Initializer::InitialFarmConditionToFarmData = 
+/*const InitialFarmData Initializer::previouslyInfected = {0.02, 0.46, 0.06, 0.46 }; //(P, R, T, S)
+const InitialFarmData Initializer::clean = {0.00, 0.205, 0.005, 0.79 }; //(P, R, T, S)
+const std::map< FarmInitialConditionsType ,const InitialFarmData > Initializer::InitialFarmConditionToFarmData =
 {
 	{FarmInitialConditionsType::clean, Initializer::clean},
 	{FarmInitialConditionsType::previouslyInfected, Initializer::previouslyInfected}
-};
+};*/
 Initializer::Initializer(INIReader* inireader)
 {
 	this->reader = inireader;
@@ -40,6 +40,19 @@ Initializer::Initializer(INIReader* inireader)
 	  std::cerr << "Unknown simulation type. Aborting" << std::endl;
 	  exit(18);
   }
+    double previnfS = reader->GetReal("modelparam", "previnfS", 0.46);
+    double previnfT = reader->GetReal("modelparam", "previnfT", 0.06);
+    double previnfR = reader->GetReal("modelparam", "previnfR", 0.46);
+    double previnfP = reader->GetReal("modelparam", "previnfP", 0.02);
+
+    double cleanS = reader->GetReal("modelparam", "cleanS", 0.79);
+    double cleanT = reader->GetReal("modelparam", "cleanT", 0.005);
+    double cleanR = reader->GetReal("modelparam", "cleanR", 0.205);
+    double cleanP = reader->GetReal("modelparam", "cleanP", 0.00);
+
+    set_STRP(previnfS, previnfT, previnfR, previnfP,
+             cleanS, cleanT, cleanR, cleanP);
+
 	double percPI = reader->GetReal("modelparam", "populationPercentagePI", 0.02);
 	double percTI = reader->GetReal("modelparam", "populationPercentageTI", 0.02);
 	int farmNum = reader->GetInteger("modelparam", "numberOfFarms", 0);
@@ -113,12 +126,23 @@ Initializer::Initializer(INIReader* inireader)
 	std::cout << "created initializer for " << farmNum << " farms." << std::endl;
 }
 
-
 Initializer::~Initializer()
 {
 
 }
 
+
+void Initializer::set_STRP(double previnfS, double previnfT, double previnfR, double previnfP,
+                           double cleanS, double cleanT, double cleanR, double cleanP)
+{
+    previouslyInfected = {previnfS, previnfT, previnfR, previnfP};
+    clean = {cleanS, cleanT, cleanR, cleanP};
+    InitialFarmConditionToFarmData =
+    {
+            {FarmInitialConditionsType::clean, Initializer::clean},
+            {FarmInitialConditionsType::previouslyInfected, Initializer::previouslyInfected}
+    };
+}
 
 void Initializer::set_default_age_distribution( double min , double max , double mod )
 {
@@ -344,7 +368,7 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
                     break;
                 default:
                     c->calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
-                    break;
+//                    break;
             }
             t = timeOfLastInsemination + s->rng.duration_of_pregnancy();
         } else {

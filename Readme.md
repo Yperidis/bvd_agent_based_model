@@ -68,13 +68,13 @@ Several tasks have already been defined for the development of the code.
 You can easily contribute to this project by forking it and starting pull requests. If you are interested in the corresponding research, feel free to reach out to one of the main developers of this package. Note that we're trying to stick to the infamous [git flow](https://danielkummer.github.io/git-flow-cheatsheet/). 
 
 ## History
-This project has been developed during a collaboration of Philipp Hövel and his working group at TU Berlin and Friedrich Loeffler Institut (FLI), which belongs to the German federal ministry of agriculture. The idea was to implement an agent based simulation with the cattle being the agents to simulate BVD on the German cattle trade network, since BVD is a very complex disease, which can not easily be described analytically. 
+This project has been developed during a collaboration between Philipp Hövel and his working group at the TU Berlin, and the Friedrich Loeffler Institut (FLI), which belongs to the German federal ministry of agriculture. The idea has been to implement an agent based simulation for the spread of BVD on the German cattle trade network with the cattle serving as agents, so as to emulate the BVD and trading dynamics and develop mitigation strategies for the containment of BVD.
 
 The project started in November 2015 by Thomas Isele, PhD and then continued by Inia Steinbach, M.Sc. and Pascal Blunk, M.Sc.. The data for the simulation as well as all information on the disease as well as German legislation was provided by Jörn Gethmann, PhD (FLI) and Hartmut Lentz, PhD (FLI).
 
 
 ## Includes from other projects
-The directory `projectImports` includes those libraries provided by other sources. By now it contains a project called `inih` [https://github.com/benhoyt/inih](https://github.com/benhoyt/inih) (BSD License) and a good [Catch2](https://github.com/catchorg/Catch2)(Boost License) for testings, as well as [Fake It](https://github.com/eranpeer/FakeIt) (MIT License) for mocking objects during tests.
+The directory `projectImports` includes libraries provided by other sources. So far it contains a project called `inih` [https://github.com/benhoyt/inih](https://github.com/benhoyt/inih) (BSD License), [Catch2](https://github.com/catchorg/Catch2)(Boost License) for testings, as well as [Fake It](https://github.com/eranpeer/FakeIt) (MIT License) for mocking objects during tests.
 
 # Research 
 Pending

@@ -53,10 +53,10 @@ double Random_Number_Generator::ran_triangular_double(double lo,double hi,double
       std::cerr << " -> lo <= mod <= hi && lo < hi evaluates to false.. Aborting"<<std::endl;
       exit(1);
     }
-  double y = ran_unif_double(1,0);                                     //random double zwischen 0-1
+  double y = ran_unif_double(1,0);                                     //random double between 0-1
   double ymod = (mod - lo) / (hi - lo);                                //F⁻1(mod)=ymod
-  double inverse_lo = lo + sqrt(y * (hi - lo) * (mod - lo) );            //inverse Verteilungsfunktion für 0<y<F
-  double inverse_hi = hi - sqrt((1 - y) * (hi - lo) * (hi - mod) );      //inverse Verteilungsfunktion für F<y<1
+  double inverse_lo = lo + sqrt(y * (hi - lo) * (mod - lo) );            //inverse distribution function for 0<y<F
+  double inverse_hi = hi - sqrt((1 - y) * (hi - lo) * (hi - mod) );      //inverse distribution function for F<y<1
   if (y <= ymod)
     return inverse_lo;
   else

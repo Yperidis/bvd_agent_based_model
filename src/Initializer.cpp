@@ -135,13 +135,15 @@ Initializer::~Initializer()
 void Initializer::set_STRP(double previnfS, double previnfT, double previnfR, double previnfP,
                            double cleanS, double cleanT, double cleanR, double cleanP)
 {
-    previouslyInfected = {previnfS, previnfT, previnfR, previnfP};
-    clean = {cleanS, cleanT, cleanR, cleanP};
+    previouslyInfected = {previnfP, previnfR, previnfT, previnfS}; //This order is given due to the way the compartments are pushed in the vector container
+    clean = {cleanP, cleanR, cleanT, cleanS};
     InitialFarmConditionToFarmData =
     {
             {FarmInitialConditionsType::clean, Initializer::clean},
             {FarmInitialConditionsType::previouslyInfected, Initializer::previouslyInfected}
     };
+/*    std::cout << "previnfS: " << previnfS << ", previnfT: " << previnfT << ", previnfR: " << previnfR << ", previnfP: " << previnfP
+              << ", cleanS: " << cleanS << ", cleanT: " << cleanT << ", cleanR: " << cleanR << ", cleanP: " << cleanP << std::endl;*/
 }
 
 void Initializer::set_default_age_distribution( double min , double max , double mod )
@@ -332,6 +334,7 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
 	}
 	//(5) put animal into farm
 	f->push_cow( c );
+    //Future events in the system are scheduled only for female cows
     if (c->female) {
         this->scheduleFutureEventsForCow(c, f, farm_idx, i, number, time);
     }

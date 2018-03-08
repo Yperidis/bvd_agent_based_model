@@ -565,9 +565,6 @@ inline void Cow::scheduleVaccination(const double& time) const{
 
 //If the animal can be vaccinated (i.e. passed the previous conditional of test of age) we do not check here
 //whether it should (i.e. if it has already been vaccinated) at the running time.
-    if(this->end_of_vaccination_event != nullptr)     //If the animal has already been vaccinated and its vaccine is still in effect
-        return;                                       //do not schedule a new vaccination
-    else
         system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
 }
 

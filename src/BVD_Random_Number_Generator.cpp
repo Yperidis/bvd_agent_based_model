@@ -9,7 +9,7 @@
 Random_Number_Generator::Random_Number_Generator() //Constructor with random seed
 {
 
- seed = (time(NULL)  + random());    //set a random seed
+ seed = (time(NULL)  + rand());    //set a random seed
  init(seed);
 
 }

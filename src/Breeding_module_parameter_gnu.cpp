@@ -18,7 +18,7 @@ int und (int ranLRmax)			//uniform number distribution
 
  	gsl_rng_env_setup();
  	//set a random seed
- 	unsigned int seed = (time(NULL)  + random());
+ 	unsigned int seed = (time(NULL)  + rand());
     gsl_rng_set (r,seed);
 
 

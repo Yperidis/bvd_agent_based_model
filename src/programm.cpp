@@ -40,7 +40,7 @@ int main(int argnum, char *arguments[], char *environment[])
 	#ifdef _DEBUG_
 	std::cout << "set init stuff" << std::endl;
 	#endif
-	std::cout << "blub" << std::endl;
+	std::cout << "Initializing (blurb)..." << std::endl;
 	
 	//init.set_number_of_farms( 3 );
 	//init.set_number_of_slaughterhouses( 2 );

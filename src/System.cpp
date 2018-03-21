@@ -376,7 +376,7 @@ void System::run_until( double end_time )
   if(this->mySettings->strategies.size() > 0)
 	schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
   stop=false;
-  while( !(stop || queue.empty())){
+  while( !(stop || queue.empty())){    //The simulation continues until it either reaches the end time or the event queue is empty
 	  execute_next_event();
   }
 }

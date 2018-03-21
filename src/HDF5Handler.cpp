@@ -100,10 +100,14 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 		}
 		delete[] calvingTimeData;
 	}
-	this->writeSaveToFile(file_id,this->CowData, "BVD_Dead_Cows");
+#ifndef _SUPPRESS_MINOR_OUTPUT_
+    this->writeSaveToFile(file_id,this->CowData, "BVD_Dead_Cows");
 	this->writeSaveToFile(file_id,this->InfectionData, "BVD_Cows_Infections");
+#endif
 	this->writeSaveToFile(file_id,this->PIDeathSave, "BVD_Dead_PIs");
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	this->writeLivingPIsToFile(file_id);
+#endif
 #endif
 #endif
 }

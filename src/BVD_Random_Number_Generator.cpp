@@ -275,7 +275,7 @@ double Random_Number_Generator::time_of_death_as_calf()
                            bvd_const::time_of_death_as_calf.first_six_month );
   }
   else{
-    return -1;
+    return -1;    //survival as calf
   }
 }
 

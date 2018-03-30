@@ -278,7 +278,7 @@ void Initializer::initialize_random_farm( Farm* farm , int farm_idx )
 	System* s = farm->system;
 	int i;
 
-	double time = 0.;
+	double time = 0.;    //Start of time for a random farm
 	int number = no_animal.at(farm_idx);
 	double hi,lo;
 	lo = log10((double)def_farm_size_distr.min);
@@ -300,8 +300,9 @@ void Initializer::initialize_random_farm( Farm* farm , int farm_idx )
 #endif
 }
 void Initializer::initialize_farm_of_size(Farm* farm, int size){
-	
+
 }
+
 void Initializer::initialize_slaughterhouse( Slaughterhouse* slh ){
 	
 }
@@ -346,20 +347,21 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
     Event_Type et;
     double t;
     System* s = System::getInstance(NULL);
-    double insem_age = s->rng.first_insemination_age();
+    double insem_age = s->rng.first_insemination_age();     //insem_age belongs in [0, max(first_insemination_age() ) )
     double age = c->age();
     double timeForCalving = age - insem_age ;
     int calvings_so_far=0;
-    if ( timeForCalving >= 0 )
+    if ( timeForCalving >= 0 )    //if the cow is either of age to be inseminated, pregnant or about to give birth
     {
         calvings_so_far = (int) round((timeForCalving) / ( s->rng.duration_of_pregnancy() + s->rng.time_of_rest_after_calving(c->calving_number) )) ;
         c->calving_number -= calvings_so_far;
 		if (c->calving_number > 0) {
 			c->has_been_pregnant_at_all_so_far = true;
 		}
-        double timeOfLastInsemination = s->rng.staggering_first_inseminations();
+        double timeOfLastInsemination = s->rng.staggering_first_inseminations();    //Select in a random uniform fashion the time between 0 and the minimum pregnancy
+                                                                                    // duration
 
-        if(timeOfLastInsemination <= time){
+        if(timeOfLastInsemination <= time){    //if it is already carrying schedule its labour...
             et = Event_Type::BIRTH;
             switch( c->infection_status )
             {
@@ -373,16 +375,17 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
                     c->calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
 //                    break;
             }
-            t = timeOfLastInsemination + s->rng.duration_of_pregnancy();
+            t = timeOfLastInsemination + s->rng.duration_of_pregnancy();    //...right after the duration of its pregnancy
         } else {
-            et = Event_Type::INSEMINATION;
+            et = Event_Type::INSEMINATION;    //otherwise schedule its insemination somewhere in [0, min(duration of pregnancy) )
             t = timeOfLastInsemination;
         }
     }
     else
-    {
+    {    //if the cow is below its insemination age, schedule its insemination somewhere in time between its age of insemination and the min(duration of pregnancy)
         et = Event_Type::INSEMINATION;
-        t  = insem_age - (age + time);
+        t  = insem_age - age + s->rng.staggering_first_inseminations();
+        //TODO the current system strategy (other than the "no strategy" scheme) is not applied on the initialised cows
     }
     //(6) schedule the event.
     s->schedule_event( new Event( t , et , c->id() ) );

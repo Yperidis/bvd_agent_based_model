@@ -52,7 +52,7 @@ At the current state of the project, the easiest build would be through [Cygwin]
 
 #### Cloning and Building
 * Clone this repository via `git clone https://github.com/Yperidis/bvd_agent_based_model.git` and make it your working directory the `bvd_agent_based_model`.
-* Run the `./configure` script in the directory. If you are running this on Windows do this from the Cygwin command-line console.
+* Run the `./configure` script in the `bvd_agent_based_model` directory. If you are running this on Windows do this from the Cygwin command-line console.
 * If you are on Windows, modify the Makefile by adding on line 5 the library calls "-lhdf5 -lhdf5_hl".
 * Run `Make`. 
 
@@ -60,7 +60,7 @@ If you experience problems in the build process, try running `autoreconf -i`. If
 
 
 ## Running the code
-After the successful compilation and lining an executable called 'bvd_agent_based_model' (on Windows this will be called 'bvd_agent_simulation' due to legacy reasons) can be found in the `build`-directory. So far it only has two options which can be added on the command line, namely `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies the behavior of the simulated system. Some sample ini files can be found in the folder `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (respectively `./build/bvd_agent_simulation --ini iniFiles/Test.ini` on Windows), if your current working directory is the main directory of the the repository. A detailed description of the set parameters is provided in the ini file.
+After the successful compilation and lining an executable called 'bvd_agent_based_model' (on Windows this will be called 'bvd_agent_simulation' due to legacy reasons) can be found in the `build`-directory. So far it only has two options which can be added on the command line, namely `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies the behavior of the simulated system. Some sample ini files can be found in the folder `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (respectively `./build/bvd_agent_simulation --ini iniFiles/Test.ini` on Windows), if your current working directory is the main directory of the the repository. A detailed description of the set parameters is provided in the Test.ini file in the iniFiles folder.
 
 
 # Development
@@ -98,7 +98,7 @@ The project started in November 2015 by Thomas Isele, PhD and then continued by 
 
 
 ## Includes from other projects
-The directory `projectImports` includes libraries provided by other sources. So far it contains a project called `inih` [https://github.com/benhoyt/inih](https://github.com/benhoyt/inih) (BSD License) for setting the code's parameters from a single .ini file, and for testing purposes [Catch2](https://github.com/catchorg/Catch2)(Boost License) following the [TDD testing](https://en.wikipedia.org/wiki/Test-driven_development) paradigm, as well as [Fake It](https://github.com/eranpeer/FakeIt) (MIT License) for [mocking](https://en.wikipedia.org/wiki/Mock_object) objects. **Note that you will have to clone the contents of each import in its respective directory separately from this project.**
+The directory `projectImports` includes libraries provided by other sources. So far it contains a project called `inih` [https://github.com/benhoyt/inih](https://github.com/benhoyt/inih) (BSD License) for setting the code's parameters from a single .ini file, and for testing purposes [Catch2](https://github.com/catchorg/Catch2) (Boost License) following the [TDD](https://en.wikipedia.org/wiki/Test-driven_development) paradigm, as well as [Fake It](https://github.com/eranpeer/FakeIt) (MIT License) for [mocking](https://en.wikipedia.org/wiki/Mock_object) objects. **Note that you will have to clone the contents of each import in its respective directory separately from this project.**
 
 
 # Research

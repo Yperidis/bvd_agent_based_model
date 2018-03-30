@@ -125,7 +125,7 @@ void System::schedule_event( Event* e )
 	// (1) put the event into the main queue
 	queue.push( e );
 	// (2) find the farm that this event pertains to and register the event there if it is an infection rate changing event.
-	if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){ //the event just being processed is from
+	if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){
 		this->output->logResultingEventOfInfection(e);
 	}
 	if ( e->is_trade_event() )
@@ -213,12 +213,12 @@ void System::execute_next_event()
         return;
     }
 
-    no_of_events_processed++;
+    no_of_events_processed++;    //event counter
 
-    Event* e = queue.top();
+    Event* e = queue.top();    //Accessing top element (event) of the queue
 
-    queue.pop();
-    if (e->execution_time < _current_time){
+    queue.pop();    //Removing the top element (event) from the queue
+    if (e->execution_time < _current_time){    //the current time should be initialized from the ini file
         std::cerr << "Error, got an event that is earlier than the current time. Exiting" << std::endl;
         Utilities::pretty_print(e, std::cout);
 
@@ -227,7 +227,8 @@ void System::execute_next_event()
     if(e->valid) // => e is valid.
     {
         Cow* c = Cow::get_address( e->id );
-        _current_time = e->execution_time;
+        _current_time = e->execution_time;    //the current time becomes the execution time of the event from the main queue
+        //TODO calls of events are always logged regardless of what is happening in their member functions
         this->output->logEvent(e);
         if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
             delete c;
@@ -236,7 +237,7 @@ void System::execute_next_event()
             {
                 case Destination_Type::COW:
                 {
-                    if ( c != nullptr  && c->id() == e->id){
+                    if ( c != nullptr  && c->id() == e->id){    //the cow has to exist and correspond to the event to be executed
                         c->execute_event( e );
                     } //Event is not pertaining to a dead cow. Could  this happen?
                     break;
@@ -252,22 +253,24 @@ void System::execute_next_event()
             }
         }
     } else {
-		if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH) {
-			std::cerr << "Error, got an event that is invalid. Exiting" << std::endl;
-			Utilities::pretty_print(e, std::cout);
-		}
+        //TODO Why is this sort of event invalid? The possible initialization events are BIRTH and (first) INSEMINATION
+        if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH) {
+            std::cerr << "Error, got an event that is invalid. Exiting" << std::endl;
+            Utilities::pretty_print(e, std::cout);
+        }
     }
 
-    if(e->is_infection_rate_changing_event()) {
+    if(e->is_infection_rate_changing_event()) {    //if the current event changed the infection rate, add it to a buffer priority queue
         memorySaveQ.push(e);
     }
     else {
-        delete e;
+        delete e;    //otherwise delete the running event (end of its course)
     }
 
     Event* event;
-    while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) &&(event->execution_time + 500. < this->_current_time )){
-        delete event;
+    while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) && (event->execution_time + 500. < this->_current_time )){
+        delete event;    //delete the events of the buffer queue and its elements if they are scheduled for anytime less than the current time
+                        //plus 500 and they are actual events (nullptr)
         memorySaveQ.pop();
     }
 
@@ -376,7 +379,7 @@ void System::run_until( double end_time )
   if(this->mySettings->strategies.size() > 0)
 	schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
   stop=false;
-  while( !(stop || queue.empty())){    //The simulation continues until it either reaches the end time or the event queue is empty
+  while( !(stop || queue.empty())){    //The simulation continues until it either reaches the end time or the main event queue is empty
 	  execute_next_event();
   }
 }

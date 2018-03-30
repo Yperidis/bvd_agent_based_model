@@ -87,13 +87,13 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 		herd = NULL;
 	}
 	all_living_cows[ _id ]= this;
-	birthTimesOfCalves = new double[calving_number+1]; //using one more entry to have a END for the output class to look for
+	birthTimesOfCalves = new double[calving_number+1]; //using one more entry to have an END for the output class to look for
 	for(int i=0; i < calving_number+1; i++){
 		birthTimesOfCalves[i] = -1.0;
 	}
 	hasBeenTestedPositiveYet = false;
 	knownStatus = KnownStatus::NOSTATUS;
-	end_of_vaccination_event = NULL;
+	end_of_vaccination_event = nullptr;
 	numberOfVaccinations = 0;
 	timeOfInfection = -1.0;
 	timeOfLastCalving = -1.0;
@@ -114,19 +114,20 @@ Cow::~Cow()
 
 void Cow::execute_event( Event* e )
 {
-	Farm * f = herd->farm;  // We have to store this at this place, because after executing an eventual DEATH event, the cow is already deleted..
-	future_irc_events_that_move.erase((Event*)e); // Same reason for doing this here.
-	//TODO why triple querry in the condition?
-	if(f->myType == SLAUGHTERHOUSE && !( e->type == Event_Type::SLAUGHTER || e->type == Event_Type::SLAUGHTER || e->type == Event_Type::SLAUGHTER)){
+	Farm * f = herd->farm;  // We have to store this at this place, because after executing an eventual DEATH event, the cow is already deleted
+	future_irc_events_that_move.erase(e); // Same reason for doing this here.
+
+	if(f->myType == SLAUGHTERHOUSE && !(e->type == Event_Type::SLAUGHTER) ){    //if the farm is a slaughterhouse and the
+		                                                                        //event to be executed not a slaughter, then
+		                                                                        //then there is nothing to execute
 		return;
 	}
 	switch ( e->type ){
 		case Event_Type::VACCINATE		:
 			this->runVaccination(e->execution_time);
 			break;
-			//Possibly the END_OF_VACINATION event exists solely for the purpose of invalidating vacciantion events
 		case Event_Type::END_OF_VACCINATION		:
-			if(this->end_of_vaccination_event != NULL && this->end_of_vaccination_event == e){
+			if(this->end_of_vaccination_event != nullptr && this->end_of_vaccination_event == e){
 				this->execute_END_OF_VACCINATION(e->execution_time);
 			}
 			break;
@@ -242,10 +243,11 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 //TODO check if this accounts only for abortions and stillbirths or if there is something else going on
 void Cow::execute_BIRTH( const double& time  )
 {
+    ///At these block segments we are referring to the embryo
 	if ( calf_status == Calf_Status::NO_CALF || (time - last_conception_time) < bvd_const::minimum_pregnancy_duration ) {
 		/// This should only happen if there has been an abortion.
 		if (calf_status == Calf_Status::NO_CALF) {
-			std::cout << "WARNING! CALF STATUS NOCALF CALLED AT BIRTH! DEBUG ME" << std::endl;
+			std::cout << "WARNING! CALF STATUS NOCALF CALLED AT BIRTH! ABORTION?" << std::endl;
 		}
 		return;
 	}
@@ -253,15 +255,16 @@ void Cow::execute_BIRTH( const double& time  )
 	calving_number--;
 	bool first_birth = !has_been_pregnant_at_all_so_far;
 	has_been_pregnant_at_all_so_far = true;
-	double calfVaccinationTime = -1.0;
+	double calfVaccinationTime = -1.0;    //initialisation of the vaccination time
 	handle_rest_time_after_ABORTION_or_BIRTH( time );
 
 	/// Will the newborn calf be living? (This depends on the age of the mother).
 	if ( !system->rng.is_this_a_deadbirth( first_birth ) )
-	{ // Determine status of new calf
+	{ // Determine status of new calf. We assume it is not born in the T state for simplicity
 		Infection_Status is;
 		switch ( calf_status )
 		{
+			//We assume that a calf cannot be transiently infected upon birth
 			case Calf_Status::SUSCEPTIBLE:
 				is = Infection_Status::SUSCEPTIBLE;
 				break;
@@ -277,43 +280,45 @@ void Cow::execute_BIRTH( const double& time  )
 			default: /// We will never land here, because NO_CALF has been excluded already.
 				calf_status = Calf_Status::NO_CALF;
 				return;
-		}//switch
+		}
 
-		calf_status = Calf_Status::NO_CALF;
+		calf_status = Calf_Status::NO_CALF;    //The calf cannot be pregnant itself at this point
 
-		/// Welcome to this world little calf.
+		/// Welcome to this world little calf!
 		Cow* calf = new Cow( time , this ); // The sex of the calf is determined in the constructor
 
-        //TODO The cows which do not die in the result may mean that they originate from the initialised cows or that the unused time_of_death would be invoked (1.79769e+308!!!)
-		double time_of_death = std::numeric_limits<double>::max();
-		// If this stays infinite, the cow will die anyway at some point,
+		double time_of_death;
+		// If this remains practically infinite (1.79769e+308), the cow will die anyway at some point,
 		//  because either it is male or if it is female it has a finite number of calvings
-		if ( is == Infection_Status::PERSISTENTLY_INFECTED ){ //PI animals will die earlier than others.
-			time_of_death = time + system->rng.lifetime_PI();
-		} else {
-			time_of_death =  time + system->rng.time_of_death_as_calf(); // If this returns -1, newborn will not die as calf.
-			if ( time_of_death <= time ) {
-				time_of_death = std::numeric_limits<double>::max();
-			}
-		}
+        if ( is == Infection_Status::PERSISTENTLY_INFECTED ){ //PI animals will die earlier than others.
+            time_of_death = time + system->rng.lifetime_PI();
+        } else {
+            time_of_death =  time + system->rng.time_of_death_as_calf(); // If this returns -1, the animal will not die as a calf.
+            if ( time_of_death <= time ) {    //If the calf survives, then it will never die as a cow (as S, T or R)
+                time_of_death = std::numeric_limits<double>::max();
+            }
+        }
         //TODO DEATH not implemented
 		system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
 		double execution_time;
-		if ( calf->female ){/// Female cow: schedule first insemination if it doesn't die before.
+		if ( calf->female ){/// Female calf: schedule first insemination if it doesn't die before.
 			execution_time = time + system->rng.first_insemination_age();
-			if ( time_of_death > execution_time ) {
-				this->scheduleInsemination(execution_time, calfVaccinationTime, calf);
+			if ( time_of_death > execution_time ) {    //you wouldn't inseminate an animal which is about to die or has already died now, would you?
+				this->scheduleInsemination(execution_time , calfVaccinationTime, calf);
 			}
 		}
 		else {/// Male cow: schedule culling if it doesn't die before.
 			execution_time = time + system->rng.life_expectancy_male_cow();
-			if ( time_of_death > execution_time ) {
+			if ( time_of_death > execution_time ) {    //if the male calf survives beyond its life expectancy kill it
                 //TODO DEATH not implemented
-				system->schedule_event( new Event( execution_time , Event_Type::DEATH       , calf->id() ) );
+				system->schedule_event( new Event( execution_time , Event_Type::DEATH , calf->id() ) );
 			}
 		}
         //TODO a non PI calf should always enter the IMMUNE class for the MA period, due to the colostrum system being implemented
-		if ( infection_status == Infection_Status::IMMUNE && is == Infection_Status::SUSCEPTIBLE ) // If the mother is IMMUNE, then calf is protected by Maternal antibodies for a while
+        // If the mother is immune, then the calf is protected by maternal antibodies for a while
+		if ( infection_status == Infection_Status::IMMUNE && is == Infection_Status::SUSCEPTIBLE )
+        //If the calf status is susceptible, then it would have a period of MA protection due to the colostrum administered
+        //if ( is == Infection_Status::SUSCEPTIBLE )
 		{
 			is = Infection_Status::IMMUNE;
 			double ma_end = time+system->rng.duration_of_MA();
@@ -321,14 +326,16 @@ void Cow::execute_BIRTH( const double& time  )
 				system->schedule_event( new Event( ma_end , Event_Type::END_OF_MA , calf->id() ) );
 			}
 		}
-		calf->infection_status = is;
+		calf->infection_status = is;    //According to what has been already set that can be S, P or R
 
 		children.insert( calf );
-		herd->farm->push_cow( calf );
+        //TODO what does the push_cow implementation mean in the well and slaughter farms?
+		herd->farm->push_cow( calf );    //Add the calf in the herd of the farm of its mother
 		herd->reevaluateGroup(this); //Resetting the trading criteria according to the new arrivals
 		//log time of birth to mother cow in order to use it in output
 		int index = 0;
-		while(birthTimesOfCalves[index] != -1.0) index++;
+		while(birthTimesOfCalves[index] != -1.0) index++;    //Go through all the newly born calves and set their birth
+                                                             // time to the present one
 		birthTimesOfCalves[index] = time;
 		if(system->activeStrategy->usesEartag){
 			double firstTestAge = system->rng.timeOfFirstTest();
@@ -348,8 +355,9 @@ void Cow::execute_BIRTH( const double& time  )
 void Cow::execute_ABORTION( const double& time )
 {
 	if (!female) {
+        // According to the cow creation (scheduled events only for females) from the initializer this shouldn't happen
+        // for the first batch of pregnancies
 		std::cout << "WARNING! ABORTION ON MALE HEAD! DEBUG ME" << std::endl;
-		// Can this actually happen?
 		return;
 	}
 	calf_status = Calf_Status::NO_CALF;
@@ -370,7 +378,7 @@ void Cow::execute_INSEMINATION( const double& time )
 	if (!female){
 		return; // ;)
 	}
-	bool conception;
+	bool conception;    //if not initialised, then this is False by default
 	double execution_time = time + system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception );
 
 	if (conception) {
@@ -431,7 +439,7 @@ void Cow::execute_END_OF_MA( const double& time )
 {
     //if the cow has already been vaccinated, it shouldn't return to being susceptible here. This block should concern
     //only cows which are of age to be vaccinated.
-	if(this->end_of_vaccination_event != NULL && this->end_of_vaccination_event->execution_time > time)
+	if(this->end_of_vaccination_event != nullptr && this->end_of_vaccination_event->execution_time > time)
 		return;
 
 	infection_status = Infection_Status::SUSCEPTIBLE;    //This block concerns any animal (also called from execute_END_OF_VACCINATION)
@@ -554,17 +562,22 @@ inline void Cow::execute_END_OF_VACCINATION(const double& time){
 	if(this->infection_status == Infection_Status::IMMUNE){
 		this->execute_END_OF_MA(time);
 	}
-	this->end_of_vaccination_event = nullptr;    //For any infectious status the end of the vaccination effect is annulled
+	this->end_of_vaccination_event = nullptr;    //For any infectious status the vaccination effect is annulled
 
 }
 //TODO should this function be const, i.e. funct(...) const {...}? There is a dependency in the scheduleInsemination function (c->scheduleVaccination(vaccTime))
 inline void Cow::scheduleVaccination(const double& time) const{
+    //TODO this conditional doesn't help the cumulative vaccinations on the output, although it suppresses the debugging prompt in runVaccination
+	if(this->end_of_vaccination_event != nullptr)
+		return;
 	double vaccTime = time;
-	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )
+	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )    //make sure that the animal does not receive a vaccination before it reaches the appropriate age
 		vaccTime = this->birth_time + bvd_const::firstVaccAge + 1;
 
 //If the animal can be vaccinated (i.e. passed the previous conditional of test of age) we do not check here
 //whether it should (i.e. if it has already been vaccinated) at the running time.
+
+	//std::cout << vaccTime << " for cow with ID " << this->id() << "\n";
         system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
 }
 
@@ -579,18 +592,28 @@ inline void Cow::runVaccination(const double& time){
 //		if(this->herd->farm->next_infection_event != nullptr && this->herd->farm->next_infection_event->id == this->id() && this->herd->farm->next_infection_event->execution_time < time + bvd_const::timeOfVaccinationPersistance)
 //			this->herd->farm->invalidate_next_infection_event();
         //consistency check. If this has any other effect, it may lead to problems.
+
+		if(buf_time == 0)    //for the first encounter set at current time
+			buf_time = time;
+		else if(time - buf_time < System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense)    //if the difference in time is greater than 365. ok
+			std::cout << "Called before the vacc. end" << "\n";
+
 		if(this->end_of_vaccination_event != nullptr){
-			system->invalidate_event(this->end_of_vaccination_event);    //This still needs to be verified, but on a first look it seems to free reserved memory
-			this->end_of_vaccination_event = nullptr;
-		}
+			system->invalidate_event(this->end_of_vaccination_event);    //This seems to disallow the end_of_vaccination_event to enter the main event queue, but it seems to be already there!
+			this->end_of_vaccination_event = nullptr;}
+
 		//Creating and scheduling the end of the vaccination's effect
 		this->end_of_vaccination_event = new Event( system->getCurrentTime()+ System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
-		system->schedule_event(this->end_of_vaccination_event);    //Guarantee that the next vaccination will take place no sooner than the end of the vaccine's effect
+        //this->end_of_vaccination_event = new Event( time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
+		system->schedule_event(this->end_of_vaccination_event);    //schedule the expiry of the vaccine's protective effect
+        //std::cout << time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense << "\n";
 	}
 	//At this point the animal's infection status is not checked and it is scheduled for vaccination.
 	//The only thing that is taken into account in the call of the scheduleVaccination function is
 	//the current time and the duration of the vaccination's effect.
-	this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);//Controlled from the ini file (legacy) bvd_const::timeOfVaccinationPersistance);
+	//std::cout << time << "\n";
+    //this->scheduleVaccination(time);
+	this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);    //schedule the next vaccination
 	this->numberOfVaccinations++;
 }
 
@@ -662,15 +685,15 @@ inline void Cow::scheduleNextTest(){
 void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* c){
 	if(c == nullptr)
 		c = this;
-	//TODO check the status of the cow (inseminate only if at the right age). This should be done in the scheduleFutureEventsForCow (Initializer.cpp)
 	system->schedule_event( new Event( time , Event_Type::INSEMINATION, c->id() ) );
 #ifdef _VACCINATION_DEBUG_
 	std::cout << "vaccination enabled: "<< system->activeStrategy->usesVaccination << std::endl;
 #endif
 
+    //If on top of the insemination we have a vaccination strategy, we might need to schedule a future vaccination
 	if(system->activeStrategy->usesVaccination){
 		//vaccination
-		vaccTime = time - System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination;
+		vaccTime = time - System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination;    //when the animal is to be vaccinated
 
 		//Check if the cow has been vaccinated before
 		//see if the vaccination will take place within the time before the insemination. Otherwise
@@ -678,18 +701,19 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
 		//So far it's sufficient to check if the approximate end of the vaccination effect is in the given time frame.
 		//TODO if distributions for the time of a working vaccination are introduced, another test to check if a cow has been vaccinated before needs to be introduced
 		if(c->end_of_vaccination_event != nullptr){
-			// this needs to be larger than 0 and smaller than vaccinationTimeBeforeInsemination
+			// this needs to be in the future and at the latest at the vaccination time before the insemination
 			const double diff = c->end_of_vaccination_event->execution_time - vaccTime;
 
+            //TODO is the && diff condition meaningful? Shouldn't a new vaccination be scheduled only after the end of the previous?
 			if(diff >= 0.0 && diff <= System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination){
 				//vaccination is happening in the desired time frame
-				//leave everything
+				//leave everything as is
 				return;
 			}
 		}else{
 			//the cow has either not been vaccinated before or its previous vaccination's effect has worn off
             //(see the implementation of end_of_vaccination_event at the execute_END_OF_MA function). The previously defined
-            //vaccTime takes into account the elapsed time between the vaccination and the following insemination.
+            //vaccTime takes into account that the vaccination and the following insemination have to be a specified interval apart.
 			c->scheduleVaccination(vaccTime);
 		}
 

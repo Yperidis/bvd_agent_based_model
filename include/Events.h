@@ -83,18 +83,18 @@ class FARM_EVENT: public Event{
 	public:
 	FARM_EVENT(double exec_time, Event_Type type, Farm *farm);
 };
-class Event_Pointer_Sort_Criterion
+class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's container and sorts the accordingly
 {
  public:
-  bool operator() (Event const * const  e1 , Event const * const e2)
+  bool operator() (Event const * const  e1 , Event const * const e2)    //const pointer to const Event type
   {
     if (e1->execution_time < e2->execution_time) return false;
     if (e2->execution_time < e1->execution_time) return true;
-    //Reaching this point means that the execution times are the same.
+    //Reaching this point means that the execution times of e1 and e2 are the same.
     if (e2->type < e1->type) return false;
     if (e1->type < e2->type) return true;
-    //Reaching this point means that the type of the event is also the same
-    return e1->id < e2->id;
+    //Reaching this point means that the types of e1 and e2 are also the same
+    return e1->id < e2->id;    //true if the cow id of e1 is smaller than that of e2
   }
 };
 

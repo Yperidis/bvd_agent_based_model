@@ -84,9 +84,10 @@ class Cow
 		Infection_Status  infection_status;
 		double            last_conception_time;  /// Time of last conception. Negative value means: no conception so far.;
 		int               calving_number;        /// Number of remaining calvings
-		bool              has_been_pregnant_at_all_so_far;// Self explanatory, innit?
+		bool              has_been_pregnant_at_all_so_far;    // Self explanatory, innit?
 		Calf_Status       calf_status;           /// State of the calf, can be NO_CALF which means that this Cow is not pregnant at the moment
 		Herd *            herd	;                  /// Pointer to the herd, this cow belongs to
+		double            buf_time=0;    //For debugging purposes on the vaccination times
 
 		Cow *             mother;
 		Cow::UnorderedSet          children;

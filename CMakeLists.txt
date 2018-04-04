@@ -1,20 +1,25 @@
-cmake_minimum_required(VERSION 3.9)
+##Another way to build the project is with the autotools suite. This is 
+##thought to be more straightforward by the author.
+
+cmake_minimum_required(VERSION 3.7)    #check with the cmake version of your system
 project(bvd_agent_based_model)
 
 get_filename_component(PARENTDIR ${CMAKE_BINARY_DIR} DIRECTORY)
-set(EXECUTABLE_OUTPUT_PATH ${PARENTDIR}/build)
+set(EXECUTABLE_OUTPUT_PATH ${PARENTDIR}/bvd_agent_based_model_test/build)
 message(STATUS "Cmake EXECUTABLE OUTPUT DIR is ${EXECUTABLE_OUTPUT_PATH}")
 
 #set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 find_package(GSL REQUIRED)
 
+#Different native build enviornments can be set, such as Xcode (Apple) and MSVS (Windows)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
-#set(CMAKE_BUILD_TYPE DEBUG)
+#set(CMAKE_BUILD_TYPE DEBUG)  #the available types are Debug, MinSizeRel, RelWithDebInfo and Release
 set(CMAKE_BUILD_TYPE RELEASE)
 
+#Flags for the debugger. We define a verbose debug and a release version
 set(CMAKE_C_FLAGS_DEBUG "-Wall -g -pedantic -fopenmp -D_SUPPRESS_OUTPUT_ -D_DEBUG_ -D_FARM_INITIALIZER_DEBUG_ -D_OUTPUT_DEBUG_ -D_FARM_MANAGER_DEBUG_ -D_INITIALIZER_DEBUG_ -D_HERD_DEBUG_ -D_MARKET_DEBUG_")
 set(CMAKE_C_FLAGS_RELEASE "-Wall -g -pedantic -fopenmp -D_FARM_INITIALIZER_DEBUG_ -D_SUPPRESS_MINOR_OUTPUT_")
 
@@ -93,9 +98,9 @@ add_executable(bvd_agent_based_model
         src/System.cpp
         src/TableBasedOutput.cpp
         src/TradeFilter.cpp
-        src/Utilities.cpp
-        config.h)
+        src/Utilities.cpp)
 
+##Not deleted for possible future use
 #tests/test_cow.cpp
 #tests/test_csv_reader.cpp
 #tests/test_event.cpp
@@ -106,16 +111,15 @@ add_executable(bvd_agent_based_model
 #tests/test_system.cpp
 #tests/tests.cpp
 
+#Linux systems required the hdf5_serial library names in order to work as expected
 include_directories(include
         /usr/include/hdf5/serial
-        projectImports
-        projectImports/inih
         projectImports/inih/cpp
         .)
 
 # This needs to account for platform-specific names of libraries, like HDF5
 find_program(UNAME uname)
-execute_process(COMMAND ${UNAME} -s
+execute_process(COMMAND ${UNAME} -s    #Attention! uname is a UNIX only command. In WINDOWS use systeminfo
         OUTPUT_VARIABLE OS_IDENTIFICATION
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )

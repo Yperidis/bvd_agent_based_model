@@ -567,9 +567,6 @@ inline void Cow::execute_END_OF_VACCINATION(const double& time){
 }
 //TODO should this function be const, i.e. funct(...) const {...}? There is a dependency in the scheduleInsemination function (c->scheduleVaccination(vaccTime))
 inline void Cow::scheduleVaccination(const double& time) const{
-    //TODO this conditional doesn't help the cumulative vaccinations on the output, although it suppresses the debugging prompt in runVaccination
-	if(this->end_of_vaccination_event != nullptr)
-		return;
 	double vaccTime = time;
 	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )    //make sure that the animal does not receive a vaccination before it reaches the appropriate age
 		vaccTime = this->birth_time + bvd_const::firstVaccAge + 1;
@@ -584,37 +581,43 @@ inline void Cow::scheduleVaccination(const double& time) const{
 inline void Cow::runVaccination(const double& time){
     //TODO Ensure that the scheduling of the vaccination takes place only if end_of_vaccination event == nullptr
 	//Actions to be taken if the animal is susceptible and the vaccination will have the desired effect
-	if( this->infection_status == Infection_Status::SUSCEPTIBLE && system->rng.vaccinationWorks()){
-		this->infection_status = Infection_Status::IMMUNE;
-		this->herd->remove_cow_from_susceptible( this );
+    if( this->infection_status == Infection_Status::SUSCEPTIBLE && system->rng.vaccinationWorks()){
+        this->infection_status = Infection_Status::IMMUNE;
+        this->herd->remove_cow_from_susceptible( this );
 
-		this->herd->add_r_cow(this);
+        this->herd->add_r_cow(this);
 //		if(this->herd->farm->next_infection_event != nullptr && this->herd->farm->next_infection_event->id == this->id() && this->herd->farm->next_infection_event->execution_time < time + bvd_const::timeOfVaccinationPersistance)
 //			this->herd->farm->invalidate_next_infection_event();
         //consistency check. If this has any other effect, it may lead to problems.
 
-		if(buf_time == 0)    //for the first encounter set at current time
-			buf_time = time;
-		else if(time - buf_time < System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense)    //if the difference in time is greater than 365. ok
-			std::cout << "Called before the vacc. end" << "\n";
+        if(this->end_of_vaccination_event != nullptr){
+            system->invalidate_event(this->end_of_vaccination_event);    //This seems to disallow the end_of_vaccination_event to enter the main event queue, but it seems to be already there!
+            this->end_of_vaccination_event = nullptr;}
 
-		if(this->end_of_vaccination_event != nullptr){
-			system->invalidate_event(this->end_of_vaccination_event);    //This seems to disallow the end_of_vaccination_event to enter the main event queue, but it seems to be already there!
-			this->end_of_vaccination_event = nullptr;}
-
-		//Creating and scheduling the end of the vaccination's effect
-		this->end_of_vaccination_event = new Event( system->getCurrentTime()+ System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
+        //Creating and scheduling the end of the vaccination's effect
+        this->end_of_vaccination_event = new Event( system->getCurrentTime()+ System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
         //this->end_of_vaccination_event = new Event( time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense  , Event_Type::END_OF_VACCINATION      , this->id() );
-		system->schedule_event(this->end_of_vaccination_event);    //schedule the expiry of the vaccine's protective effect
+        system->schedule_event(this->end_of_vaccination_event);    //schedule the expiry of the vaccine's protective effect
         //std::cout << time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense << "\n";
-	}
-	//At this point the animal's infection status is not checked and it is scheduled for vaccination.
-	//The only thing that is taken into account in the call of the scheduleVaccination function is
-	//the current time and the duration of the vaccination's effect.
-	//std::cout << time << "\n";
-    //this->scheduleVaccination(time);
-	this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);    //schedule the next vaccination
-	this->numberOfVaccinations++;
+        this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);    //schedule the next vaccination
+        this->numberOfVaccinations++;
+    }
+        //At this point the animal's infection status is not checked and it is scheduled for vaccination.
+        //The only thing that is taken into account in the call of the scheduleVaccination function is
+        //the current time and the duration of the vaccination's effect.
+        //std::cout << time << "\n";
+        //this->scheduleVaccination(time);
+    this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);    //schedule the next vaccination
+    this->numberOfVaccinations++;
+
+    //For debugging purposes
+/*    if(buf_time == 0)    //for the first encounter set at current time
+        buf_time = time;
+    else if(time - buf_time < System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense) {    //if the difference in time is greater than 365. ok
+		std::cout << "Called before the vacc. end" << "\n";
+		cntr = ++cntr;
+        std::cout << cntr << "  " << buf_time << "\n";
+	}*/
 }
 
 bool Cow::testCow(const Event* e){

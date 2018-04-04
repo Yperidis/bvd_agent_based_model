@@ -115,42 +115,42 @@ void System::schedule_event( Event* e )
     }
 
     Cow* c = Cow::get_address(e->id);
-	if (e->type == Event_Type::ABORTION && c->calf_status == Calf_Status::NO_CALF) {
-		std::cout << "Unreasonable situation" << std::endl;
-	}
-
-	if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr) {
+    if (e->type == Event_Type::ABORTION && c->calf_status == Calf_Status::NO_CALF) {
         std::cout << "Unreasonable situation" << std::endl;
     }
-	// (1) put the event into the main queue
-	queue.push( e );
-	// (2) find the farm that this event pertains to and register the event there if it is an infection rate changing event.
-	if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){
-		this->output->logResultingEventOfInfection(e);
-	}
-	if ( e->is_trade_event() )
-	{
-		Cow* c = Cow::get_address( e->id );
-		if ( c != NULL ) //Actually, at this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
-		{
 
-			e->farm->register_future_infection_rate_changing_event( e );
-			if(c->herd != NULL && c->herd->farm != NULL)
-				c->herd->farm->register_future_infection_rate_changing_event( e );
+    if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr) {
+        std::cout << "Unreasonable situation" << std::endl;
+    }
+    // (1) put the event into the main queue
+    queue.push( e );
+    // (2) find the farm that this event pertains to and register the event there if it is an infection rate changing event.
+    if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){
+        this->output->logResultingEventOfInfection(e);
+    }
+    if ( e->is_trade_event() )
+    {
+        Cow* c = Cow::get_address( e->id );
+        if ( c != NULL ) //Actually, at this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
+        {
 
-		}
-	}
-	else if ( e->is_infection_rate_changing_event() )
-	{ // So far, all infection_rate_changing events have dest == COW
-		Cow* c = Cow::get_address( e->id );
-		if ( c != nullptr ) //Actually, at this point, c==NULL should NEVER happen!!
-		{
-			if(c->herd != nullptr && c->herd->farm != nullptr) {
-				c->herd->farm->register_future_infection_rate_changing_event( e );
-			}
-			c->register_future_infection_rate_changing_event( e );
-		}
-	}
+            e->farm->register_future_infection_rate_changing_event( e );
+            if(c->herd != NULL && c->herd->farm != NULL)
+                c->herd->farm->register_future_infection_rate_changing_event( e );
+
+        }
+    }
+    else if ( e->is_infection_rate_changing_event() )
+    { // So far, all infection_rate_changing events have dest == COW
+        Cow* c = Cow::get_address( e->id );
+        if ( c != nullptr ) //Actually, at this point, c==NULL should NEVER happen!!
+        {
+            if(c->herd != nullptr && c->herd->farm != nullptr) {
+                c->herd->farm->register_future_infection_rate_changing_event( e );
+            }
+            c->register_future_infection_rate_changing_event( e );
+        }
+    }
 }
 void System::scheduleFutureCowIntros(){
 	int num = System::reader->GetInteger("modelparam","inputCowNum", 0);
@@ -239,7 +239,7 @@ void System::execute_next_event()
                 {
                     if ( c != nullptr  && c->id() == e->id){    //the cow has to exist and correspond to the event to be executed
                         c->execute_event( e );
-                    } //Event is not pertaining to a dead cow. Could  this happen?
+                    } //Event does not pertain to a dead cow. Could  this happen?
                     break;
                 }
                 case Destination_Type::HERD:

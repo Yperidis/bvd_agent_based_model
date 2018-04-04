@@ -1,6 +1,5 @@
 
 #autoconfig
-
 Makefile
 config.status
 
@@ -18,7 +17,6 @@ FLI_Scenarios/
 build/*
 lib/*
 *.o
-bvd_agent_simulation
 bvd_agent_based_model
 *dSYM
 *.pyc
@@ -30,3 +28,6 @@ bvd_agent_based_model
 #test output
 output_
 /.vs
+
+#legacy files
+Legacy_files

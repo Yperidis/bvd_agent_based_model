@@ -88,6 +88,7 @@ class Cow
 		Calf_Status       calf_status;           /// State of the calf, can be NO_CALF which means that this Cow is not pregnant at the moment
 		Herd *            herd	;                  /// Pointer to the herd, this cow belongs to
 		double            buf_time=0;    //For debugging purposes on the vaccination times
+        int               cntr=0;    //For debugging purposes
 
 		Cow *             mother;
 		Cow::UnorderedSet          children;

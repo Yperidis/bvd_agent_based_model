@@ -256,7 +256,7 @@ void Farm::infection_rate_has_changed( Event * e ){ //e points to the event by w
 void Farm::execute_event( Event *e )
 {
 
-  // At the moment the only event for this is the TRADE event.
+  // At the moment the only events at this hierarchical level are the TRADE and QUARANTINEEND events.
 	if ( e-> type == Event_Type::TRADE)
 		execute_TRADE_event( e );
 	else if( e-> type == Event_Type::QUARANTINEEND)

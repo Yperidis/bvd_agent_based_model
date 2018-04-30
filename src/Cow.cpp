@@ -314,7 +314,6 @@ void Cow::execute_BIRTH( const double& time  )
 				system->schedule_event( new Event( execution_time , Event_Type::DEATH , calf->id() ) );
 			}
 		}
-        //TODO a non PI calf should always enter the IMMUNE class for the MA period, due to the colostrum system being implemented
         // If the mother is immune, then the calf is protected by maternal antibodies for a while
 		if ( infection_status == Infection_Status::IMMUNE && is == Infection_Status::SUSCEPTIBLE )
         //If the calf status is susceptible, then it would have a period of MA protection due to the colostrum administered

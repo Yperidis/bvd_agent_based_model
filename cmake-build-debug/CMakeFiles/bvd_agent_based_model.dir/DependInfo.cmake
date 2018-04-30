@@ -13,8 +13,6 @@ set(CMAKE_C_COMPILER_ID "GNU")
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "../include"
   "/usr/include/hdf5/serial"
-  "../projectImports"
-  "../projectImports/inih"
   "../projectImports/inih/cpp"
   "../."
   )
@@ -60,8 +58,6 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
   "/usr/include/hdf5/serial"
-  "../projectImports"
-  "../projectImports/inih"
   "../projectImports/inih/cpp"
   "../."
   )

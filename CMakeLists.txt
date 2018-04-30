@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.7)    #check with the cmake version of your sys
 project(bvd_agent_based_model)
 
 get_filename_component(PARENTDIR ${CMAKE_BINARY_DIR} DIRECTORY)
-set(EXECUTABLE_OUTPUT_PATH ${PARENTDIR}/bvd_agent_based_model_test/build)
+set(EXECUTABLE_OUTPUT_PATH ${PARENTDIR}/build)
 message(STATUS "Cmake EXECUTABLE OUTPUT DIR is ${EXECUTABLE_OUTPUT_PATH}")
 
 #set(CMAKE_VERBOSE_MAKEFILE TRUE)

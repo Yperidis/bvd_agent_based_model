@@ -46,8 +46,6 @@
 				<Compiler>
 					<Add directory="/home/jbassett/bvd_agent_based_model_develop/include"/>
 					<Add directory="/usr/include/hdf5/serial"/>
-					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports"/>
-					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih"/>
 					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/cpp"/>
 					<Add directory="/home/jbassett/bvd_agent_based_model_develop/."/>
 					<Add directory="/usr/include/c++/6"/>
@@ -75,8 +73,6 @@
 				<Compiler>
 					<Add directory="/home/jbassett/bvd_agent_based_model_develop/include"/>
 					<Add directory="/usr/include/hdf5/serial"/>
-					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports"/>
-					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih"/>
 					<Add directory="/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/cpp"/>
 					<Add directory="/home/jbassett/bvd_agent_based_model_develop/."/>
 					<Add directory="/usr/include/c++/6"/>
@@ -96,9 +92,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/config.h">
-			<Option target="bvd_agent_based_model"/>
-		</Unit>
 		<Unit filename="/home/jbassett/bvd_agent_based_model_develop/include/AdvancedOutput.h">
 			<Option target="bvd_agent_based_model"/>
 		</Unit>

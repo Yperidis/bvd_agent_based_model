@@ -86,9 +86,10 @@ Initializer::Initializer(INIReader* inireader)
 		CSVTable<int> table = CSVReader<int>::readCSVFile(inifilename, true, ';');
 		simType = inputFarmFile;
 		int total_number_of_farms = 0;
+		int total_number_of_animals = 0;
 		int farmNumber, cowNum;
 		if(table.getNumCols() < 2){
-			std::cerr << "csv file does not contain enoguh columns" << std::endl;
+			std::cerr << "csv file does not contain enough columns or the delimiter is wrong" << std::endl;
 			std::cout << inifilename << std::endl;
 			exit(15);
 		}
@@ -102,6 +103,7 @@ Initializer::Initializer(INIReader* inireader)
 		}
 		this->set_number_of_farms(total_number_of_farms);
 
+		//Diagnostics' block (for the entries' reading)
 		total_number_of_farms = 0;
 		
 		for(int i=0; i < table.getNumRows() ; i++){
@@ -113,8 +115,11 @@ Initializer::Initializer(INIReader* inireader)
 				this->set_number_of_animals_in_farm(total_number_of_farms-1, cowNum);
 				
 			}
+			for(int k=0; k < cowNum; k++)
+				total_number_of_animals++;
 		}
 		farmNum = total_number_of_farms;
+        std::cout << "created initializer for " << total_number_of_animals << " animals." << std::endl;
 		
 	}else{
 		set_number_of_farms(farmNum);
@@ -164,7 +169,7 @@ void Initializer::set_default_farm_size_distribution(  int min, int max  )
 void Initializer::set_number_of_farms( int N )
 {
 	System *s = System::getInstance(NULL);
-  if ( N < 1 )
+  if ( N < 1 )     //Ensure that the system is initialised with at least one farm
     N=1;
   number_of_farms = N;
 	std::cout << "pct previously infected is " << this->percentageOfPreviouslyInfected << std::endl;
@@ -222,7 +227,7 @@ void Initializer::initialize_system( System* s )
 	
 
 	for (int i=0 ; i<number_of_farms ; i++ ){
-		if(this->smallFarmMax < no_animal.at(i)){
+		if(this->smallFarmMax < no_animal.at(i)){    //Initialize simple or small (no annual replacement requirement) herd farm
 			farm = new Simple_One_Herd_Farm( s );
 		}else{
 			farm = new Small_One_Herd_Farm(s);

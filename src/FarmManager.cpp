@@ -245,7 +245,7 @@ int FarmManager::standardCalculateOverallNumberToSell(){
 	std::vector<Herd*>* herds = this->myFarm->getHerds();
 
 	for (int i=0; i < herds->size(); i++){
-		//take the number of cows that we want to have. Take off the percentage that we want to replace and substract the number of cows that exists. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
+		//take the number of cows that we want to have. Take off the percentage that we want to replace and subtract the number of cows that exist. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
 		difference = (int) (this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number() ;//implicit floor for performance
 		if(difference < 0 )
 			numberOfCowsToSell -= difference;

@@ -4,8 +4,8 @@
 
 namespace bvd_const
 {
-  const double lambda_TI              = 0.03; // Dummy value
-  const double lambda_PI              = 0.5; // Dummy value
+  const double lambda_TI              = 0.03; // Default value (Viet 2004) 0.03
+  const double lambda_PI              = 0.5; // Default value (Viet 2004) 0.5
   const double age_threshold_calf     = 180.; //(180 days = 6 months )
   //  const int    maximum_calving_number = 4;
   const double minimum_pregnancy_duration = 280.; // Minimum pregnancy duration

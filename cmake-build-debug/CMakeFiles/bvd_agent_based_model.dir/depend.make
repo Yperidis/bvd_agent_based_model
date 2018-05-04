@@ -295,7 +295,10 @@ CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Cow.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/CowWellFarm.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Events.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Farm.h
+CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/FarmManager.h
+CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Herd.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Initializer.h
+CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Market.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Model_Constants.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Simple_One_Herd_Farm.h
 CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../include/Slaughterhouse.h

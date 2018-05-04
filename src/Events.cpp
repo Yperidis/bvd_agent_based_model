@@ -7,7 +7,7 @@ Event::Event(double exec_time , Event_Type event_type , int _id  )
   :execution_time{exec_time},
    type{event_type},
    id{_id},
-  dest(Destination_Type::COW),farm(nullptr),valid(true){}
+  dest(Destination_Type::COW),farm(nullptr),valid(true){}  //An event is set to be valid upon initialization
 
 bool Event::is_infection_rate_changing_event() const { return type >= Event_Type::BIRTH; }
 bool Event::is_trade_event() const { return type==Event_Type::TRADE; }

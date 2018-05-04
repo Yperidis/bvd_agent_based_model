@@ -219,16 +219,16 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 	double execution_time = time + system->rng.time_of_rest_after_calving(calving_number);
 	// TODO calving number is used subtractively.
 	if ( calving_number <= 0 ){
-		//The cow's cycle ends and it is sent to the slaughterhouse
+		///The cow's cycle ends and it is sent to the slaughterhouse
 		/// Die Kuh hat ausgedient und wird auf Suppenkuh umgeschult.
 		this->herd->farm->manager->registerCowForSale(this);
 	}
 	else
 	{
 		/// Die Kuh hat noch nicht ausgedient und kann ihre Position als Gebär- und Milchmaschine behalten.
-		//The cow has not yet fulfilled its usage cycle and thus retains its position as a birth and milk machine
-		// Der nächste Gebärauftrag wird aufgegeben
-		//
+		///The cow has not yet fulfilled its usage cycle and thus retains its position as a birth and milk machine
+		/// Der nächste Gebärauftrag wird aufgegeben
+
 		// TODO why was vaccTime reset here?
 		double vaccTime;
 		if (this->end_of_vaccination_event == nullptr) {
@@ -310,7 +310,7 @@ void Cow::execute_BIRTH( const double& time  )
 		else {/// Male cow: schedule culling if it doesn't die before.
 			execution_time = time + system->rng.life_expectancy_male_cow();
 			if ( time_of_death > execution_time ) {    //if the male calf survives beyond its life expectancy kill it
-                //TODO DEATH not implemented
+                //TODO DEATH not implemented and memory leak?
 				system->schedule_event( new Event( execution_time , Event_Type::DEATH , calf->id() ) );
 			}
 		}
@@ -429,7 +429,7 @@ void Cow::execute_CONCEPTION(const double& time )
 
 void Cow::execute_DEATH( const double& time )
 {
-	//TODO not implemented. This has an effect on the born cows (see the implementation above)
+	//TODO not implemented. However, an equivalent utility is in execute_next_event in System.cpp. Never called due to that. Redundant?
 	std::cout << "WARNING! Tried to execute DEATH but not implemented" << std::endl;
 }
 

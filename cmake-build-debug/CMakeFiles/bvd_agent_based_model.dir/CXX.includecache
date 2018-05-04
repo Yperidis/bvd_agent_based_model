@@ -553,6 +553,8 @@ CSV_Reader.h
 /home/jbassett/bvd_agent_based_model_develop/src/CSV_Reader.h
 Small_One_Herd_Farm.h
 /home/jbassett/bvd_agent_based_model_develop/src/Small_One_Herd_Farm.h
+FarmManager.h
+/home/jbassett/bvd_agent_based_model_develop/src/FarmManager.h
 iostream
 -
 fstream

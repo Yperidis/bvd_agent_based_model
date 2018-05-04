@@ -21,9 +21,10 @@ Slaughterhouse::~Slaughterhouse()
 
 void Slaughterhouse::push_cow(Cow *c )
 {
+  //The cows enter the slaughterhouse...
   my_herds.front()->push_cow( c );
   system->schedule_event( new Event( system->current_time() , Event_Type::SLAUGHTER , c->id() ) );
-  // They never come back...
+  //and they never come back...
 }
 
 void Slaughterhouse::pull_cow( Cow *c )

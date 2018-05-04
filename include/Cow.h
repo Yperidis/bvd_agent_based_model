@@ -80,7 +80,7 @@ class Cow
 		typedef std::unordered_set<Cow*> UnorderedSet;
 		int               id() const;                  /// Identification number. This is unique for the entire simulation
 		double            birth_time;            /// Time of birth
-		bool              female;                /// Whether the calf is female
+		bool              female;                /// Whether the calf is female. Uninitialized boolean variables in C++ are false (0) by default
 		Infection_Status  infection_status;
 		double            last_conception_time;  /// Time of last conception. Negative value means: no conception so far.;
 		int               calving_number;        /// Number of remaining calvings

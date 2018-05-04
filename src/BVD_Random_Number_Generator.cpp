@@ -211,8 +211,8 @@ bool Random_Number_Generator::is_calf_female()
 {
   int index = ran_unif_int(100,0);
   if (index < 50)
-    return true;
-  return false;
+    return true;  //is female
+  return false;  //is male
 }
 
 double Random_Number_Generator::duration_of_MA()

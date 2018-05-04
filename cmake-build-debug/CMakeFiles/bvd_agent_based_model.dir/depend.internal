@@ -296,7 +296,10 @@ CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o
  ../include/CowWellFarm.h
  ../include/Events.h
  ../include/Farm.h
+ ../include/FarmManager.h
+ ../include/Herd.h
  ../include/Initializer.h
+ ../include/Market.h
  ../include/Model_Constants.h
  ../include/Simple_One_Herd_Farm.h
  ../include/Slaughterhouse.h

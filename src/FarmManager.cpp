@@ -118,6 +118,8 @@ void FarmManager::manage(){
 		for(auto cow : *cowsToSell){
 			this->system->getMarket()->sellDirectlyToSlaughterHouse(cow);
 		}
+		//TODO addressing the memory leak of the previously assigned container. To be changed with the rest of the block.
+		delete cowsToSell;  //The cowsToSell should now release its reserved memory
 	}
 
 #ifdef _FARM_MANAGER_DEBUG_

@@ -215,7 +215,7 @@ void System::execute_next_event()
 
     no_of_events_processed++;    //event counter
 
-    Event* e = queue.top();    //Accessing top element (event) of the queue
+    Event* e = queue.top();    //Accessing the top element (event) of the queue
 
     queue.pop();    //Removing the top element (event) from the queue
     if (e->execution_time < _current_time){    //the current time should be initialized from the ini file
@@ -232,6 +232,7 @@ void System::execute_next_event()
         this->output->logEvent(e);
         if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
             delete c;
+            //std::cout << "DEATH event implemented" << std::endl;
         } else {
             switch ( e->dest )
             {

@@ -8,8 +8,8 @@
 #include "AdvancedOutput.h"
 
 
-class Cow;   //Forward declaration.. Real declaration in Cow.h
-class System;//Forward declaration.. Real declaration in System.h
+class Cow;   //Forward declaration... Real declaration in Cow.h
+class System;//Forward declaration... Real declaration in System.h
 class FarmManager;
 enum FarmType{
 	NORMAL_FARM,
@@ -27,7 +27,7 @@ class Farm{
   int id;
   void execute_event( Event * );
   
-  virtual void pull_cow( Cow * )=0; // It's up to the subclasses of Farm, how they manage they herds.
+  virtual void pull_cow( Cow * )=0; // It's up to the subclasses of Farm, on how they manage their herds.
   virtual void push_cow( Cow * )=0;
 
   int number_of_PI() const; //Done

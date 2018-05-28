@@ -56,7 +56,7 @@ Initializer::Initializer(INIReader* inireader)
 
 	double percPI = reader->GetReal("modelparam", "populationPercentagePI", 0.02);
 	double percTI = reader->GetReal("modelparam", "populationPercentageTI", 0.02);
-	int farmNum = reader->GetInteger("modelparam", "numberOfFarms", 0);
+	int farmNum = reader->GetInteger("modelparam", "numberOfFarms", 1);
 	int wellNum = reader->GetInteger("modelparam", "numberOfWells", 0);
 
 	int minAge = reader->GetInteger("modelparam", "age_dist_min", 0);
@@ -90,38 +90,49 @@ Initializer::Initializer(INIReader* inireader)
 		int total_number_of_animals = 0;
 		int farmNumber, cowNum;
 		if(table.getNumCols() < 2){
-			std::cerr << "csv file does not contain enough columns or the delimiter is wrong" << std::endl;
+			std::cerr << "csv file does not contain enough columns or the delimiter is wrong (has to be ;)" << std::endl;
 			std::cout << inifilename << std::endl;
 			exit(15);
 		}
+		///Storing the information from the given csv file in an array (see the table implementation in the CSVTable template)
+		///and initialising the farms in terms of STRP distributions
 		for(int i=0; i < table.getNumRows() ; i++){
-			cowNum = table[0][i];
-			farmNumber = table[1][i];
-			if(cowNum <= minFarmSize || cowNum > maxFarmSize) continue; 
+			cowNum = table[0][i];     //Number of animals column
+			farmNumber = table[1][i];    //Number of farms column
+			if(cowNum <= minFarmSize || cowNum > maxFarmSize) continue;    //Conditional to filter out farms corresponding
+            //to animals less or equal or greater than certain values. These values are input from the ini file.
 			total_number_of_farms += farmNumber;
+            for(int j=0; j < farmNumber; j++){
+                No_farm_animals.push_back(cowNum);    //This vector keeps track of the number of cows corresponding to the number of farms.
+                //Useful for allocating the farm types (clean or PI-infected) upon the setup of the farm number. Consistent
+                //with the next loop. Has to be set before the set_number_of_farms function is called to be useful.
+            }
 
-				
 		}
+		//Here we set the total number of farms filtered from the ini file
 		this->set_number_of_farms(total_number_of_farms);
 
-		//Diagnostics' block (for the entries' reading)
 		total_number_of_farms = 0;
-		
+
+		///Distributing the number of animals in each farm, which already contains instructions for the STRP distribution
 		for(int i=0; i < table.getNumRows() ; i++){
-			cowNum = table[0][i];
-			farmNumber = table[1][i];
-			if(cowNum <= minFarmSize || cowNum > maxFarmSize) continue; 
+			cowNum = table[0][i];    //Number of animals column
+			farmNumber = table[1][i];    //Number of farms column
+			if(cowNum <= minFarmSize || cowNum > maxFarmSize) continue;    //Conditional to filter out farms corresponding
+            //to animals less or equal or greater than certain values. These values are input from the ini file.
 			for(int j=0; j < farmNumber; j++){
 				total_number_of_farms++;
-				this->set_number_of_animals_in_farm(total_number_of_farms-1, cowNum);
+				//Here we set the number of animals in every single farm as they have been already set up
+				this->set_number_of_animals_in_farm(total_number_of_farms-1, cowNum);    //total_number_of_farms-1 counts
+				//the farm ID
 				
 			}
-			for(int k=0; k < cowNum; k++)
-				total_number_of_animals++;
+/*			for(int k=0; k < cowNum; k++)
+				total_number_of_animals++;*/
 		}
 		farmNum = total_number_of_farms;
-//        std::cout << "created initializer for " << total_number_of_animals << " animal classes." << std::endl;
-		
+
+        //This alternative leads to the default value of farms or those defined from the ini file.
 	}else{
 		set_number_of_farms(farmNum);
 
@@ -156,7 +167,7 @@ void Initializer::set_default_age_distribution( double min , double max , double
 {
   def_age_distr.min = min;
   def_age_distr.max = max;
-  def_age_distr.mod = mod;  
+  def_age_distr.mod = mod;
 }
 
 
@@ -174,11 +185,14 @@ void Initializer::set_number_of_farms( int N )
     N=1;
   number_of_farms = N;
 	std::cout << "pct of previously PI infected farms is " << this->percentageOfPreviouslyInfected << std::endl;
+
   for (int i=0 ; i < N ; i++ )
     {
-      age_distr.push_back( def_age_distr );
-      no_animal.push_back( -1 );
-      if(s->rng.ran_unif_double( 1.0, 0.0) <= this->percentageOfPreviouslyInfected){
+      age_distr.push_back( def_age_distr );    //Initialise a vector with the default age distribution for every farm created
+      no_animal.push_back( -1 );    //Initialise a vector for the animal number with an initial entry for every farm created
+      //if(No_farm_animals.at(i) > 100){    //For assigning PI infected farms according to an animal count criterion
+      if(s->rng.ran_unif_double( 1.0, 0.0) <= this->percentageOfPreviouslyInfected){  //Assigning randomly (from a uniform
+          // rnd distribution) PI-infected and clean farms, according to a threshold defined in the ini file
 	      initialTypes.push_back(FarmInitialConditionsType::previouslyInfected);
       }else{
 	      initialTypes.push_back(FarmInitialConditionsType::clean);
@@ -208,7 +222,7 @@ void Initializer::set_number_of_animals_in_farm(    int farm_idx , int no_of_ani
 
 
 
-
+//TODO Make the age distribution function have an effect on the initialisation
 void Initializer::set_age_distribution_in_farm(     int farm_idx , double min , double max , double mod )
 {
   if ( farm_idx >= number_of_farms )

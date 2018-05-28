@@ -6,6 +6,7 @@ SlaughterHouseManager::SlaughterHouseManager(Farm* farm,System *s):FarmManager(f
 	
 }
 SlaughterHouseManager::~SlaughterHouseManager(){}
+
 void SlaughterHouseManager::calculateDemand(std::set<Demand*>* requests){
 
 	int demand = this->dumpingCapacityPerType;
@@ -29,9 +30,11 @@ void SlaughterHouseManager::calculateDemand(std::set<Demand*>* requests){
 	d = new Demand(crit,demand, this->myFarm);
 	requests->insert(d);
 }
+
+//TODO The following three functions override the ones from FarmManager.cpp. The slaughterhouse should never sell cows.
 int SlaughterHouseManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows){
 	return this->dumpingCapacityPerType;
 }
-void SlaughterHouseManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows){} 
+void SlaughterHouseManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows){}
 
 void SlaughterHouseManager::registerCowForSale(const Cow* cow){}

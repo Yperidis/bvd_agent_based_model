@@ -69,6 +69,7 @@ class Initializer
   INIReader* reader;
   std::vector< d_tri_distr > age_distr;
   std::vector< int >         no_animal;
+  std::vector< int >         No_farm_animals;
   simulationType simType;
 	std::vector <FarmInitialConditionsType> initialTypes;
 	std::map< FarmInitialConditionsType , InitialFarmData > InitialFarmConditionToFarmData;

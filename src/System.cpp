@@ -145,9 +145,11 @@ void System::schedule_event( Event* e )
         Cow* c = Cow::get_address( e->id );
         if ( c != nullptr ) //Actually, at this point, c==NULL should NEVER happen!!
         {
+            ///If both the herd and the farm exist register a future infection rate changing event at the farm level
             if(c->herd != nullptr && c->herd->farm != nullptr) {
                 c->herd->farm->register_future_infection_rate_changing_event( e );
             }
+            ///...otherwise register it at the cow level
             c->register_future_infection_rate_changing_event( e );
         }
     }
@@ -175,7 +177,7 @@ void System::scheduleFutureCowIntros(){
 		intTime = (double) System::reader->GetInteger(cowName, "introductiontime", 500);
 		farmID = System::reader->GetInteger(cowName, "farmID", 1);
 		if(farmID >= this->farms.size() || farmID < 0){
-			std::cout << "the farm you wanted input cow " << no << "to(" << farmID << ") doesn't exist" << std::endl;
+			std::cout << "the farm you wanted input cow " << no << " to (" << farmID << ") doesn't exist" << std::endl;
 			delete c;
 			continue;
 		}
@@ -253,10 +255,19 @@ void System::execute_next_event()
                     _execute_event( e );
             }
         }
+        //According to Cow.cpp an event can only be invalid if
+        //(1) A planned_birth_event in not nullptr with calf_status = Calf_Status::NO_CALF, i.e. a birth from a
+        //    non pregnant cow has been scheduled.
+        //(2) An end_of_vaccination_event is not nullptr for a susceptible animal with a successful vaccination working
+        //    probability, i.e. there has been
+        //
+        //According to Farm.cpp an event can only be invalid if
+        //(1) When an infection rate change occurs
+        //(2) When a trade event is executed
     } else {
-        //TODO Why is this sort of event invalid? The possible initialization events are BIRTH and (first) INSEMINATION
+        //TODO Why is this sort of invalid event unacceptable? The possible initialization events are BIRTH and (first) INSEMINATION
         if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH) {
-            std::cerr << "Error, got an event that is invalid. Exiting" << std::endl;
+            std::cerr << "Error, got an event that is invalid and of type infection or birth. Exiting" << std::endl;
             Utilities::pretty_print(e, std::cout);
         }
     }
@@ -281,6 +292,7 @@ void System::invalidate_event( Event* e )
 {
 	e->valid = false;
 	//invalidated_events.insert( e );
+    //TODO Potential memory leak. Since the event has been invalidated, shouldn't we delete as well?
 	if(memorySaveQ.size() > 10000000){
 		std::cout << (int) e->type << std::endl;
 		Utilities::printStackTrace(15);
@@ -468,7 +480,8 @@ void System::_execute_event( Event* e )
     case Event_Type::MANAGE:
     	for (auto farm : farms){
 
-			if (this->_dynamic_reintroduction) {
+			if (this->_dynamic_reintroduction) {    //This block regulates the introduction of PIs from the source farm
+			    //according to the current PI population
 				CowWellFarmManager* ptr =  dynamic_cast<CowWellFarmManager*> (farm->manager);
 				if (ptr != nullptr) {
 					std::tuple<double, double> res = calculatePrevalence();

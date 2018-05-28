@@ -58,6 +58,8 @@ int CowWellFarmManager::getACowId(){
 		this->myFarm->push_cow(c);
 	return c->id();
 }
+
+//TODO Maybe a conditional on the farm type here to avoid self-loops?
 void CowWellFarmManager::registerCowForSale(const Cow* cow){}
 
 

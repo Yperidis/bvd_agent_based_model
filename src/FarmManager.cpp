@@ -93,8 +93,7 @@ void FarmManager::manage(){
 	#endif
 	this->resetGroupsOfAllCowsOfAllHerds();
 
-
-	if( System::getInstance(nullptr)->activeStrategy->respectQuarantine && System::getInstance(nullptr)->activeStrategy->applyQuarantineOnBuying) return;
+	if( this->isUnderQuarantine() && System::getInstance(nullptr)->activeStrategy->applyQuarantineOnBuying) return;
 	std::set<Demand*>* requests = new std::set<Demand*>();
 
 	this->calculateDemand(requests);
@@ -111,7 +110,7 @@ void FarmManager::manage(){
 	#endif
 	Cow::UnorderedSet* cowsToSell = new Cow::UnorderedSet();
 	this->chooseCowsToOffer(cowsToSell);
-	if(!this->myFarm->isUnderQuarantine()){
+	if(!this->isUnderQuarantine()){
 		this->postOffer(cowsToSell);
 	}else{
 		//TODO: this is actually just a quick fix for a problem occurring when quarantine is used. Make this nice code!
@@ -225,7 +224,7 @@ void FarmManager::chooseCowsToOffer(Cow::UnorderedSet* cowsToSell){
 }
 
 void FarmManager::standardCalculateDemand(std::set<Demand*>* requests){
-	//Ideally you would want to buy the difference between the number of cows you want to own and the number of Cows that you own
+	//Ideally you would want to buy the difference between the number of cows you want to own and the number of cows you own
 	//I thought this should be split up on the different groups in terms of age, but
 	//most farms just buy pregnant cows on that step so we will just buy pregnant cows
 
@@ -247,12 +246,14 @@ int FarmManager::standardCalculateOverallNumberToSell(){
 	std::vector<Herd*>* herds = this->myFarm->getHerds();
 
 	for (int i=0; i < herds->size(); i++){
-		//take the number of cows that we want to have. Take off the percentage that we want to replace and subtract the number of cows that exist. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
+		//take the number of cows that we want to have. Subtract the percentage that we want to replace and the number
+        // of existing cows. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
 		difference = (int) (this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number() ;//implicit floor for performance
 		if(difference < 0 )
 			numberOfCowsToSell -= difference;
-		else
-			numberOfCowsToSell += difference;
+/*		else
+			//TODO Sell more of your cows if you need more cows?
+			numberOfCowsToSell += difference;*/
 	}
 	if(this->myFarm->isUnderQuarantine()){
 		this->replacementPercentage = tmp;
@@ -266,7 +267,8 @@ int FarmManager::standardCalculateOverallNumberToBuy(bool replace){
 	int difference = 0;
 	for (int i=0; i < herds->size(); i++){
 		if(replace){
-			difference = (int) ceil(this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number(); // if this is negative, this herd does not need any new cows
+            // if the difference is negative, this herd does not need any new cows
+			difference = (int) ceil(this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number();
 		}else{
 			difference = this->plannedNumberOfCows[i] - (*herds)[i]->total_number();
 		}

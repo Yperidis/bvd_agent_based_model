@@ -107,7 +107,7 @@ class Cow
 		KnownStatus knownStatus;
 		int numberOfVaccinations;
 
-		static Cow *   get_address( int search_id ); /// This returns the memory adress of a cow. Will return null if the cow is not there (anymore).
+		static Cow *   get_address( int search_id ); /// This returns the memory address of a cow. Will return null if the cow is not there.
 		static int     total_number();
 		static int     number_of_living_cows();
 		static System* system;

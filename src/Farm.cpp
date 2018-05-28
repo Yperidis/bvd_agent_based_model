@@ -283,12 +283,12 @@ void Farm::execute_TRADE_event( Event* e )
     Farm* source;
     if (c->herd != NULL) {
         source = c->herd->farm;
-    } else {
+    } else {    //presumably this is the case of a slaughterhouse or a well farm
         // TODO should the source be null in the case of external introductions?
-        source = NULL;
+        source = nullptr;
     }
 
-    if (source == this  )
+    if (source == this  )    //This checks whether the defined source farm is the same as the farm calling this event
     {
         if(source->myType != SLAUGHTERHOUSE){//it's quite hacky to disable the trade at this position, but it will fix issue #6
             std::cerr << " Encountered trade with source==destination. This should not happen. Aborting. " << std::endl;
@@ -303,7 +303,7 @@ void Farm::execute_TRADE_event( Event* e )
     }
 
     // The pull_cow and push_cow methods ensure that the number or S,TI,PI and R in both farms are correct,
-    //  the list of susceptible cows are up to date and the cows get the pointer to the right herd..
+    //  the list of susceptible cows are up to date and the cows get the pointer to the right herd.
     if(source != NULL){
         source->pull_cow( c );
         source->invalidate_next_infection_event();

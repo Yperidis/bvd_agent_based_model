@@ -62,7 +62,7 @@ void Utilities::pretty_print( Cow* c , std::ostream& out )
 void Utilities::pretty_print( const Event* e , std::ostream& out)
 {
   out << "Execution time: "<< e->execution_time << ", type: " << Event_tostr.at(e->type);
-  out << ", id: " << e->id<<". Is irc? " << e->is_infection_rate_changing_event() << std::endl;
+  out << ", id: " << e->id<<". Is irc? " << e->is_infection_rate_changing_event() << std::endl;  //False is 0, True is 1
 }
 
 void Utilities::printStackTrace(int number){

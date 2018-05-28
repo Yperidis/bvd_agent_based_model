@@ -20,7 +20,7 @@ enum class Event_Type
       END_OF_MA             = 106,
       INFECTION             = 107,
       RECOVERY              = 108,
-      TRADE                 = 300,//Trade Events should always be the last events to be handled on the same day -> they need to have the highest number for the event type
+      TRADE                 = 300,//Trade Events should always be the last events to be handled on the same day
       REMOVECOW				= 301,
       SLAUGHTER				= 200,
       CULLING				= 201,
@@ -34,7 +34,7 @@ enum class Event_Type
       TEST					= -100,
       ANTIBODYTEST			= -101,
       VIRUSTEST				= -102,
-      VACCINATION			= -103,
+      VACCINATION			= -103,  //infection rate changing event (not implemented)
       QUARANTINEEND			= -104,
       JUNGTIER				= -105,
       JUNGTIER_EXEC			= -106,
@@ -44,7 +44,7 @@ enum class Event_Type
       };
 
 // At least the numbers of the system events should stay in this particular order because
-// the second sorting criterion (when exec times are equal) is the id number.
+// the second sorting criterion (when the execution times are equal) is the id number.
 // If there is log, write stop at the same time, they should be executed in that order (in order to also write the last achieved data point to file).
 
 enum class Destination_Type { COW, HERD, FARM , SYSTEM };
@@ -83,15 +83,17 @@ class FARM_EVENT: public Event{
 	public:
 	FARM_EVENT(double exec_time, Event_Type type, Farm *farm);
 };
-class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's container and sorts the accordingly
+class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's container and sorts them accordingly
 {
  public:
   bool operator() (Event const * const  e1 , Event const * const e2)    //const pointer to const Event type
   {
+      ///First sorting criterion for the pair of event: according their execution time
     if (e1->execution_time < e2->execution_time) return false;
-    if (e2->execution_time < e1->execution_time) return true;
+    if (e1->execution_time > e2->execution_time) return true;
     //Reaching this point means that the execution times of e1 and e2 are the same.
-    if (e2->type < e1->type) return false;
+      ///First sorting criterion for the pair of event: according their type (see event enumerable class)
+    if (e1->type > e2->type) return false;
     if (e1->type < e2->type) return true;
     //Reaching this point means that the types of e1 and e2 are also the same
     return e1->id < e2->id;    //true if the cow id of e1 is smaller than that of e2

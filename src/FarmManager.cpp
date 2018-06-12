@@ -93,6 +93,7 @@ void FarmManager::manage(){
 	#endif
 	this->resetGroupsOfAllCowsOfAllHerds();
 
+	//Check if there is a quarantine restriction on selling and buying animals
 	if( this->isUnderQuarantine() && System::getInstance(nullptr)->activeStrategy->applyQuarantineOnBuying) return;
 	std::set<Demand*>* requests = new std::set<Demand*>();
 
@@ -107,8 +108,15 @@ void FarmManager::manage(){
 	}
 	#ifdef _FARM_MANAGER_DEBUG_
 		std::cout << "FarmManager: starting offering process" << std::endl;
-	#endif
+    #endif
+
+	if (this->myFarm->getType() == SLAUGHTERHOUSE){    //A slaughterhouse does not offer animals
+        delete requests;  //The newly created "requests" should now release its reserved memory
+        return;
+	}
+
 	Cow::UnorderedSet* cowsToSell = new Cow::UnorderedSet();
+
 	this->chooseCowsToOffer(cowsToSell);
 	if(!this->isUnderQuarantine()){
 		this->postOffer(cowsToSell);
@@ -118,7 +126,7 @@ void FarmManager::manage(){
 			this->system->getMarket()->sellDirectlyToSlaughterHouse(cow);
 		}
 		//TODO addressing the memory leak of the previously assigned container. To be changed with the rest of the block.
-		delete cowsToSell;  //The cowsToSell should now release its reserved memory
+		delete cowsToSell;  //The newly created cowsToSell should now release its reserved memory
 	}
 
 #ifdef _FARM_MANAGER_DEBUG_
@@ -132,7 +140,7 @@ void FarmManager::manage(){
 //		std::cout << "trying to sell " << cowsToSell->size() << " cows" << std::endl;
 //	}
 #endif
-	delete requests;
+	delete requests;  //The newly created "requests" should now release its reserved memory
 	#ifdef _FARM_MANAGER_DEBUG_
 		std::cout << "FarmManager: finished managing" << std::endl;
 	#endif
@@ -188,9 +196,9 @@ void FarmManager::postDemand(std::set<Demand*>* requests){
 
 inline void FarmManager::postOffer(Cow::UnorderedSet* cowsToSell){
 
-	Offer* o = new Offer(cowsToSell, this->myFarm);
+	Offer* o = new Offer(cowsToSell, this->myFarm);    //This block of memory will be released at the end of
+    // register_offer() in Market.cpp
 	this->system->getMarket()->register_offer(o);
-	//delete o; //This should be done by the market itself
 }
 
 inline void FarmManager::resetGroupsOfAllCowsOfAllHerds(){
@@ -372,7 +380,8 @@ FarmManagerSellChoosingStrategy FarmManager::iniInputToSellingStrategy(std::stri
 }
 
 void FarmManager::registerCowForSale(const Cow* cow){
-	if(this->myFarm->myType == SLAUGHTERHOUSE){return;}
+	if(this->myFarm->myType == SLAUGHTERHOUSE)    //A slaughterhouse does not sell cows
+		return;
 	this->system->getMarket()->sellDirectlyToSlaughterHouse(cow);
 }
 

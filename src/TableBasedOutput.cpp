@@ -240,18 +240,26 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
 
 
 		int j = 0;
-		double state;
+		int state;
 		while(cow->birthTimesOfCalves != NULL && cow->birthTimesOfCalves[j] != -1.0){
 			if(event != NULL && (event->type == Event_Type::CULLING || event->type == Event_Type::SLAUGHTER || event->type == Event_Type::DEATH )){
 
-				state = 0.0;
+				state = 0;
 				if(lastCalvingTime > 0.0 ){
 					double intermediateCalvingTime = cow->birthTimesOfCalves[j] - lastCalvingTime;
+					//TODO Except for the PI number, the way the variable "state" is defined (now commented) doesn't make sense as the health status output
 					if(std::abs(intermediateCalvingTime) > 1e-1){
-						if(cow->timeOfInfection > lastCalvingTime && cow->timeOfInfection < cow->birthTimesOfCalves[j])
-							state = 1.0;
-						else if(cow->infection_status == Infection_Status::PERSISTENTLY_INFECTED)
-							state = 2.0;
+					    if (cow->infection_status == Infection_Status::SUSCEPTIBLE)
+					        state = 1;
+						/*if(cow->timeOfInfection > lastCalvingTime && cow->timeOfInfection < cow->birthTimesOfCalves[j])
+							state = 1.0;*/
+						if(cow->infection_status == Infection_Status::PERSISTENTLY_INFECTED)
+							state = 2;
+						if(cow->infection_status == Infection_Status::TRANSIENTLY_INFECTED)
+						    state = 3;
+                        if(cow->infection_status == Infection_Status::IMMUNE)
+                            state = 4;
+
 						intermediateCalvingTimePoint p{};// = {(double) cow->id(),intermediateCalvingTime,state};
 						p.id = (double) cow->id();
 						p.intermediateCalvingTime = intermediateCalvingTime;

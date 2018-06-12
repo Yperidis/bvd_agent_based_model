@@ -31,7 +31,7 @@ void SlaughterHouseManager::calculateDemand(std::set<Demand*>* requests){
 	requests->insert(d);
 }
 
-//TODO The following three functions override the ones from FarmManager.cpp. The slaughterhouse should never sell cows.
+//TODO The slaughterhouse should never sell cows.
 int SlaughterHouseManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows){
 	return this->dumpingCapacityPerType;
 }

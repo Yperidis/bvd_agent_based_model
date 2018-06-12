@@ -5,7 +5,7 @@
 #include "Farm.h"
 #include "Herd.h"
 
-#pragma mark -
+#pragma mark -  //XCode specific macros
 #pragma mark Writing the file
 
 void HDF5FileHandler::writeLivingPIsToFile(const hid_t& file){
@@ -100,14 +100,14 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 		}
 		delete[] calvingTimeData;
 	}
-#ifndef _SUPPRESS_MINOR_OUTPUT_
+//#ifndef _SUPPRESS_MINOR_OUTPUT_
     this->writeSaveToFile(file_id,this->CowData, "BVD_Dead_Cows");
 	this->writeSaveToFile(file_id,this->InfectionData, "BVD_Cows_Infections");
-#endif
+//#endif
 	this->writeSaveToFile(file_id,this->PIDeathSave, "BVD_Dead_PIs");
-#ifndef _SUPPRESS_MINOR_OUTPUT_
+//#ifndef _SUPPRESS_MINOR_OUTPUT_
 	this->writeLivingPIsToFile(file_id);
-#endif
+//#endif
 #endif
 #endif
 }
@@ -120,16 +120,17 @@ void HDF5FileHandler::writeTestData(const hid_t& file_id){
 #ifndef _SUPPRESS_OUTPUT_
 	if(this->testStorage->size() > 0){
 		const int rank = 2;
+		//note that static_cast is not type-safe. Make sure that the object being converted is a full object of the destination type
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->testStorage->size()), static_cast<hsize_t>(TestDataPoint::size) };
 
 
 		double * data = NULL;
 		this->createWritableData(this->testStorage, &data);
-		int success = H5LTmake_dataset_double( file_id ,
+		int success = H5LTmake_dataset_double( file_id,
 						  HDF5FileHandler::testsTableName.c_str(),
 						  rank,
 						  dims,
-						  data);
+						  data );
 		if(success < 0){
 			std::cerr << "Failed to create test dataset" << std::endl;
 			exit(12);
@@ -155,7 +156,7 @@ void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 						  dims,
 						  data);
 		if(success < 0){
-			std::cerr << "Failed to create test dataset" << std::endl;
+			std::cerr << "Failed to create vaccination dataset" << std::endl;
 			exit(12);
 		}
 		delete[] data;

@@ -1,12 +1,5 @@
 #include "AdvancedOutput.h"
 #include "projectImports/inih/cpp/INIReader.h"
-
-
-
-
-
-
-
 #include "SQLiteHandler.h"
 #include "HDF5Handler.h"
 

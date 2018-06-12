@@ -1,4 +1,3 @@
-
 #include <FarmManager.h>
 #include <CowWellFarmManager.h>
 #include "System.h"
@@ -43,7 +42,8 @@ System* System::getInstance(INIReader* reader){
 		}
 
 
-	   	_instance = new System( t_start ,  dt_log ,  dt_output,  dt_manage);
+		//TODO Check for memory leaks here and in the System function below
+	   	_instance = new System( t_start, dt_log, dt_output, dt_manage );
 	   	//Step 4: Set custom log and write intervals (if desired) and start the simulation
 		_instance->set_log_interval(dt_log);
 		_instance->set_write_interval(dt_output);
@@ -104,6 +104,8 @@ System::~System()
 }
 double System::current_time(){ return _current_time; }
 
+
+///This function places the event into the priority queue provided that some reasonable conditions are met
 void System::schedule_event( Event* e )
 {
     if (e->type == Event_Type::BIRTH) {
@@ -233,8 +235,7 @@ void System::execute_next_event()
         //TODO calls of events are always logged regardless of what is happening in their member functions
         this->output->logEvent(e);
         if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
-            delete c;
-            //std::cout << "DEATH event implemented" << std::endl;
+            delete c;    //Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
         } else {
             switch ( e->dest )
             {
@@ -385,14 +386,14 @@ void System::log_state()
 void System::run_until( double end_time )
 {
 
-  schedule_event( new System_Event( end_time ,                  Event_Type::STOP ) );
-  schedule_event( new System_Event( _current_time + _dt_log   , Event_Type::LOG_OUTPUT   ) );
-  schedule_event( new System_Event( _current_time + _dt_write , Event_Type::WRITE_OUTPUT ) );
-  schedule_event( new System_Event( _current_time + _dt_manage , Event_Type::MANAGE ) );
+  schedule_event( new System_Event( end_time,                   Event_Type::STOP ) );
+  schedule_event( new System_Event( _current_time + _dt_log,    Event_Type::LOG_OUTPUT   ) );
+  schedule_event( new System_Event( _current_time + _dt_write,  Event_Type::WRITE_OUTPUT ) );
+  schedule_event( new System_Event( _current_time + _dt_manage, Event_Type::MANAGE ) );
   if(this->mySettings->strategies.size() > 0)
 	schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
   stop=false;
-  while( !(stop || queue.empty())){    //The simulation continues until it either reaches the end time or the main event queue is empty
+  while( !( stop || queue.empty() ) ){    //The simulation continues until it either reaches the end time or the main event queue is empty
 	  execute_next_event();
   }
 }

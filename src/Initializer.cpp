@@ -90,7 +90,7 @@ Initializer::Initializer(INIReader* inireader)
 		int total_number_of_animals = 0;
 		int farmNumber, cowNum;
 		if(table.getNumCols() < 2){
-			std::cerr << "csv file does not contain enough columns or the delimiter is wrong (has to be ;)" << std::endl;
+			std::cerr << "csv file does not contain enough columns, the path, or the delimiter is wrong (has to be ;)" << std::endl;
 			std::cout << inifilename << std::endl;
 			exit(15);
 		}
@@ -384,7 +384,7 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 			double timeOfLastInsemination = s->rng.staggering_first_inseminations();    //Select in a random uniform fashion the time between 0 and the minimum pregnancy
 			// duration
 
-			if(timeOfLastInsemination <= time){    //if it is already carrying schedule its labour...
+			if(timeOfLastInsemination <= time){    //if it is already carrying, schedule its labour...
 				et = Event_Type::BIRTH;
 				switch( c->infection_status )
 				{
@@ -415,7 +415,7 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 	}
 	///Send all the initialized male animals to the slaughterhouse, each one within a uniformly distributed random time drawn from their life expectancy.
 	else{
-	    et = Event_Type::DEATH;
+	    et = Event_Type::SLAUGHTER;
 	    t = time + s->rng.life_expectancy_male_cow();
         s->schedule_event( new Event( t , et , c->id() ) );
 	}

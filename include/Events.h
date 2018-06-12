@@ -12,34 +12,34 @@ The possible events in our simulation
  */
 
 enum class Event_Type
-  { ABORTION     = 2,
-      INSEMINATION = 3,
-      CONCEPTION   = 4,
-      BIRTH                 = 100,
-      DEATH                 = 105,
-      END_OF_MA             = 106,
-      INFECTION             = 107,
-      RECOVERY              = 108,
-      TRADE                 = 300,//Trade Events should always be the last events to be handled on the same day
-      REMOVECOW				= 301,
-      SLAUGHTER				= 200,
-      CULLING				= 201,
-      VACCINATE				= 202,
-      END_OF_VACCINATION 	= 203,
-      LOG_OUTPUT            = -1,
-      WRITE_OUTPUT          = -2,
-      STOP                  = -3,
-      MANAGE				= -4,
-      EARTAG 				= -5,
-      TEST					= -100,
-      ANTIBODYTEST			= -101,
-      VIRUSTEST				= -102,
-      VACCINATION			= -103,  //infection rate changing event (not implemented)
-      QUARANTINEEND			= -104,
-      JUNGTIER				= -105,
-      JUNGTIER_EXEC			= -106,
-      JUNGTIER_SMALL_GROUP = -107,
-      ChangeContainmentStrategy = -108
+  { ABORTION     = 2,  //Cow event
+      INSEMINATION = 3,  //Cow event
+      CONCEPTION   = 4,  //Cow event
+      BIRTH                 = 100,  //Cow event
+      DEATH                 = 105,  //System event. Also appears in Cow, but is not implemented there.
+      END_OF_MA             = 106,  //Cow event
+      INFECTION             = 107,  //Cow event appearing in the infection rate change of the Farm as well
+      RECOVERY              = 108,  //Cow event
+      TRADE                 = 300,  //Trade Events should always be the last events to be handled on the same day. Farm event
+      REMOVECOW				= 301,  //Cow event
+      SLAUGHTER				= 200,  //System event
+      CULLING				= 201,  //System event
+      VACCINATE				= 202,  //Cow event
+      END_OF_VACCINATION 	= 203,  //Cow event
+      LOG_OUTPUT            = -1,  //System event
+      WRITE_OUTPUT          = -2,  //System event
+      STOP                  = -3,  //System event
+      MANAGE				= -4,  //System event
+      EARTAG 				= -5,  //Redundant by the TEST event
+      TEST					= -100,  //Cow event
+      ANTIBODYTEST			= -101,  //Cow event. Equivalent to JUNGTIER_SMALL_GROUP
+      VIRUSTEST				= -102,  //Cow event. Appears at the herd level.
+      VACCINATION			= -103,  //Redundant by the VACCINATE event
+      QUARANTINEEND			= -104,  //Farm event
+      JUNGTIER				= -105,  //Not implemented
+      JUNGTIER_EXEC			= -106,  //System event
+      JUNGTIER_SMALL_GROUP = -107,  //Cow event. Equivalent to ANTIBODYTEST. Appears at the Farm level.
+      ChangeContainmentStrategy = -108  //System event
 
       };
 
@@ -88,15 +88,16 @@ class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's con
  public:
   bool operator() (Event const * const  e1 , Event const * const e2)    //const pointer to const Event type
   {
-      ///First sorting criterion for the pair of event: according their execution time
+      ///First sorting criterion for the pair of events: according to their execution time
     if (e1->execution_time < e2->execution_time) return false;
     if (e1->execution_time > e2->execution_time) return true;
     //Reaching this point means that the execution times of e1 and e2 are the same.
-      ///First sorting criterion for the pair of event: according their type (see event enumerable class)
+      ///Second sorting criterion for the pair of events: according to their type (see event enumerable class)
     if (e1->type > e2->type) return false;
     if (e1->type < e2->type) return true;
-    //Reaching this point means that the types of e1 and e2 are also the same
-    return e1->id < e2->id;    //true if the cow id of e1 is smaller than that of e2
+    ///Reaching this point means that the types of e1 and e2 are also the same. In this case the event with the
+    ///smallest id will be executed first
+    return e1->id < e2->id;
   }
 };
 

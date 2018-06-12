@@ -42,7 +42,7 @@ enum class Calf_Status
     ABORT                 = 6,
     INFERTILE 				= 7
     };
-/// The possible infection states of a cow.
+/// The possible infection states of a born animal.
 enum class Infection_Status
   { SUSCEPTIBLE           = 1,
     PERSISTENTLY_INFECTED = 2,
@@ -72,7 +72,7 @@ class Cow_Pointer_Sort_Criterion
 class Cow
 {
 	public:
-		Cow( double birth_time , Cow* my_mother ) ; /// Constructor
+		Cow( double birth_time , Cow* my_mother ) ; /// Constructors
 		Cow( double birth_time, Cow* mother, bool female);
 		Cow( std::string cowName);
 		~Cow();

@@ -11,14 +11,12 @@ Event::Event(double exec_time , Event_Type event_type , int _id  )
 
 ///Return a Boolean, derived from the defined Event enumerable class, for all cases of infection rate changing events
 /// (according to Viet 2004 this should change for every change in the PI, TI and total population of the herd in the
-/// running time). Therefore, every event set in the priority queue in Events.h related to the herd/farm population or
-/// the infectious status of the animal should be taken into account as a potentially infection rate changing event.
+/// running time). Additionally, the number of S animals should also be taken into account as the number of available
+/// animals for infection from possible contacts. Therefore, every event set in the priority queue in Events.h related
+/// to the herd/farm population as a whole or its reshuffling, or the infectious status of the animal should be taken
+/// into account as a potentially infection rate changing event.
 bool Event::is_infection_rate_changing_event() const {
     return type >= Event_Type::BIRTH;
-
-     //type != Event_Type ::END_OF_MA && type != Event_Type::VACCINATE &&type != Event_Type::END_OF_VACCINATION
-    //( (type >= Event_Type::END_OF_MA) && (type <= Event_Type::RECOVERY) ) || ( (type >= Event_Type::VACCINATE) && (type <= Event_Type::END_OF_VACCINATION) )
-    //Original working version: return type >= Event_Type::BIRTH
 }
 
 bool Event::is_trade_event() const { return type==Event_Type::TRADE; }

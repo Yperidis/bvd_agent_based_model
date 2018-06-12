@@ -94,6 +94,11 @@ Market::~Market(){
   	this->farms = nullptr;
 }
 void Market::register_offer( Offer * offer){
+	if(offer->src->getType() == SLAUGHTERHOUSE){    //We do not accept offers from slaughterhouses by definition
+		delete offer;
+		//std::cerr << "WARNING: ATTEMPTED TO REGISTER OFFER FROM THE SLAUGHTERHOUSE." << std::endl;
+		return;
+	}
 
 	Cow::UnorderedSet* cows = offer->getCows();
 	cowqueue* offerQueue = nullptr;
@@ -158,6 +163,7 @@ void Market::register_demand( Demand * demand){
 		delete demand;
 		return;
 	}
+
 
 	std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues(demand->crit);
 	std::queue<Cow*>* offerQueue = pair.first;
@@ -264,7 +270,7 @@ inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelev
 
 }
 bool Market::doTheTrading(Cow* cow, Demand* d){
-	Trade_Event *e = new Trade_Event(this->s->getCurrentTime()+bvd_const::standard_trade_execution_time,cow->id(),d->src);
+	Trade_Event *e = new Trade_Event(this->s->getCurrentTime()+bvd_const::standard_trade_execution_time, cow->id(), d->src);
 	bool ret = this->scheduleTrade(e);
 	if(ret){
 		#ifdef _MARKET_DEBUG_
@@ -282,15 +288,14 @@ bool Market::scheduleTrade(Trade_Event* event){
 		if(!(*filter)(event))
 			return false;
 	}
-	//TODO This came up whith an input farm size distribution of two farms, each with 30 animals.
+	//TODO This came up whith an input farm size distribution of two farms, each with 20 animals.
 	if(this->lastID == event->id){
 		std::cerr << "I don't remember, why I'm doing this" <<std::endl;
 		Utilities::printStackTrace(15);
-		//exit(234234);
 	}
 	lastID = event->id;
 
-	s->schedule_event((Trade_Event*) event );
+	s->schedule_event((Trade_Event*) event );    //explicit type-casting
 	return true;
 }
 void Market::registerFarm(Farm * f){

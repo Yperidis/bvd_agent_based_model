@@ -1,4 +1,5 @@
 * Questions
+
 ** Pertaining to breeding
 1. male animals. Taken into account in the simulation?
 2. How long does it take until we know insemination success?
@@ -14,7 +15,8 @@
 8. is instant removal of PI calves realistic? No!
    Test within 8-9 days. Removal of PI can take up to 6 months. Most of them 2-3 weeks.
 9. If there are subgroups of animals which are separately kept, how are these organized (e.g. by age) could they be organized by infection status ("quarantine..")
-   Separation of animals depends on state. 
+   Separation of animals depends on state.
+   
 ** Pertaining to disease dynamics
 1. is the contagion probability calculated by taking the number of animals that actually become sick.
    If yes, then in the simulation, the probability is different, because first the event "becomes infected" is executed and then it is checked for MA (or existing TI) or R.

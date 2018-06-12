@@ -17,7 +17,8 @@ namespace bvd_const
   const double firstVaccAge = 186.;
   //FIXME With the input from the ini file the timeOfVaccinationPersistence is redundant
   const double timeOfVaccinationPersistance = 365.;
-  const double probabilityOfOnlyOneTestForThatCow = 0.7488;
+  const double probabilityOfOnlyOneTestForThatCow = 0.7488;    //upper limit for the probability of a second test for
+    //the cow. See cowGetsASecondChance() at BVD_Radnom.Number_Generator.cpp
   struct {
 	  double DAILY = 1.0;
 	  double WEEKLY = 7.0;

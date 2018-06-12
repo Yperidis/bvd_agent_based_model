@@ -466,7 +466,7 @@ double Random_Number_Generator::timeOfFirstTest(){
 double Random_Number_Generator::retestTime(){
 	return ran_unif_double( System::getInstance(nullptr)->activeStrategy->retestingTimeBlood , 20.0);
 }
-double Random_Number_Generator::removeTimeAfterSecondTest(){
+double Random_Number_Generator::removeTimeAfterSecondTest(){  //between one to three weeks approximately
 	return ran_unif_double( 22., 6.0);
 }
 bool Random_Number_Generator::vaccinationWorks(){

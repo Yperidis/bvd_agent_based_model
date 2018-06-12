@@ -1,3 +1,5 @@
+Status from December 2016. By Thomas Isele.
+
 * Compile problems. NEEDS TO BE RESOLVED BEFORE STARTING.
 The linker does not find the libraries hdf5 and hdf5_hl, which we need.
 I could not determine the right path for those.
@@ -14,10 +16,12 @@ Please talk to the Admins (Roland, Benjamin or Peter Orlowski).
      This is only for occasional inspecting as this will dump the files content (which can be a LOT) onto stdout.
   4. Run the python-script plot_example.py to plot the simulation results.
   5. Read the comments in example.cpp and plot_example.py as well as the comments referenced in both.
+  
 * Current state of the program
 Apart from not having complete information about all the model constants, especially lambda_TI and lambda_PI,
 the program simulates the dynamics of bvd in a certain number of farms.
 However, the farm sizes will grow, as there is no farm management strategy implemented yet.
+
 ** Trades
 Can be scheduled and executed now. This was the last thing I could do for the simulation in December. I have tested it and it seems to work.
 For details read the second subpoint of "INFECTION events and infection rate changing events"
@@ -26,6 +30,7 @@ My thought was that every farm implements a certain management strategy in order
 These management strategies result in offers and demands that are sent to a Market class.
 The Market class compares all offers and demands and matches them as far as possible resulting in Trade_Events which can be scheduled into the main queue via System::schedule_event.
 
+
 * The different Objects:
 ** Events
 Can have a type, execution time, id (for the cow) and pointer to herd and farm
@@ -33,6 +38,7 @@ Each event owns a variable (dest) which shows by which class (Cow, Herd, Farm) i
 So far only TRADE events are executed by Farm, no events are executed by Herd and the rest of the events are executed by Cow.
 (Exception are the 3 System Events STOP, LOG_OUTPUT, WRITE_OUTPUT)
 There are subclasses of Event for Trade_Event and System_Event. Only these can have the associated type (TRADE, STOP, ...)
+
 ** Cow
 For cows, there is an id system. Every Cow instance gets a unique id by which it can be identified.
 For this purpose there is the static function Cow::get_address( int id ).
@@ -40,26 +46,34 @@ It returns a pointer to the Cow with id and returns the null pointer if there is
 If the null pointer is returned this usually means that the cow has already died.
 This way, it is ensured that events in the queue that pertain to a dead cow (which can happen) can cause no segmentation fault.
 It is important, that before constructing cows, Cow::set_system is called once with a pointer to the System instance.
+
 ** Herd
 Sort of a container for cows which keeps track of the number of cows in the different infection compartments.
 It can also give the pointer of a randomly selected S cow.
+
 ** Farm
 Is an abstract class. It can have one or more herds and treat its cows in different ways.
 It handles the scheduling of infection events, when the infection rate has changed. See the point "INFECTION events and infection rate changing events".
 Subclasses need to provide implementation for the pull_cow and push_cow methods.
 Simple_One_Herd_Farm is a simple implementation of a farm, where every Cow is in one herd.
-Slaughterhouse is another implementation, where for every Cow thats pushed into this "Farm", a death event is scheduled for the current time.
+Slaughterhouse is another implementation, where for every Cow that's pushed into this "Farm", a death event is scheduled for the current time.
+
 ** System
 This is the most top level class. There must only be one instance of System at one time.
 It handles the event queue of all events. Events are scheduled and executed by this class.
+
 ** Output
 This is used for generating output to a hdf5 file.
+
 ** Utilities
 Contains helper functions mainly for printing some of the objects to the screen.
 Mainly used for debugging.
+
 ** BVD_Random_Number_Generator
 ** Model_Constants
 * INFECTION events and infection rate changing events.
+
+
 ** General principle / without trades
 In the documentation of this program, by infection rate we mean the value \lambda of VIE04 times the number of susceptible cows.
 The result is the average number of infection events per time in the pertaining herd (neglecting that the rate changes with the next infection event).
@@ -78,6 +92,7 @@ The infection rate is viewed as a vector with number of components equal to the 
 If there is an irc event for the farm, this vector of infection rates changes. If the inter-herd transmission coefficients are not set to 0, all entries actually change.
 Thus, the waiting time for the next INFECTION event is calculated for every herd of this farm and ( because all these events would also be irc events ) the shortest is taken.
 It is again compared whether it will occur before the next irc event for this farm or not, and similarly it is scheduled or not as in the above case.
+
 ** Modifications when including trades
 The difference with trades is, that a trade event can be scheduled as soon as there is a matching demand for an offer (or vice versa). 
 Thus, the cause for scheduling a trade can be outside of one of the farms that are involved. 
@@ -85,16 +100,16 @@ Due to this, a trade event (which is an irc event) can appear before an INFECTIO
 If the farm where this happens had known the trade event beforehand, it would not have scheduled the INFECTION event.
 Or, said differently, we have to make sure in this case, that there is no INFECTION event after an irc event.
 This is the reason for the implementation of the event invalidation mechanism.
-After the cow of the trade has moved to the destination farm, eventual INFECTION events scheduled to be exeuted after this trade event are to be invalidated so that 
+After the cow of the trade has moved to the destination farm, possible INFECTION events scheduled to be exeuted after this trade event are to be invalidated so that 
 they are not executed. (Invalidation is cheaper than looking for this event in the queue and removing it.).
 Because there is at most one INFECTION event per farm in the queue at one time, it is easy for the farm to keep a pointer to this event.
 This pointer is used to invalidate the event after a trade.
-By now, we postulate that a cow takes all her events (except infection, which has been taken care of above) with her to the new farm.
-This seems sensible for BIRTH, DEATH, etc. the only one, where one could argue is maybe INSEMINATION (which is a non-irc event).
+By now, we postulate that a cow takes all its events (except infection, which has been taken care of above) with it to the new farm.
+This seems sensible for BIRTH, DEATH, etc. The only one, where one could argue is INSEMINATION (which is a non-irc event).
 Therefore, after a trade, the set of future irc events for a farm (which the farm keeps track of) changes.
 The irc events pertaining to the cow being traded disappear from the source farm and appear on the destination farm.
 This is solved in the following way: 
-Destination farm: When checking the future irc events, for every event, it is checked, whether its farm (the farmof the pertaining cow) is the same farm.
+Destination farm: When checking the future irc events, for every event, it is checked, whether its farm (the farm of the pertaining cow) is the same farm.
 Thus, events pertaining to a different farm are ignored. Done here.
 Source farm: The moving irc events of the cow need to be inserted in the set of future irc events of this farm. Therefore, a cow needs to keep trak of these events.
 This is done within the cow itself and by the system, when an event is scheduled.

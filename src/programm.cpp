@@ -34,8 +34,8 @@ int main(int argnum, char *arguments[], char *environment[])
 	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	
 	System * s = System::getInstance(&reader);
-	
-	
+
+
 	Initializer init = *new Initializer(&reader);
 	#ifdef _DEBUG_
 	std::cout << "set init stuff" << std::endl;

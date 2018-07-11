@@ -79,37 +79,39 @@ In the documentation of this program, by infection rate we mean the value \lambd
 The result is the average number of infection events per time in the pertaining herd (neglecting that the rate changes with the next infection event).
 This rate is used to calculate the waiting time until the next infection event by drawing from an exponential distribution with this value.
 This rate however can change due to other events as e.g. BIRTH, DEATH, END_OF_MA, INFECTION, etc. 
-As we idealize the process of infection as Markovian, the waiting time from an arbitrary time point to the next INFECTION event is given by the exponential distribution as well.
+As we idealize the process of infection as Markovian, the waiting time from an arbitrary time point to the next of an INFECTION event is given by the exponential distribution as well.
 Imagine now a farm with one herd and no trade events.
 Every time an infection rate changing event (irc event) has been processed, the farm is notified that its infection rate has changed.
 The farm now calculates the waiting time until the next INFECTION event by drawing from the exponential distribution. 
 Then, the farm compares if the resulting INFECTION event would occur *before* the next irc event for this farm. 
 If yes, this INFECTION event is scheduled, if not it is not scheduled.
-Due to the fact that an INFECTION event is itself an irc event, there is *never more than one* INFECTION event in the queue for each farm at one time. 
-And if there is one, it is *always the next event* for this farm.
+Due to the fact that an INFECTION event is itself an irc event, there is *never more than one* INFECTION event in the queue for each farm at one time, 
+except for *the next event* for this farm.
+
 Farms with more than one herd are treated similarly:
 The infection rate is viewed as a vector with number of components equal to the number of herds.
 If there is an irc event for the farm, this vector of infection rates changes. If the inter-herd transmission coefficients are not set to 0, all entries actually change.
 Thus, the waiting time for the next INFECTION event is calculated for every herd of this farm and ( because all these events would also be irc events ) the shortest is taken.
 It is again compared whether it will occur before the next irc event for this farm or not, and similarly it is scheduled or not as in the above case.
 
+
 ** Modifications when including trades
 The difference with trades is, that a trade event can be scheduled as soon as there is a matching demand for an offer (or vice versa). 
-Thus, the cause for scheduling a trade can be outside of one of the farms that are involved. 
+Thus, the cause for scheduling a trade can be outside the pair of farms being involved. 
 Due to this, a trade event (which is an irc event) can appear before an INFECTION event. 
 If the farm where this happens had known the trade event beforehand, it would not have scheduled the INFECTION event.
-Or, said differently, we have to make sure in this case, that there is no INFECTION event after an irc event.
+Or, said differently, we have to make sure in this case, that there is no INFECTION event after an irc event for the source farm.
 This is the reason for the implementation of the event invalidation mechanism.
 After the cow of the trade has moved to the destination farm, possible INFECTION events scheduled to be exeuted after this trade event are to be invalidated so that 
 they are not executed. (Invalidation is cheaper than looking for this event in the queue and removing it.).
 Because there is at most one INFECTION event per farm in the queue at one time, it is easy for the farm to keep a pointer to this event.
 This pointer is used to invalidate the event after a trade.
 By now, we postulate that a cow takes all its events (except infection, which has been taken care of above) with it to the new farm.
-This seems sensible for BIRTH, DEATH, etc. The only one, where one could argue is INSEMINATION (which is a non-irc event).
+This seems reasonable for BIRTH, DEATH, etc. The only one event for which one could argue against being transferred is the INSEMINATION (which is a non-irc event).
 Therefore, after a trade, the set of future irc events for a farm (which the farm keeps track of) changes.
 The irc events pertaining to the cow being traded disappear from the source farm and appear on the destination farm.
 This is solved in the following way: 
-Destination farm: When checking the future irc events, for every event, it is checked, whether its farm (the farm of the pertaining cow) is the same farm.
+Destination farm: When checking the future irc events, for every event, it is checked whether its farm (the farm of the pertaining cow) is the same farm.
 Thus, events pertaining to a different farm are ignored. Done here.
 Source farm: The moving irc events of the cow need to be inserted in the set of future irc events of this farm. Therefore, a cow needs to keep trak of these events.
 This is done within the cow itself and by the system, when an event is scheduled.

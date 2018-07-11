@@ -19,7 +19,7 @@ class Cow;
 
 //
 enum Cow_Trade_Criteria{
-	CALF = 0,
+	CALF = 0,  //Female
 	HEIFER_PRE_BREEDING = 1,
 	HEIFER_RDY_BREEDING =2,
 	INFERTILE =3,
@@ -87,8 +87,8 @@ class Cow
 		bool              has_been_pregnant_at_all_so_far;    // Self explanatory, innit?
 		Calf_Status       calf_status;           /// State of the calf, can be NO_CALF which means that this Cow is not pregnant at the moment
 		Herd *            herd	;                  /// Pointer to the herd, this cow belongs to
-		double            buf_time=0;    //For debugging purposes on the vaccination times
-        int               cntr=0;    //For debugging purposes
+		//double            buf_time=0;    //For debugging purposes on the vaccination times
+        //int               cntr=0;    //For debugging purposes
 
 		Cow *             mother;
 		Cow::UnorderedSet          children;

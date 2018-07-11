@@ -126,7 +126,7 @@ void System::schedule_event( Event* e )
     }
     // (1) put the event into the main queue
     queue.push( e );
-    // (2) find the farm that this event pertains to and register the event there if it is an infection rate changing event.
+    // (2) find the farm to which this event pertains and register the event there if it is an infection rate changing event.
     if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){
         this->output->logResultingEventOfInfection(e);
     }
@@ -151,7 +151,7 @@ void System::schedule_event( Event* e )
             if(c->herd != nullptr && c->herd->farm != nullptr) {
                 c->herd->farm->register_future_infection_rate_changing_event( e );
             }
-            ///...otherwise register it at the cow level
+            ///...and register it at the cow level at any rate
             c->register_future_infection_rate_changing_event( e );
         }
     }
@@ -263,8 +263,8 @@ void System::execute_next_event()
         //    probability, i.e. there has been
         //
         //According to Farm.cpp an event can only be invalid if
-        //(1) When an infection rate change occurs
-        //(2) When a trade event is executed
+        //(1) An infection rate change occurs
+        //(2) A trade event is executed
     } else {
         //TODO Why is this sort of invalid event unacceptable? The possible initialization events are BIRTH and (first) INSEMINATION
         if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH) {
@@ -293,7 +293,7 @@ void System::invalidate_event( Event* e )
 {
 	e->valid = false;
 	//invalidated_events.insert( e );
-    //TODO Potential memory leak. Since the event has been invalidated, shouldn't we delete as well?
+    //TODO Potential memory leak. Since the event has been invalidated, shouldn't we delete as well? Check the invalidation purpose at README.org
 	if(memorySaveQ.size() > 10000000){
 		std::cout << (int) e->type << std::endl;
 		Utilities::printStackTrace(15);

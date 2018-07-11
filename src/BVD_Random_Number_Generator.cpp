@@ -145,7 +145,7 @@ Calf_Status Random_Number_Generator::calf_outcome_from_infection( double time_of
 
 double Random_Number_Generator::time_of_abortion_due_to_infection( double time_of_pregnancy )
 {
-  return ran_unif_double(bvd_const::time_till_abortion_takes_place,0);
+  return ran_unif_double(bvd_const::time_till_abortion_takes_place, 0); //TODO Check the defined constant. Make 0-14 days.
   /*  {
   int index = ran_unif_int(100,0);
   if (time_of_pregnancy <=70)
@@ -171,7 +171,7 @@ double Random_Number_Generator::time_of_abortion_due_to_infection( double time_o
   }*/
 }
 
-double Random_Number_Generator::time_of_rest_after_calving( int calving_number) //unabhängig von der calving number?!
+double Random_Number_Generator::time_of_rest_after_calving( int calving_number) //TODO Should this be independent of the calving No?
 {
   return ran_triangular_double(bvd_const::time_of_rest.min,
 			                         bvd_const::time_of_rest.max,
@@ -291,11 +291,12 @@ double Random_Number_Generator::staggering_first_inseminations() {
 
 double Random_Number_Generator::insemination_result( bool first_pregnancy , bool* conception)
 {
-    double index = ran_unif_double(100,0);  // Andersrum aufbauen und mehrfach aus der Dreiecksverteilung ziehen.
+    double index = ran_unif_double(100,0);  //Comparison for the following triangular distribution draw
+    //This time refers to two inseminations where the first one has not been successful. Lambda function (C++11 feature)
     auto time_between_two_inseminations = [this](){return ran_triangular_double(bvd_const::time_between_inseminations.min,
                                                                                 bvd_const::time_between_inseminations.max,
                                                                                 bvd_const::time_between_inseminations.mod);};
-    if ( first_pregnancy ){
+    if ( first_pregnancy ){    //According to our parameters' definition so far, a heifer will eventually be impregnated
         if (index < bvd_const::number_inseminations_heifer.zero){
             *conception = true;
             return 0.0;
@@ -305,18 +306,19 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
         } else if (index< bvd_const::number_inseminations_heifer.two){
             *conception = true;
             return (time_between_two_inseminations()
-                    + time_between_two_inseminations()); //Dreiechsverteilung 2 mal ausgeführt
+                    + time_between_two_inseminations()); //Drawing twice from the previous triangular distribution
         } else if (index < bvd_const::number_inseminations_heifer.three){
             *conception = true;
             return (time_between_two_inseminations()
                     + time_between_two_inseminations()
-                    + time_between_two_inseminations());
+                    + time_between_two_inseminations());  //Drawing thrice from the previous triangular distribution
         } else {
             //time till death takes place 0-14 days
             // Not right, I think. The waiting times between the inseminations have been neglected.
             // Cannot occur with the present model constants
             *conception = false;
-            return ran_unif_double(bvd_const::time_till_death_takes_place,0);
+            //TODO the way execute_INSEMINATION() at Cow.cpp has been written makes returning anything else except the *conception redundant
+            return ran_unif_double(bvd_const::time_till_death_takes_place, 0);
         }
     } else {
         if (index < bvd_const::number_inseminations_cow.zero) {
@@ -327,46 +329,48 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
             return time_between_two_inseminations();
         } else if (index < bvd_const::number_inseminations_cow.two){
             *conception = true;
-            return (time_between_two_inseminations() + time_between_two_inseminations());
+            return ( time_between_two_inseminations() + time_between_two_inseminations() );
         } else if (index < bvd_const::number_inseminations_cow.three){
             *conception = true;
-            return (time_between_two_inseminations() + time_between_two_inseminations() + time_between_two_inseminations());
+            return ( time_between_two_inseminations() + time_between_two_inseminations() +
+                     time_between_two_inseminations() );
         } else {
             //time till death takes place 0-14 days
             // Not right, I think. The waiting times between the inseminations have been neglected.
             *conception = false;
-            return ran_unif_double(bvd_const::time_till_death_takes_place,0);
+            //TODO the way execute_INSEMINATION() at Cow.cpp has been written makes returning anything else except the *conception redundant
+            return ran_unif_double(bvd_const::time_till_death_takes_place, 0);
         }
     }
 }
 
 double Random_Number_Generator::conception_result( double time_of_pregnancy, Infection_Status is_of_mother , bool* birth )
 {
-  int index = ran_unif_double(100.,0.);
+  auto index = ran_unif_double(100., 0.);
   if (index < bvd_const::conception_result.second_month)
   {
     *birth = false;
-    return ran_unif_double(bvd_const::conception_result_time.second_month,0.);
+    return ran_unif_double(bvd_const::conception_result_time.second_month, 0.);
   }
   else if (index < bvd_const::conception_result.third_month)
   {
     *birth = false;
-    return ran_unif_double(bvd_const::conception_result_time.third_month,
-                           bvd_const::conception_result_time.second_month);
+    return ran_unif_double(bvd_const::conception_result_time.third_month);
+//                           bvd_const::conception_result_time.second_month);
   }
   else if (index < bvd_const::conception_result.fourth_month)
   {
     *birth = false;
-    return ran_unif_double(bvd_const::conception_result_time.fourth_month,
-                           bvd_const::conception_result_time.third_month);
+    return ran_unif_double(bvd_const::conception_result_time.fourth_month);
+//                           bvd_const::conception_result_time.third_month);
   }
   else if (index < bvd_const::conception_result.rest_months)
   {
     *birth = false;
-    return ran_unif_double(bvd_const::conception_result_time.rest_months,
-                           bvd_const::conception_result_time.fourth_month);
+    return ran_unif_double(bvd_const::conception_result_time.rest_months);
+//                           bvd_const::conception_result_time.fourth_month);
   }
-  else{
+  else{    //All the previous cases lead to an abortion, hence *birth=false
     *birth = true;
     return duration_of_pregnancy();
   }

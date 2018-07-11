@@ -82,7 +82,7 @@ void HDF5FileHandler::writeFarmData(const hid_t& file){
 
 void HDF5FileHandler::writeCowData(const hid_t& file_id){
 #ifndef _SUPPRESS_OUTPUT_
-#ifndef _SUPPRESS_MINOR_OUTPUT_
+//#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if( this->intermediateCalvingTimes->size() > 0){
 		double *calvingTimeData;// = &((*this->intermediateCalvingTimes)[0]);
 		this->createWritableData(this->intermediateCalvingTimes, &calvingTimeData);
@@ -100,7 +100,7 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 		}
 		delete[] calvingTimeData;
 	}
-//#ifndef _SUPPRESS_MINOR_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
     this->writeSaveToFile(file_id,this->CowData, "BVD_Dead_Cows");
 	this->writeSaveToFile(file_id,this->InfectionData, "BVD_Cows_Infections");
 //#endif

@@ -77,6 +77,8 @@ Initializer::Initializer(INIReader* inireader)
 		
 	}
 	std::string inifilename = reader->Get("modelparam", "inifileName", Initializer::noinifilestring);
+
+    std::cout << "Farm size distribution path: " << inifilename << std::endl;
 	
 
         
@@ -223,7 +225,7 @@ void Initializer::set_number_of_animals_in_farm(    int farm_idx , int no_of_ani
 
 
 //TODO Make the age distribution function have an effect on the initialisation
-void Initializer::set_age_distribution_in_farm(     int farm_idx , double min , double max , double mod )
+void Initializer::set_age_distribution_in_farm( int farm_idx , double min , double max , double mod )
 {
   if ( farm_idx >= number_of_farms )
     return;
@@ -355,10 +357,8 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
 	}
 	//(5) put animal into farm
 	f->push_cow( c );
-    //Future events in the system are scheduled only for female cows
-    //if (c->female) {
+    //Future events in the system other than slaughter are scheduled only for female cows. See scheduleFutureEventsForCow()
     this->scheduleFutureEventsForCow(c, f, farm_idx, i, number, time);
-    //}
 	f->system->addCow(c);
 	return c;
 }
@@ -370,45 +370,47 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 
 	if (c->female){  //Block only for female cows
 
-		double insem_age = s->rng.first_insemination_age();     //insem_age belongs in [0, max(first_insemination_age() ) )
+		double insem_age = s->rng.first_insemination_age();     // insem_age belongs in [0, max(first_insemination_age() ) )
 		double age = c->age();
-		double timeForCalving = age - insem_age ;
+		double timeForCalving = age - insem_age;
 		int calvings_so_far=0;
-		if ( timeForCalving >= 0 )    //if the cow is either of age to be inseminated, pregnant or about to give birth
+		if ( timeForCalving >= 0 )    // if the cow is either of age to be inseminated, pregnant or about to give birth
 		{
-			calvings_so_far = (int) round((timeForCalving) / ( s->rng.duration_of_pregnancy() + s->rng.time_of_rest_after_calving(c->calving_number) )) ;
-			c->calving_number -= calvings_so_far;
+			calvings_so_far = (int) round( (timeForCalving) / ( s->rng.duration_of_pregnancy() +
+															   s->rng.time_of_rest_after_calving(c->calving_number) ) );
+			//TODO Should the calving number be modified at all? This would be taken care of at the birth function...
+			c->calving_number -= calvings_so_far;    // alter the calving counter according to the age over the pregnancy
+			// and the rest duration rounded
 			if (c->calving_number > 0) {
 				c->has_been_pregnant_at_all_so_far = true;
 			}
-			double timeOfLastInsemination = s->rng.staggering_first_inseminations();    //Select in a random uniform fashion the time between 0 and the minimum pregnancy
-			// duration
+			double timeOfLastInsemination = s->rng.staggering_first_inseminations();    // Select in a uniformly random
+            // fashion the time of insemination between 0 and the minimum pregnancy duration
 
-			if(timeOfLastInsemination <= time){    //if it is already carrying, schedule its labour...
+			if(timeOfLastInsemination <= time){    // if it is already carrying, schedule its labour...
 				et = Event_Type::BIRTH;
 				switch( c->infection_status )
 				{
 					case Infection_Status::TRANSIENTLY_INFECTED:
-						c->calf_status = s->rng.calf_outcome_from_infection ( 0 );
+						c->calf_status = s->rng.calf_outcome_from_infection ( 0 );  // At t=0 since we are initialising
 						break;
 					case Infection_Status::PERSISTENTLY_INFECTED:
-						c->calf_status = Calf_Status::PERSISTENTLY_INFECTED;          // p=1 for the birth of a PI calf by a PI mother.
+						c->calf_status = Calf_Status::PERSISTENTLY_INFECTED;  // p=1 for the birth of a PI calf by a PI mother.
 						break;
 					default:
-						c->calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
-//                    break;
+						c->calf_status = Calf_Status::SUSCEPTIBLE;  // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
 				}
-				t = timeOfLastInsemination + s->rng.duration_of_pregnancy();    //...right after the duration of its pregnancy
+				t = timeOfLastInsemination + s->rng.duration_of_pregnancy();    // ...right after the duration of its pregnancy
 			} else {
-				et = Event_Type::INSEMINATION;    //otherwise schedule its insemination somewhere in [0, min(duration of pregnancy) )
+				et = Event_Type::INSEMINATION;    // otherwise schedule its insemination somewhere in [0, min(duration of pregnancy) )
 				t = timeOfLastInsemination;
 			}
 		}
 		else
-		{    //if the cow is below its insemination age, schedule its insemination somewhere in time between its age of insemination and the min(duration of pregnancy)
-			et = Event_Type::INSEMINATION;
+		{    //if the cow is below its insemination age, schedule its insemination somewhere in time between its age
+			// of insemination and the min(duration of pregnancy)
+			et = Event_Type::INSEMINATION;  // Vaccination is achieved through insemination
 			t  = insem_age - age + s->rng.staggering_first_inseminations();
-			//TODO the current system strategy (other than the "no strategy" scheme) is not applied on the initialised cows
 		}
 		//(6) schedule the event.
 		s->schedule_event( new Event( t , et , c->id() ) );

@@ -58,13 +58,13 @@ class Random_Number_Generator
 
 
 
-	//It has to be decided whether a beginning pregnacy will lead to an abortion or a birth.
+	//It has to be decided whether a beginning pregnancy will lead to an abortion or a birth.
 	// Also here, pointer *birth is meant for output. if false, abortion is the case. If true birth is the case.
-	// The return value is the time until the event (in case of birth -> duration of pregnancy, in case of abortion -> time until abort ).
-	// afaik, in the statistics we have, only the total abort rates are given.
+	// The return value is the time until the event (in case of birth -> duration of pregnancy, in case of abortion -> time until abortion ).
+	// afaik, in the statistics we have, only the total abortion rates are given.
 	// We don't know yet (as of 10.12.2015) whether there is a correlation between abortion happening and the infection status of the mother or the age of the mother.
-	// So for now, treat it as uncorrelated. And use the total abort rates given in the handout.
-	double       conception_result( double age_of_mother , Infection_Status is_of_mother , bool* birth );
+	// So for now, treat it as uncorrelated. And use the total abortion rates given in the handout.
+	double       conception_result( double age_of_mother, Infection_Status is_of_mother, bool* birth );
 
 	void getNRandomNumbersInRange(int n, int rangeLeft, int rangeRight, int* resultArray);
 	//double cowWellTimeOfBirth(double time);

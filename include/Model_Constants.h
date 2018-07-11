@@ -36,7 +36,7 @@ namespace bvd_const
     double min = 42.;
     double max = 115.;
     double mod = 90.;
-  } time_of_rest ;
+  } time_of_rest;
   struct{
     double first=70.;                            //0-70 days
     double second=120.;                          //70-120 days
@@ -44,7 +44,7 @@ namespace bvd_const
   } period_of_pregnancy;
   struct{
     double PI=90.;
-    double abort=90. + 10.;
+    double abort=90. + 10.;    //Definitely an abortion if not PI in the first period of pregnancy
     double cripple=0.;
     double immune=0.;
   } first_period_of_pregnancy; //There are biological grounds for the chosen values of 1st to 4th pregnancies.
@@ -52,19 +52,19 @@ namespace bvd_const
     double PI=45.;
     double abort=15.+45.;
     double cripple=15.+15.+45.;
-    double immune=25.+15.+15.+45.;
+    double immune=25.+15.+15.+45.;    //Definitely immune if nothing else in the second period of pregnancy
   } second_period_of_pregnancy;
   struct{
     double PI=0.;
     double abort=20.;
     double cripple=25.+20.;
-    double immune=55.+25.+20.;
+    double immune=55.+25.+20.;    //Definitely immune if nothing else in the third period of pregnancy
   } third_period_of_pregnancy;
   struct{
     double PI=0.;
     double abort=5.;
     double cripple=15.+5.;
-    double immune=80.+15.+5.;
+    double immune=80.+15.+5.;    //Definitely immune if nothing else in the fourth period of pregnancy
   } fourth_period_of_pregnancy;
   struct{
     double heifer=2.; //17
@@ -99,25 +99,25 @@ namespace bvd_const
     double one=9.05 + 90.48;
     double two=0.45 + 9.05 + 90.48;
     double three=0.02 + 0.45 + 9.05 + 90.48;
-  } number_inseminations_heifer; // Sums to 100, no possibility of not remaining pregnant
+  } number_inseminations_heifer;  //Sums to 100, no possibility of not remaining pregnant for a heifer
   struct{
     double zero=67.03;
     double one=26.81+67.03;
     double two=5.36+26.81+67.03;
     double three=0.72+5.36+26.81+67.03;
-  } number_inseminations_cow;// TODO Sums to 99.92, so 0.08 pct probability of infertility
+  } number_inseminations_cow;  //Sums to 99.92, so 0.08 pct probability of infertility
   struct{
     double second_month=7.;
     double third_month=2.+7.;
     double fourth_month=1.+2.+7.;
     double rest_months=2.+1.+2.+7.;
-  } conception_result;
-  struct{                           //propabilities that abortion happens depending on the month of pregnancy
+  } conception_result;    //probability percentages that an abortion will happen depending on certain months of the pregnancy
+  struct{
     double second_month=60.;
     double third_month=90.;
     double fourth_month=120.;
     double rest_months=210.;
-  } conception_result_time;
+  } conception_result_time;    //The corresponding days where the abortion is scheduled to take place
   struct{
     double first_year=50.;
     double second_year=67.; //30% of the ones remaining

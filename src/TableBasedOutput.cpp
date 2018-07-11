@@ -230,7 +230,7 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
 	if(event == NULL){
 
 		age = cow->age();//System::getInstance(NULL)->getCurrentTime() - cow->birth_time;
-		}
+	}
 	else{
 		age = event->execution_time - cow->birth_time;
 
@@ -239,43 +239,45 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
 	double lastCalvingTime = 0.0;
 
 
-		int j = 0;
-		int state;
-		while(cow->birthTimesOfCalves != NULL && cow->birthTimesOfCalves[j] != -1.0){
-			if(event != NULL && (event->type == Event_Type::CULLING || event->type == Event_Type::SLAUGHTER || event->type == Event_Type::DEATH )){
+	int j = 0;
+	int state;
+	while(cow->birthTimesOfCalves != nullptr && cow->birthTimesOfCalves[j] != -1.0){
+		///Log the ICT events if the cow in question is to be culled, slaughtered or to die
+		if(event != nullptr && (event->type == Event_Type::CULLING || event->type == Event_Type::SLAUGHTER || event->type == Event_Type::DEATH )){
 
-				state = 0;
-				if(lastCalvingTime > 0.0 ){
-					double intermediateCalvingTime = cow->birthTimesOfCalves[j] - lastCalvingTime;
-					//TODO Except for the PI number, the way the variable "state" is defined (now commented) doesn't make sense as the health status output
-					if(std::abs(intermediateCalvingTime) > 1e-1){
-					    if (cow->infection_status == Infection_Status::SUSCEPTIBLE)
-					        state = 1;
-						/*if(cow->timeOfInfection > lastCalvingTime && cow->timeOfInfection < cow->birthTimesOfCalves[j])
-							state = 1.0;*/
-						if(cow->infection_status == Infection_Status::PERSISTENTLY_INFECTED)
-							state = 2;
-						if(cow->infection_status == Infection_Status::TRANSIENTLY_INFECTED)
-						    state = 3;
-                        if(cow->infection_status == Infection_Status::IMMUNE)
-                            state = 4;
+			state = 0;
+			if(lastCalvingTime > 0.0 ){
+				double intermediateCalvingTime = cow->birthTimesOfCalves[j] - lastCalvingTime;
+				//TODO Except for the PI number, the way the variable "state" is defined (now commented) doesn't make sense as the health status output.
+				if(std::abs(intermediateCalvingTime) > 1e-1){
+					if (cow->infection_status == Infection_Status::SUSCEPTIBLE)
+						state = 1;
+					/*if(cow->timeOfInfection > lastCalvingTime && cow->timeOfInfection < cow->birthTimesOfCalves[j])
+                        state = 1.0;*/
+					if(cow->infection_status == Infection_Status::PERSISTENTLY_INFECTED)
+						state = 2;
+					//TODO Should the cow be TI when this data is channeled to the output?
+					if(cow->infection_status == Infection_Status::TRANSIENTLY_INFECTED)
+						state = 3;
+					if(cow->infection_status == Infection_Status::IMMUNE)
+						state = 4;
 
-						intermediateCalvingTimePoint p{};// = {(double) cow->id(),intermediateCalvingTime,state};
-						p.id = (double) cow->id();
-						p.intermediateCalvingTime = intermediateCalvingTime;
-						p.healthState = state;
-						this->intermediateCalvingTimes->push_back(	p );
-					}else{
-		//				std::cout << lastCalvingTime << " " << cow->birthTimesOfCalves[j] << std::endl;
-		//				std::cout << intermediateCalvingTime << std::endl;
-					}
+					intermediateCalvingTimePoint p{};// = {(double) cow->id(),intermediateCalvingTime,state};
+					p.id = (double) cow->id();
+					p.intermediateCalvingTime = intermediateCalvingTime;
+					p.healthState = state;
+					this->intermediateCalvingTimes->push_back(	p );
+				}else{
+					//				std::cout << lastCalvingTime << " " << cow->birthTimesOfCalves[j] << std::endl;
+					//				std::cout << intermediateCalvingTime << std::endl;
 				}
-
-				lastCalvingTime = cow->birthTimesOfCalves[j];
 			}
-			j++;
 
+			lastCalvingTime = cow->birthTimesOfCalves[j];
 		}
+		j++;
+
+	}
 
 	double firstCalvingTime = -1.0;
 	double eventType = -1.0;

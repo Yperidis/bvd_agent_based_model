@@ -499,7 +499,7 @@ void Cow::execute_INFECTION( const double& time )
 			//Determine the outcome of the infection on the pregnancy
 			calf_status = system->rng.calf_outcome_from_infection ( time_of_pregnancy );  //Note that the instant infection determines the calf outcome. Approximation.
 			if (calf_status == Calf_Status::NO_CALF) {
-				std::cerr << "NO_CALF status for the embryo upon infection of the mother. DEBUG." << std::endl;
+				std::cerr << "NO_CALF status upon infection of the pregnant cow. DEBUG." << std::endl;
 			}
 			if (calf_status == Calf_Status::ABORT ){
 				execution_time = time + system->rng.time_of_abortion_due_to_infection( time_of_pregnancy );
@@ -595,14 +595,13 @@ inline void Cow::execute_END_OF_VACCINATION(const double& time){
 //TODO should this function be const, i.e. funct(...) const {...}? There is a dependency in the scheduleInsemination function (c->scheduleVaccination(vaccTime))
 inline void Cow::scheduleVaccination(const double& time) const{
 	double vaccTime = time;
-	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )    //make sure that the animal does not receive a vaccination before it reaches the appropriate age
+	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )  //make sure that the animal does not receive a vaccination before it reaches the appropriate age
 		vaccTime = this->birth_time + bvd_const::firstVaccAge + 1;
 
 //If the animal can be vaccinated (i.e. passed the previous conditional of test of age) we do not check here
 //whether it should (i.e. if it has already been vaccinated) at the running time.
 
-	//std::cout << vaccTime << " for cow with ID " << this->id() << "\n";
-        system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
+    system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
 }
 
 inline void Cow::runVaccination(const double& time){
@@ -614,23 +613,20 @@ inline void Cow::runVaccination(const double& time){
     if( this->infection_status == Infection_Status::SUSCEPTIBLE && system->rng.vaccinationWorks() ){
         this->infection_status = Infection_Status::IMMUNE;
         this->herd->remove_cow_from_susceptible( this );
-
         this->herd->add_r_cow(this);
-//		if(this->herd->farm->next_infection_event != nullptr && this->herd->farm->next_infection_event->id == this->id() && this->herd->farm->next_infection_event->execution_time < time + bvd_const::timeOfVaccinationPersistance)
-//			this->herd->farm->invalidate_next_infection_event();
-        //consistency check. If this has any other effect, it may lead to problems.
 
+        // This should not happen as excluded from the beginning of the function. For debugging purposes.
         if(this->end_of_vaccination_event != nullptr){      //Setting the temporal offset for the vaccination event
             system->invalidate_event(this->end_of_vaccination_event);
             this->end_of_vaccination_event = nullptr;
-            std::cerr << "A PREVIOUSLY S COW HAS A NON NULL END OF VACC. EVENT!" << std::endl;
+            std::cerr << "A PREVIOUSLY S COW HAS A NON NULL END OF VACC. EVENT! NOT DEFINED SO." << std::endl;
         }
 
-        //Creating and scheduling the end of the vaccination's effect
+        // Creating and scheduling the end of the vaccination's effect
         this->end_of_vaccination_event = new Event( system->getCurrentTime() +
                                                     System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense,
                                                     Event_Type::END_OF_VACCINATION, this->id() );
-        system->schedule_event(this->end_of_vaccination_event);  //schedule the expiry of the vaccine's protective effect (push into the system queue)
+        system->schedule_event(this->end_of_vaccination_event);  // schedule the expiry of the vaccine's protective effect (push into the system queue)
         this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);  //schedule the next vaccination
         this->numberOfVaccinations++;
 		return;
@@ -642,59 +638,57 @@ inline void Cow::runVaccination(const double& time){
         /// call of the end of vaccination function. We are merely scheduling the next vaccination after the predefined
         /// vaccination time of defence value.
         this->scheduleVaccination(time + System::getInstance(
-                nullptr)->activeStrategy->vaccinationTimeOfDefense);  //schedule the next vaccination
+                nullptr)->activeStrategy->vaccinationTimeOfDefense);  // schedule the next vaccination
         this->numberOfVaccinations++;
     }
 }
 
 bool Cow::testCow(const Event* e){
-	if(firstTestTime <= 0.0)    //initialisation value is -1
+	if(firstTestTime <= 0.0)    // initialisation value is -1
 		this->firstTestTime = system->getCurrentTime();
 	lastTestTime = system->getCurrentTime();
-	if(this->isTestedPositive(e)){    //True positive or true negative
+	if(this->isTestedPositive(e)){    // True positive or true negative
 		if(System::getInstance(nullptr)->activeStrategy->quarantineAfterPositiveTest)
 			//TODO Put the farm under quarantine for a true negative too? See the implementation of isTestedPositive()
 			this->herd->farm->putUnderQuarantine();
 
+		// If the cow has not been tested positive yet set its known status to "POSITIVE_ONCE".
 		this->knownStatus = this->hasBeenTestedPositiveYet ? KnownStatus::POSITIVE_TWICE : KnownStatus::POSITIVE_ONCE;
-		//If the test is a virus test, indeed test the cow once. Otherwise, if the cow is to be tested again, make this
+		// If the test is a virus test, indeed test the cow once. Otherwise, if the cow is to be tested again, make this
 		// variable false. If the cow is not to be tested again, indeed this variable should be true.
-		bool testOnce = e->type == Event_Type::VIRUSTEST ? true : !(this->testAgain());
+		bool testOnce = e->type == Event_Type::VIRUSTEST ? true : !(this->testAgain());  // Presently, only TEST events reach here
+		// for non young-calf window strategy (individual basis). Only then is the VIRUSTEST possible (for the whole herd).
 		bool testASecondTime = !(this->hasBeenTestedPositiveYet || testOnce); //Do not test again (false) if the cow
-		//has already been tested positive (so this is the second time we test it) or it should be tested only once.
+		// has already been tested positive (so this is the second time we test it) or if it should be tested only once.
 		if(testASecondTime)
 			this->scheduleNextTest();
 		else if(testOnce)
 			system->schedule_event( new Event( system->getCurrentTime() + bvd_const::standard_trade_execution_time,
 											   Event_Type::REMOVECOW, this->id() ) );  //statistics show that cows
-			//which have only been tested once and then removed, have been removed immediately
+			// which have only been tested once and then removed, have been removed immediately
 
-            //TODO Is this condition ever reached?
 		else{
 			double removeTime = system->rng.removeTimeAfterSecondTest();
-			system->schedule_event( new Event( system->getCurrentTime() + removeTime , Event_Type::REMOVECOW, this->id() ) );
-			if(this->hasBeenTestedPositiveYet)
+			system->schedule_event( new Event( system->getCurrentTime() + removeTime, Event_Type::REMOVECOW, this->id() ) );
+			if(this->hasBeenTestedPositiveYet)  // Sanity check. To have reached here it has to have been tested positive already
 				for(auto calf : this->children)
 					calf->knownStatus = KnownStatus::POSITIVE_MOTHER;
-		}
+			}
 
 		this->hasBeenTestedPositiveYet = true;
 
 	}else{
 		this->knownStatus = KnownStatus::NEGATIVE;
-		if(this->mother != NULL)  //If the cow has given birth at some point in the past
+		if(this->mother != NULL)  // If the cow has given birth at some point in the past
 			this->mother->knownStatus = KnownStatus::NEGATIVE;
 	}
 	this->herd->removeCowFromUnknownList(this);
 	return this->hasBeenTestedPositiveYet;
-	//if the cow is not detected as infected: do nothing
-	//else{}
 }
 
 bool Cow::isTestedPositive(const Event* e){
-	//TODO This function probably would want to return true only for a TP. Not for either a TP or a TN.
-	bool resultIsCorrect = system->rng.bloodTestRightResult();    //This tells us if the test was successful or not i.e.
-	//either a true positive or a true negative, or a false positive or a false negative
+	bool resultIsCorrect = system->rng.bloodTestRightResult();    // This tells us if the test was successful or not i.e.
+	// either a true positive or a true negative, or a false positive or a false negative
 
 	bool correctHealthState;
 	switch(e->type){
@@ -711,10 +705,9 @@ bool Cow::isTestedPositive(const Event* e){
 			exit(9);
 	}
 	return !resultIsCorrect ^ correctHealthState; // (not A) XOR B. Operation at the bit level due to the
-	// class enum values. This will only be true either if the blood test result (positive or negative) turns out to be correct
-    // (true positive or true negative respectively), i.e. if resultIsCorrect is True and the correct health state is
-	// True (for any of the two groups of tests), or if the the blood test result turns out to be incorrect (false positive
-	// of false negative) and the correct health state is False (for any of the two groups of tests).
+	// class enum values. This will only be true for a true positive or a false positive. We assume all the
+	// tests to be antigen tests (second case of the switch block) so far in the code. ATTENTION:
+	// The name and the logic should be reconsidered if we start making distinctions for the different tests.
 }
 inline bool Cow::testAgain(){
 	return system->rng.cowGetsASecondChance();    //The upper probability limit for that is set at the model constants.h
@@ -726,16 +719,15 @@ inline void Cow::scheduleNextTest(){
 }
 
 void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* c){
-    //If there are null pointer remnants in memory the memory where c points to, dereference the passed calf
+    // If there are null pointer remnants in the memory where c points to, dereference the passed c (calf)
 	if(c == nullptr)
 		c = this;
-	//TODO Memory leak of the new memory allocation?
 	system->schedule_event( new Event( time, Event_Type::INSEMINATION, c->id() ) );
 #ifdef _VACCINATION_DEBUG_
 	std::cout << "vaccination enabled: "<< system->activeStrategy->usesVaccination << std::endl;
 #endif
 
-    //If on top of the insemination we have a vaccination strategy, we might need to schedule a future vaccination
+    // If on top of the insemination we have a vaccination strategy, we might need to schedule a future vaccination
     if(system->activeStrategy->usesVaccination){
         // First scheduling of vaccination for the newly born calf. vaccTime is the vaccination time and we are
         // assigning to it the time of vaccination before the scheduled insemination's time which is given. That
@@ -760,8 +752,9 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
             }
                 // If not, if the insemination time's difference with the vaccTime is at or before the vaccination time before
                 // insemination, then schedule the vaccination at vaccTime
-            else if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination)
-                c->scheduleVaccination(vaccTime);  //The vaccination is too close to the insemination event
+            else if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination) {
+				c->scheduleVaccination(vaccTime);  //The vaccination is too close to the insemination event
+			}
             else
                 // If the vaccination is not in effect at the time of vaccTime and the insemination will happen in a time
                 // frame smaller than the temporal distance between itself and the vaccination do not vaccinate.
@@ -773,9 +766,7 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
             if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination)
                 c->scheduleVaccination(vaccTime);
         }
-
     }
-
 }
 
 void Cow::setGroup(Cow::UnorderedSet* set){

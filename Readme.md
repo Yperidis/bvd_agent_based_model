@@ -107,5 +107,5 @@ The directory `projectImports` includes libraries provided by other sources. So 
 [Pascal's](https://github.com/Gerungofulus/) thesis is the first milestone of this project and can be found at [git repository](https://github.com/Gerungofulus/Masterarbeit/settings).
 
 
-# Acknowledgments
+# Acknowledgements
 Special thanks to Bryan Iotti (university of Turin in early 2018) and Denis Nikhitin (ITMO university of Saint Petersburg in early 2018) for their invaluable technical advise and efforts in testing and compiling this project.

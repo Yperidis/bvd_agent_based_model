@@ -148,7 +148,7 @@ void TableBasedOutput::logResultingEventOfInfection(const Event* e){
 }
 
 void TableBasedOutput::logVaccination(const Event* e, const Cow* c){
-	VaccinationDataPoint p{};// = {c->id(), (int) e->type , (int) c->calf_status};
+	VaccinationDataPoint p{};  // = {c->id(), (int) e->type , (int) c->calf_status};
 	p.id = c->id();
 	p.age = (int)c->age();
 	p.sex = (int)c->female;

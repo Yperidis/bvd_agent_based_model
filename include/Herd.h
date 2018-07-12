@@ -72,14 +72,14 @@ class Herd
   
 };
 
-//The bookkeeping of the infection stati within the herd is done partially by this class and partially by the cow class.
-//The rule is:
-//When a cow is introduced to or taken from the herd, this is to be done via the push_cow and pull_cow methods.
-//  Then the herd class will take care of this.
-//  This applies to BIRTH, DEATH and trade events.
-//When a cow changes its status, the cow takes care of the bookkeeping by changing the int variables with the number of cows with different stati
-//  and modifying the susceptible_cow set.
-//  This applies to INFECTION, RECOVERY and END_OF_MA events.
+// The bookkeeping of the infection stats within the herd is done partially by this class and partially by the cow class.
+// The rule is:
+// When a cow is introduced to or taken from the herd, this is to be done via the push_cow and pull_cow methods.
+// Then the herd class will take care of this.
+// This applies to BIRTH, DEATH and trade events.
+// When a cow changes its status, the cow takes care of the bookkeeping by changing the int variables with the number of cows with different stats
+// and modifying the susceptible_cow set.
+// This applies to INFECTION, RECOVERY and END_OF_MA events.
 
 
 

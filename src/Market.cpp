@@ -290,8 +290,8 @@ bool Market::scheduleTrade(Trade_Event* event){
 	}
 	//TODO This came up whith an input farm size distribution of two farms, each with 20 animals.
 	if(this->lastID == event->id){
-		std::cerr << "I don't remember, why I'm doing this" <<std::endl;
-		Utilities::printStackTrace(15);
+//		std::cerr << "I don't remember, why I'm doing this" <<std::endl;
+//		Utilities::printStackTrace(15);
 	}
 	lastID = event->id;
 

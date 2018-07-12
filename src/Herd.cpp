@@ -138,7 +138,8 @@ Cow* Herd::random_S_cow()
   
   if (number_of_S != susceptible_cows.size() )
     {
-      std::cerr << "Bookkeeping Error @t="<<farm->system->current_time()<<": number_of_S = "<<number_of_S<<", susceptible_cows.size()="<<susceptible_cows.size()<<std::endl;
+      std::cerr << "Bookkeeping Error @t=" << farm->system->current_time() << ": number_of_S = " <<
+				number_of_S << ", susceptible_cows.size()=" << susceptible_cows.size() << std::endl;
       if ( susceptible_cows.empty() )
 	  std::cerr << "susceptible_cows is actually empty.";
       else

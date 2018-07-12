@@ -217,11 +217,11 @@ void System::execute_next_event()
         return;
     }
 
-    no_of_events_processed++;    //event counter
+    no_of_events_processed++;    // event counter
 
-    Event* e = queue.top();    //Accessing the top element (event) of the queue
+    Event* e = queue.top();    // Accessing the top element (event) of the queue
 
-    queue.pop();    //Removing the top element (event) from the queue
+    queue.pop();    // Removing the top element (event) from the queue
     if (e->execution_time < _current_time){    //the current time should be initialized from the ini file
         std::cerr << "Error, got an event that is earlier than the current time. Exiting" << std::endl;
         Utilities::pretty_print(e, std::cout);
@@ -232,18 +232,19 @@ void System::execute_next_event()
     {
         Cow* c = Cow::get_address( e->id );
         _current_time = e->execution_time;    //the current time becomes the execution time of the event from the main queue
-        //TODO calls of events are always logged regardless of what is happening in their member functions
+        // Calls of events are always logged regardless of what is happening in their member functions
         this->output->logEvent(e);
         if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
             delete c;    //Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
-        } else {
+        }
+        else{
             switch ( e->dest )
             {
                 case Destination_Type::COW:
                 {
-                    if ( c != nullptr  && c->id() == e->id){    //the cow has to exist and correspond to the event to be executed
+                    if ( c != nullptr  && c->id() == e->id){    // the cow has to exist and correspond to the event to be executed
                         c->execute_event( e );
-                    } //Event does not pertain to a dead cow. Could  this happen?
+                    } // Event does not pertain to a dead cow. Could  this happen?
                     break;
                 }
                 case Destination_Type::HERD:
@@ -265,7 +266,8 @@ void System::execute_next_event()
         //According to Farm.cpp an event can only be invalid if
         //(1) An infection rate change occurs
         //(2) A trade event is executed
-    } else {
+    }
+    else{
         //TODO Why is this sort of invalid event unacceptable? The possible initialization events are BIRTH and (first) INSEMINATION
         if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH) {
             std::cerr << "Error, got an event that is invalid and of type infection or birth. Exiting" << std::endl;
@@ -273,11 +275,11 @@ void System::execute_next_event()
         }
     }
 
-    if(e->is_infection_rate_changing_event()) {    //if the current event changed the infection rate, add it to a buffer priority queue
+    if(e->is_infection_rate_changing_event()) {    // if the current event changed the infection rate, add it to a buffer priority queue
         memorySaveQ.push(e);
     }
     else {
-        delete e;    //otherwise delete the running event (end of its course)
+        delete e;    // otherwise delete the running event (end of its course)
     }
 
     Event* event;

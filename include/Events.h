@@ -12,35 +12,34 @@ The possible events in our simulation
  */
 
 enum class Event_Type
-  { ABORTION     = 2,  //Cow event
-      INSEMINATION = 3,  //Cow event
-      CONCEPTION   = 4,  //Cow event
-      BIRTH                 = 100,  //Cow event
-      DEATH                 = 105,  //System event. Also appears in Cow, but is not implemented there.
-      END_OF_MA             = 106,  //Cow event
-      INFECTION             = 107,  //Cow event appearing in the infection rate change of the Farm as well
-      RECOVERY              = 108,  //Cow event
-      TRADE                 = 300,  //Trade Events should always be the last events to be handled on the same day. Farm and system event
-      REMOVECOW				= 301,  //Cow event
-      SLAUGHTER				= 200,  //System event
-      CULLING				= 201,  //System event
-      VACCINATE				= 202,  //Cow event
-      END_OF_VACCINATION 	= 203,  //Cow event
-      LOG_OUTPUT            = -1,  //System event
-      WRITE_OUTPUT          = -2,  //System event
-      STOP                  = -3,  //System event
-      MANAGE				= -4,  //System event
-      EARTAG 				= -5,  //Redundant by the TEST event
-      TEST					= -100,  //Cow event
-      ANTIBODYTEST			= -101,  //Cow event. Equivalent to JUNGTIER_SMALL_GROUP
-      VIRUSTEST				= -102,  //Cow event. Appears at the herd level.
-      VACCINATION			= -103,  //Redundant by the VACCINATE event
-      QUARANTINEEND			= -104,  //Farm event
-      JUNGTIER				= -105,  //Not implemented
-      JUNGTIER_EXEC			= -106,  //System event
-      JUNGTIER_SMALL_GROUP = -107,  //Cow event. Equivalent to ANTIBODYTEST. Appears at the Farm level.
+  { ABORTION     = 2,  // Cow event
+      INSEMINATION = 3,  // Cow event
+      CONCEPTION   = 4,  // Cow event
+      BIRTH                 = 100,  // Cow event
+      DEATH                 = 105,  // System event. Also appears in Cow, but is not implemented there.
+      END_OF_MA             = 106,  // Cow event
+      INFECTION             = 107,  // Cow event appearing in the infection rate change of the Farm as well
+      RECOVERY              = 108,  // Cow event
+      TRADE                 = 300,  // Trade Events should always be the last events to be handled on the same day. Farm and system event
+      REMOVECOW				= 301,  // Cow event
+      SLAUGHTER				= 200,  // System event
+      CULLING				= 201,  // System event
+      VACCINATE				= 202,  // Cow event
+      END_OF_VACCINATION 	= 203,  // Cow event
+      LOG_OUTPUT            = -1,  // System event
+      WRITE_OUTPUT          = -2,  // System event
+      STOP                  = -3,  // System event
+      MANAGE				= -4,  // System event
+      EARTAG 				= -5,  // Redundant by the TEST event
+      TEST					= -100,  // Cow event
+      ANTIBODYTEST			= -101,  // Cow event. Equivalent to JUNGTIER_SMALL_GROUP
+      VIRUSTEST				= -102,  // Cow event. Appears at the herd level.
+      VACCINATION			= -103,  // Redundant by the VACCINATE event
+      QUARANTINEEND			= -104,  // Farm event
+      JUNGTIER				= -105,  // Not implemented
+      JUNGTIER_EXEC			= -106,  // System event
+      JUNGTIER_SMALL_GROUP = -107,  // Cow event. Equivalent to ANTIBODYTEST. Appears at the Farm level.
       ChangeContainmentStrategy = -108  //System event
-
       };
 
 // At least the numbers of the system events should stay in this particular order because

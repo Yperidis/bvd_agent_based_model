@@ -415,7 +415,8 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 		//(6) schedule the event.
 		s->schedule_event( new Event( t , et , c->id() ) );
 	}
-	///Send all the initialized male animals to the slaughterhouse, each one within a uniformly distributed random time drawn from their life expectancy.
+	/// Send all the initialised male animals to the slaughterhouse, each one within a uniformly distributed random
+	/// time drawn from their life expectancy.
 	else{
 	    et = Event_Type::SLAUGHTER;
 	    t = time + s->rng.life_expectancy_male_cow();

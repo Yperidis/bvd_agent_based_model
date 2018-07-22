@@ -70,6 +70,7 @@ class Random_Number_Generator
 	//double cowWellTimeOfBirth(double time);
 	bool bloodTestRightResult();
 
+	double removeTimeAfterFirstTest();
 	double removeTimeAfterSecondTest();
 	double retestTime();
 	unsigned int getSeed();

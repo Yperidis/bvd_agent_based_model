@@ -371,7 +371,7 @@ void Farm::executeQuarantineEndEvent(const Event* e){
 	}
 }
 
-void Farm::jungtierCheck(){//This thing is so quick and dirty that even your mum feels clean
+void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your mum feels clean
 	if(this->myType == SLAUGHTERHOUSE || this->myType == WELL) return;
 	//TODO Gerneralise the test mechanisms of any herds
 	int num = this->getNumberOfCowsToTest();

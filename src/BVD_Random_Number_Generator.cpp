@@ -470,8 +470,11 @@ double Random_Number_Generator::timeOfFirstTest(){
 double Random_Number_Generator::retestTime(){
 	return ran_unif_double( System::getInstance(nullptr)->activeStrategy->retestingTimeBlood , 20.0);
 }
-double Random_Number_Generator::removeTimeAfterSecondTest(){  //between one to three weeks approximately
-	return ran_unif_double( 22., 6.0);
+double Random_Number_Generator::removeTimeAfterFirstTest(){  // between 3-34 days (see schematic)
+    return ran_unif_double( 34., 3.0);
+}
+double Random_Number_Generator::removeTimeAfterSecondTest(){  // between  days (see schematic)
+	return ran_unif_double( 23., 3.0); // (22., 6.);
 }
 bool Random_Number_Generator::vaccinationWorks(){
 	double rndNum = this->ran_unif_double( 1.0, 0.0);

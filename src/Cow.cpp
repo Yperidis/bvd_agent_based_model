@@ -100,6 +100,7 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 	knownStatus = KnownStatus::NOSTATUS;
 	end_of_vaccination_event = nullptr;
 	numberOfVaccinations = 0;
+	vaccExpiry = nullptr;
 	timeOfInfection = -1.0;
 	timeOfLastCalving = -1.0;
 	lastTestTime = -1.0;
@@ -398,10 +399,11 @@ void Cow::execute_INSEMINATION( const double& time )
 	bool conception;    //if not initialised, then this is False by default
 	double execution_time = time + system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception );
 
-	if (conception) {
+	if (conception){
 		// The cow will become pregnant.
 		system->schedule_event( new Event( execution_time, Event_Type::CONCEPTION, id() ) );
-	} else{   //The cow is infertile -> Cull it
+	}
+	else{   //The cow is infertile -> Cull it
 		this->calf_status = Calf_Status::INFERTILE;
 		this->herd->farm->manager->registerCowForSale(this);
 	}
@@ -439,9 +441,10 @@ void Cow::execute_CONCEPTION(const double& time )
 		std::cerr << "NO_CALF appeared upon conception while this should be forbidden" << std::endl;
 	}
 	//The outcome of a conception can be either a birth or an abortion
-	if ( birth ) {
+	if ( birth ){
 		system->schedule_event( new Event( execution_time, Event_Type::BIRTH, id() ) );
-	} else {
+	}
+	else{
 		system->schedule_event( new Event( execution_time, Event_Type::ABORTION, id() ) );
 	}
 
@@ -594,21 +597,26 @@ inline void Cow::execute_END_OF_VACCINATION(const double& time){
 }
 //TODO should this function be const, i.e. funct(...) const {...}? There is a dependency in the scheduleInsemination function (c->scheduleVaccination(vaccTime))
 inline void Cow::scheduleVaccination(const double& time) const{
+    if(vaccExpiry != nullptr){
+        if(*vaccExpiry > time)
+            return;
+    }
+    //else
+	//	std::cerr << "NO VACCINE EXPIRATION DEFINED!" << std::endl;
 	double vaccTime = time;
 	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )  //make sure that the animal does not receive a vaccination before it reaches the appropriate age
 		vaccTime = this->birth_time + bvd_const::firstVaccAge + 1;
 
 //If the animal can be vaccinated (i.e. passed the previous conditional of test of age) we do not check here
 //whether it should (i.e. if it has already been vaccinated) at the running time.
-
     system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
 }
 
 inline void Cow::runVaccination(const double& time){
-    if(this->end_of_vaccination_event != nullptr){
+/*    if(this->end_of_vaccination_event != nullptr){
 		std::cerr << "VACCINATION EXECUTION WHILE PREVIOUS VACCINATION STILL IN EFFECT" << std::endl;
 		return;
-	}
+	}*/
 	///Actions to be taken if the animal is susceptible and the vaccination will have the desired effect
     if( this->infection_status == Infection_Status::SUSCEPTIBLE && system->rng.vaccinationWorks() ){
         this->infection_status = Infection_Status::IMMUNE;
@@ -627,6 +635,8 @@ inline void Cow::runVaccination(const double& time){
                                                     System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense,
                                                     Event_Type::END_OF_VACCINATION, this->id() );
         system->schedule_event(this->end_of_vaccination_event);  // schedule the expiry of the vaccine's protective effect (push into the system queue)
+		vaccExpiry = &vaccBuf;
+		*vaccExpiry = time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
         this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);  //schedule the next vaccination
         this->numberOfVaccinations++;
 		return;
@@ -636,7 +646,11 @@ inline void Cow::runVaccination(const double& time){
         /// having no effect on its health status. Note that we are not using the end_of_vaccination_event, because
         /// that would require R animals to go back to the S state upon the call of the end of MA function through the
         /// call of the end of vaccination function. We are merely scheduling the next vaccination after the predefined
-        /// vaccination time of defence value.
+        /// vaccination time of defence value. Therefore the end_of_vaccination_event cannot determine whether an animal
+        /// has already been vaccinated or not in this case.
+		vaccExpiry = &vaccBuf;
+        *vaccExpiry = time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
+		//std::cout << *vaccExpiry << std::endl;
         this->scheduleVaccination(time + System::getInstance(
                 nullptr)->activeStrategy->vaccinationTimeOfDefense);  // schedule the next vaccination
         this->numberOfVaccinations++;
@@ -662,15 +676,16 @@ bool Cow::testCow(const Event* e){
 		// has already been tested positive (so this is the second time we test it) or if it should be tested only once.
 		if(testASecondTime)
 			this->scheduleNextTest();
-		else if(testOnce)
-			system->schedule_event( new Event( system->getCurrentTime() + bvd_const::standard_trade_execution_time,
-											   Event_Type::REMOVECOW, this->id() ) );  //statistics show that cows
+		else if(testOnce) {
+			double removeTime = system->rng.removeTimeAfterFirstTest();
+			system->schedule_event(new Event(system->getCurrentTime() + removeTime,
+											 Event_Type::REMOVECOW, this->id()));  //statistics show that cows
 			// which have only been tested once and then removed, have been removed immediately
-
+		}
 		else{
 			double removeTime = system->rng.removeTimeAfterSecondTest();
 			system->schedule_event( new Event( system->getCurrentTime() + removeTime, Event_Type::REMOVECOW, this->id() ) );
-			if(this->hasBeenTestedPositiveYet)  // Sanity check. To have reached here it has to have been tested positive already
+			if(this->hasBeenTestedPositiveYet)  // Sanity check. To have reached here is has to have been tested positive already
 				for(auto calf : this->children)
 					calf->knownStatus = KnownStatus::POSITIVE_MOTHER;
 			}
@@ -752,8 +767,10 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
             }
                 // If not, if the insemination time's difference with the vaccTime is at or before the vaccination time before
                 // insemination, then schedule the vaccination at vaccTime
-            else if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination) {
-				c->scheduleVaccination(vaccTime);  //The vaccination is too close to the insemination event
+            else if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination){
+				vaccExpiry = &vaccBuf;
+            	*vaccExpiry = vaccTime + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
+				c->scheduleVaccination(vaccTime);  //The vaccination is far enough from the insemination event. Do it!
 			}
             else
                 // If the vaccination is not in effect at the time of vaccTime and the insemination will happen in a time
@@ -763,8 +780,11 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
             // If the animal has not been previously vaccinated of its vaccine has expired, vaccinate if we're
             // looking at the right time frame between insemination and vaccination (see previous comments)
         else{
-            if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination)
-                c->scheduleVaccination(vaccTime);
+            if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination){
+				vaccExpiry = &vaccBuf;
+				*vaccExpiry = vaccTime + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
+				c->scheduleVaccination(vaccTime);
+			}
         }
     }
 }

@@ -122,7 +122,9 @@ class Cow
 		bool isTestedPositive(const Event* e);
 
 	private:
+        double vaccBuf;
 		Event* end_of_vaccination_event;
+        double* vaccExpiry;
 
 		void init(const double& birth_time, Cow *mother, bool female);
 		int _id;

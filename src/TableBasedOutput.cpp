@@ -213,13 +213,14 @@ void TableBasedOutput::logInfectionRateChangeEvent(const Event* event){}
 
 TestDataPoint TableBasedOutput::testEventToDataPoint(const Event*e, const Cow* c){
 	TestDataPoint point{};// = {(double) c->id(),e->execution_time,c->age(),(double) e->type,(double) c->female,(double) c->knownStatus, (double) c->infection_status, (double) c->knownStatus};
-	point.id = (double) c->id();
+	point.id = c->id();  // (double) c->id();
 	point.date = e->execution_time;
 	point.age = c->age();
-	point.testType = (double) e->type;
+	point.testType = (int) e->type;
 	point.sex = c->female;
-	point.result = (double) c->knownStatus;
+	point.result = (int) c->knownStatus;
 	point.infectiousState = (double) c->infection_status;
+	//TODO No additional information with this point. Redundant?
 	point.knownState = (double) c->knownStatus;
 	return point;
 }

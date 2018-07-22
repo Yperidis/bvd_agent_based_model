@@ -16,11 +16,11 @@ enum class Event_Type
       INSEMINATION = 3,  // Cow event
       CONCEPTION   = 4,  // Cow event
       BIRTH                 = 100,  // Cow event
-      DEATH                 = 105,  // System event. Also appears in Cow, but is not implemented there.
+      DEATH                    = 105,  // System event. Also appears in Cow, but is not implemented there.
       END_OF_MA             = 106,  // Cow event
       INFECTION             = 107,  // Cow event appearing in the infection rate change of the Farm as well
       RECOVERY              = 108,  // Cow event
-      TRADE                 = 300,  // Trade Events should always be the last events to be handled on the same day. Farm and system event
+      TRADE                 = 300,  // Trade Events should always be the last events to be handled on the same day. Farm event
       REMOVECOW				= 301,  // Cow event
       SLAUGHTER				= 200,  // System event
       CULLING				= 201,  // System event
@@ -38,7 +38,7 @@ enum class Event_Type
       QUARANTINEEND			= -104,  // Farm event
       JUNGTIER				= -105,  // Not implemented
       JUNGTIER_EXEC			= -106,  // System event
-      JUNGTIER_SMALL_GROUP = -107,  // Cow event. Equivalent to ANTIBODYTEST. Appears at the Farm level.
+      JUNGTIER_SMALL_GROUP = -107,  // Farm event. Equivalent to ANTIBODYTEST. Appears at the Farm level.
       ChangeContainmentStrategy = -108  //System event
       };
 

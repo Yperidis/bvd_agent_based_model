@@ -154,15 +154,13 @@ Initializer::~Initializer()
 void Initializer::set_STRP(double previnfS, double previnfT, double previnfR, double previnfP,
                            double cleanS, double cleanT, double cleanR, double cleanP)
 {
-    previouslyInfected = {previnfP, previnfR, previnfT, previnfS}; //This order is given due to the way the compartments are pushed in the vector container
+    previouslyInfected = {previnfP, previnfR, previnfT, previnfS}; // This order is given due to the way the compartments are pushed in the vector container
     clean = {cleanP, cleanR, cleanT, cleanS};
     InitialFarmConditionToFarmData =
     {
             {FarmInitialConditionsType::clean, Initializer::clean},
             {FarmInitialConditionsType::previouslyInfected, Initializer::previouslyInfected}
     };
-/*    std::cout << "previnfS: " << previnfS << ", previnfT: " << previnfT << ", previnfR: " << previnfR << ", previnfP: " << previnfP
-              << ", cleanS: " << cleanS << ", cleanT: " << cleanT << ", cleanR: " << cleanR << ", cleanP: " << cleanP << std::endl;*/
 }
 
 void Initializer::set_default_age_distribution( double min , double max , double mod )
@@ -243,7 +241,7 @@ void Initializer::initialize_system( System* s )
 	
 
 	for (int i=0 ; i<number_of_farms ; i++ ){
-		if(this->smallFarmMax < no_animal.at(i)){    //Initialize simple or small (no annual replacement requirement) herd farm
+		if(this->smallFarmMax < no_animal.at(i)){    // Initialize simple or small (no annual replacement requirement) herd farm
 			farm = new Simple_One_Herd_Farm( s );
 		}else{
 			farm = new Small_One_Herd_Farm(s);
@@ -376,9 +374,12 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 		int calvings_so_far=0;
 		if ( timeForCalving >= 0 )    // if the cow is either of age to be inseminated, pregnant or about to give birth
 		{
+		    // If the age of the cow is greater than its first insemination age we count the units of pregnancies
+            // and rest times until the next insemination which fit in the difference of the animal's age and
+            // first insemination age as its number of calvings upon initialisation, i.e. its an age dependent definition
+            // of the calvings.
 			calvings_so_far = (int) round( (timeForCalving) / ( s->rng.duration_of_pregnancy() +
 															   s->rng.time_of_rest_after_calving(c->calving_number) ) );
-			//TODO Should the calving number be modified at all? This would be taken care of at the birth function...
 			c->calving_number -= calvings_so_far;    // alter the calving counter according to the age over the pregnancy
 			// and the rest duration rounded
 			if (c->calving_number > 0) {
@@ -387,7 +388,7 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 			double timeOfLastInsemination = s->rng.staggering_first_inseminations();    // Select in a uniformly random
             // fashion the time of insemination between 0 and the minimum pregnancy duration
 
-			if(timeOfLastInsemination <= time){    // if it is already carrying, schedule its labour...
+			if(timeOfLastInsemination == time){    // if it is already carrying at t=0, schedule its labour...
 				et = Event_Type::BIRTH;
 				switch( c->infection_status )
 				{
@@ -401,13 +402,16 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 						c->calf_status = Calf_Status::SUSCEPTIBLE;  // Yes, SUSCEPTIBLE is right. An eventual immunity through MA is handled in the BIRTH routine.
 				}
 				t = timeOfLastInsemination + s->rng.duration_of_pregnancy();    // ...right after the duration of its pregnancy
-			} else {
+			}
+			else{
 				et = Event_Type::INSEMINATION;    // otherwise schedule its insemination somewhere in [0, min(duration of pregnancy) )
 				t = timeOfLastInsemination;
+				if(timeOfLastInsemination < time)
+					std::cerr << "INSEMINATION TAKING PLACE BEFORE t=0. DEBUG ME!" << std::endl;
 			}
 		}
 		else
-		{    //if the cow is below its insemination age, schedule its insemination somewhere in time between its age
+		{    // if the cow is below its insemination age, schedule its insemination somewhere in time between its age
 			// of insemination and the min(duration of pregnancy)
 			et = Event_Type::INSEMINATION;  // Vaccination is achieved through insemination
 			t  = insem_age - age + s->rng.staggering_first_inseminations();

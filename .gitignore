@@ -12,6 +12,8 @@ Statistiken_Cattle/
 
 #iniFiles
 FLI_Scenarios/
+Ntws_to_TH
+Sensitivity_Analysis
 
 #build
 build/*

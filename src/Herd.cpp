@@ -136,7 +136,7 @@ Cow* Herd::random_S_cow()
 {
   //Select an element from susceptible_cows randomly.
   
-  if (number_of_S != susceptible_cows.size() )
+  if ( number_of_S != susceptible_cows.size() )
     {
       std::cerr << "Bookkeeping Error @t=" << farm->system->current_time() << ": number_of_S = " <<
 				number_of_S << ", susceptible_cows.size()=" << susceptible_cows.size() << std::endl;

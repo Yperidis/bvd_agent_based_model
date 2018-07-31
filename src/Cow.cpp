@@ -2,6 +2,7 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <Model_Constants.h>
 #include "Cow.h"
 #include "System.h"
 #include "BVD_Random_Number_Generator.h"
@@ -18,9 +19,9 @@ bool Cow_Pointer_Sort_Criterion::operator() (Cow const * const c1 , Cow const * 
 }
 
 
-//static methods and members:
+// static methods and members:
 int  Cow::cow_id_counter = 0;
-System* Cow::system = NULL;
+System* Cow::system = nullptr;
 std::unordered_map< int , Cow* > Cow::all_living_cows = std::unordered_map< int , Cow* >();
 int  Cow::total_number()          { return cow_id_counter; }
 int  Cow::number_of_living_cows() { return all_living_cows.size(); }
@@ -29,11 +30,11 @@ void Cow::set_system( System* s ) { system = s; }
 Cow* Cow::get_address( int search_id )
 {
 	try { return all_living_cows.at( search_id ); }
-	catch ( const std::out_of_range& oor ) { return NULL; }
+	catch ( const std::out_of_range& oor ) { return nullptr; }
 }
 
 double Cow::age() const{
-	return System::getInstance(NULL)->getCurrentTime() - this->birth_time;
+	return System::getInstance(nullptr)->getCurrentTime() - this->birth_time;
 }
 
 //non-static methods from here.
@@ -80,15 +81,16 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 	calving_number       =  Cow::system->rng.number_of_calvings();
 	has_been_pregnant_at_all_so_far = false;
 	planned_birth_event = nullptr;
+	planned_abortion_event = nullptr;
 
 	calf_status          =  Calf_Status::NO_CALF;
 	mother               =  my_mother;
 
 	//The herd to belong to for the born calf should be its mother's herd. Otherwise point to nowhere.
-	if (my_mother != NULL ){
+	if (my_mother != nullptr ){
 		herd                 =  my_mother->herd;
 	} else {
-		herd = NULL;
+		herd = nullptr;
 	}
 	all_living_cows[ _id ]= this;
 	//TODO Why calving_number+1?
@@ -109,8 +111,8 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 Cow::~Cow()
 {
 	for ( auto const& c : children )
-		c->mother = NULL;
-	if (mother != NULL)
+		c->mother = nullptr;
+	if (mother != nullptr)
 		mother->children.erase(this);
 	herd->pull_cow( this );
 	delete[] birthTimesOfCalves;
@@ -224,7 +226,6 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 {
 	double execution_time = time + system->rng.time_of_rest_after_calving(calving_number);
-	// TODO calving number is used subtractively.
 	if ( calving_number <= 0 ){
 		/// The cow's cycle ends and it is sent to the slaughterhouse
 		/// Die Kuh hat ausgedient und wird auf Suppenkuh umgeschult.
@@ -236,34 +237,40 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 		/// The cow has not yet fulfilled its usage cycle and thus retains its position as a birth and milk machine
 		/// Der nächste Gebärauftrag wird aufgegeben
 
-		//vaccTime is reinitialised here if the vaccination effect has expired, i.e. is a nullptr
+		// vaccTime is reinitialised here if the vaccination effect has expired, i.e. is a nullptr
 		double vaccTime;
+		//TODO Should the vaccExpiry variable play a role here as well?
 		if (end_of_vaccination_event == nullptr) {
 			vaccTime = -1.0;
 		}
 		else{
-		    //if the vaccination effect has not expired, then allow the vaccination time to be set as already scheduled
+		    // if the vaccination effect has not expired, then allow the vaccination time to be set as already scheduled
 			vaccTime = end_of_vaccination_event->execution_time;
 		}
-		///Schedule the next insemination after the above defined rest time has elapsed
+		/// Schedule the next insemination after the above defined rest time has elapsed
 		this->scheduleInsemination(execution_time, vaccTime);
 	}
+/*    if(this->id() == 203458)
+        std::cout << "At t=" << time << " resting for: " << execution_time-time << " days and scheduled insem. at t=" << execution_time << std::endl;*/
 }
 
 void Cow::execute_BIRTH( const double& time  )
 {
     //TODO check if this accounts only for abortions and stillbirths or if there is something else going on
-    ///At this block segment we are referring to the cow's status
+    /// At this block segment we are referring to the cow's status
 	if ( calf_status == Calf_Status::NO_CALF || (time - last_conception_time) < bvd_const::minimum_pregnancy_duration ){
 
-	    //FIXME Sometimes the pretty_print precedes the standard output prompt at runtime.
+	    //FIXME Sometimes the pretty_print precedes the standard output prompt at runtime. May have to do with the standard output response.
 		if (calf_status == Calf_Status::NO_CALF) {
-			std::cerr << "WARNING! CALF STATUS NO_CALF CALLED AT BIRTH! NON-PREGNANT COW IS CALLED FOR BIRTH." << std::endl;
-            Utilities::pretty_print(planned_birth_event, std::cout);
+			std::cerr << "WARNING! CALF STATUS NO_CALF CALLED AT BIRTH! NON-PREGNANT COW IS CALLED FOR BIRTH @t="
+                      << time << std::endl;
+            Utilities::pretty_print(this, std::cout);
+            //Utilities::pretty_print(planned_birth_event, std::cout);
 		}
 		else{
 			std::cerr << "WARNING! BIRTH TAKING PLACE AT ABORTION CONDITIONS." <<std::endl;
-            Utilities::pretty_print(planned_birth_event, std::cout);
+            //Utilities::pretty_print(planned_birth_event, std::cout);
+            //std::cerr << time - last_conception_time << std::endl;
 		}
 		//If the function is called for a non-pregnant cow or the carriage time is less than the minimum
         //pregnancy duration a calf is certainly not born, so we should exit the function.
@@ -283,7 +290,7 @@ void Cow::execute_BIRTH( const double& time  )
 		Infection_Status is;
 		switch ( calf_status )
 		{
-			//We assume that a calf cannot be transiently infected upon birth
+			// We assume that a calf cannot be transiently infected upon birth
 			case Calf_Status::SUSCEPTIBLE:
 				is = Infection_Status::SUSCEPTIBLE;
 				break;
@@ -363,7 +370,7 @@ void Cow::execute_BIRTH( const double& time  )
 
 		}
 		this->timeOfLastCalving = time;
-		System::getInstance(NULL)->addCow(calf);
+		System::getInstance(nullptr)->addCow(calf);
 
 	}  // Case of stillbirth. Do nothing.
 }
@@ -372,17 +379,21 @@ void Cow::execute_BIRTH( const double& time  )
 void Cow::execute_ABORTION( const double& time )
 {
 	if (!female) {
-        // According to the cow creation (scheduled events only for females) from the initializer this shouldn't happen
+        // According to the cow creation (scheduled events only for females) from the initializer this shouldn't be reached
         // for the first batch of pregnancies
 		std::cerr << "WARNING! ABORTION ON MALE HEAD! DEBUG ME" << std::endl;
 		return;
 	}
 	calf_status = Calf_Status::NO_CALF;
+/*    if(this->id() == 203458)
+        std::cout << "Passed" << std::endl;*/
 	if (planned_birth_event != nullptr) {
-		System::getInstance(NULL)->invalidate_event(planned_birth_event);
+/*        if(this->id() == 203458)
+            std::cout << "Invalidating" << std::endl;*/
+		System::getInstance(nullptr)->invalidate_event(planned_birth_event);
 		planned_birth_event = nullptr;
 	}
-	//Determine whether the abortion will be counted as a calving
+	// Determine whether the abortion will be counted as a calving
 	if ( time - last_conception_time > bvd_const::threshold_abortion_counts_as_calving )
 	{
 		calving_number--;
@@ -394,8 +405,10 @@ void Cow::execute_ABORTION( const double& time )
 void Cow::execute_INSEMINATION( const double& time )
 {
 	if (!female){
-		return; // ;)
+		return;
 	}
+/*	if (id() == 309290)
+		std::cerr << "Insemination of 309290 at t=" << time << std::endl;*/
 	bool conception;    //if not initialised, then this is False by default
 	double execution_time = time + system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception );
 
@@ -417,34 +430,42 @@ void Cow::execute_CONCEPTION(const double& time )
 	switch( infection_status )
 	{
 		case Infection_Status::TRANSIENTLY_INFECTED:
-			calf_status = system->rng.calf_outcome_from_infection ( 0 );  //Upon conception we're at the 1st pregnancy period
+			calf_status = system->rng.calf_outcome_from_infection ( 0 );  // Upon conception we're at the 1st pregnancy period
 			break;
 		case Infection_Status::PERSISTENTLY_INFECTED:
 			calf_status = Calf_Status::PERSISTENTLY_INFECTED;          // p=1 for the birth of a PI calf by a PI mother.
 			break;
 		default:
-			calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. An eventual immunity through MA
-                                                    //(for an IMMUNE mother) is handled in the BIRTH routine.
+			calf_status = Calf_Status::SUSCEPTIBLE; // Yes, SUSCEPTIBLE is right. A possible immunity through MA
+                                                    // (for an IMMUNE mother) is handled in the BIRTH routine.
 			break;
 	}
-	if ( calf_status == Calf_Status::ABORT )  //This might occur from the outcome of a TI mother upon infection. See above.
+	if ( calf_status == Calf_Status::ABORT )  // This might occur from the outcome of a TI mother upon infection. See above.
 	{
-		execution_time = time + system->rng.time_of_abortion_due_to_infection( 0 );  //Again, the offset for the abortion is upon conception
+		execution_time = time + system->rng.time_of_abortion_due_to_infection( 0 );  // Again, the offset for the abortion is upon conception
 		system->schedule_event( new Event( execution_time, Event_Type::ABORTION, id() ) );
 		return;
 	}
 
-	//At this point, the infection status of the mother can be anything.
+	// At this point, the infection status of the mother can be anything.
 	bool birth;
 	execution_time = time + system->rng.conception_result( time - birth_time, infection_status, &birth );
 	if (calf_status == Calf_Status::NO_CALF) {
 		std::cerr << "NO_CALF appeared upon conception while this should be forbidden" << std::endl;
+        Utilities::pretty_print(this, std::cout);
 	}
-	//The outcome of a conception can be either a birth or an abortion
+	// The outcome of a conception can be either a birth or an abortion
 	if ( birth ){
+/*        if(this->id() == 203458) {
+            std::cout << "At t=" << time << " scheduled birth for t=" << execution_time << " through conception"
+                      << std::endl;
+            std::cout << "Calf status: " << (int) calf_status << std::endl;
+        }*/
 		system->schedule_event( new Event( execution_time, Event_Type::BIRTH, id() ) );
 	}
 	else{
+/*        if(this->id() == 203458)
+            std::cout << "At t=" << time << " scheduled abortion for t=" << execution_time << " through conception" << std::endl;*/
 		system->schedule_event( new Event( execution_time, Event_Type::ABORTION, id() ) );
 	}
 
@@ -474,59 +495,76 @@ void Cow::execute_END_OF_MA( const double& time )
 
 void Cow::execute_INFECTION( const double& time )
 {
-	//TODO the conditional here should never take place, but it does with the vaccination strategy. Check
-	if ( infection_status !=Infection_Status::SUSCEPTIBLE )
-	{
-		std::cerr << "Non S cow getting infected at t=" << time << std::endl;
-		std::cerr << "Infection status: " << Utilities::IS_tostr.at( infection_status ) << std::endl;
-		return;  //exit(1)  //Exit the program upon return?
-	}
-	this->timeOfInfection = time;
-	double execution_time;
-	if ( time-birth_time < bvd_const::age_threshold_calf ) //It's a calf!
-	{
-		if (system->rng.will_TI_calf_die())	{
-			execution_time = time + system->rng.time_of_death_infected_calf() ;
-			system->schedule_event( new Event( execution_time, Event_Type::DEATH, id() ) );
-		} else {
-			//Calf will not die
-			execution_time = time + system->rng.duration_of_infection();
-			system->schedule_event( new Event( execution_time, Event_Type::RECOVERY, id() ) );
-		}
-	}
-	else //It's not a calf.
-	{// At this point, the calf status can only be NO_CALF or SUSCEPTIBLE (because the infection status before this event must have been SUSCEPTIBLE).
-		if ( female && calf_status == Calf_Status::SUSCEPTIBLE ) // The cow is pregnant
-		{
-			double time_of_pregnancy = time-last_conception_time;
-			//Determine the outcome of the infection on the pregnancy
-			calf_status = system->rng.calf_outcome_from_infection ( time_of_pregnancy );  //Note that the instant infection determines the calf outcome. Approximation.
-			if (calf_status == Calf_Status::NO_CALF) {
-				std::cerr << "NO_CALF status upon infection of the pregnant cow. DEBUG." << std::endl;
-			}
-			if (calf_status == Calf_Status::ABORT ){
-				execution_time = time + system->rng.time_of_abortion_due_to_infection( time_of_pregnancy );
-				system->schedule_event( new Event( execution_time, Event_Type::ABORTION, id() ) );
-				//By invalidating the birth event here, we account for the cases where the abortion will be scheduled
-                //after the scheduled time of the already scheduled birth event
-                if (planned_birth_event != nullptr) {
-                    System::getInstance(NULL)->invalidate_event(planned_birth_event);
-                    planned_birth_event = nullptr;
+    //TODO the conditional here should never take place, but it does with the vaccination strategy. Check
+    if ( infection_status !=Infection_Status::SUSCEPTIBLE )
+    {
+        std::cerr << "Non S cow getting infected at t=" << time << std::endl;
+        std::cerr << "Infection status: " << Utilities::IS_tostr.at( infection_status ) << std::endl;
+        return;  //exit(1)  // Exit the program upon return?
+    }
+    this->timeOfInfection = time;
+    double execution_time;
+    if ( time-birth_time < bvd_const::age_threshold_calf ) // It's a calf!
+    {
+        if (system->rng.will_TI_calf_die())	{
+            execution_time = time + system->rng.time_of_death_infected_calf();
+            system->schedule_event( new Event( execution_time, Event_Type::DEATH, id() ) );  // A TI calf which dies from the infection
+        }
+        else{
+            // Calf will not die
+            execution_time = time + system->rng.duration_of_infection();
+            system->schedule_event( new Event( execution_time, Event_Type::RECOVERY, id() ) );  // A TI calf scheduled for recovery
+        }
+    }
+    else // It's not a calf.
+        // At this point, the calf status can only be NO_CALF, INFERTILE or SUSCEPTIBLE (because the infection status before this event must have been SUSCEPTIBLE).
+    {    // INFERTILE is taken care of directly, within the standard trading time though, so effectively only NO_CALF and SUSCEPTIBLE are possible here.
+        if ( female && calf_status == Calf_Status::SUSCEPTIBLE ) // The cow is pregnant
+        {
+            double time_of_pregnancy = time - last_conception_time;
+            if (time_of_pregnancy <= bvd_const::pregnancy_duration.max){  // Ascertain that the cow is indeed pregnant and not in its resting time
+                // Determine the outcome of the infection on the pregnancy/embryo. A cripple status is taken care of at the birth.
+                calf_status = system->rng.calf_outcome_from_infection(
+                        time_of_pregnancy);  // Note that the instant infection determines the calf outcome. Approximation.
+/*			if(this->id() == 203458)
+				std::cout << (int) calf_status << std::endl;*/
+                if (calf_status == Calf_Status::NO_CALF) {
+                    std::cerr << "NO_CALF status upon infection of the pregnant cow. DEBUG." << std::endl;
                 }
-			}
-		}
-		//The cow is not pregnant.
-		//At this point it's not a calf.
-		execution_time = time + system->rng.duration_of_infection();
-		system->schedule_event( new Event( execution_time, Event_Type::RECOVERY, id() ) );
-		/// NOTE: The reason to do schedule the RECOVERY separately for calves and non calves is not within the BVD model,
-		///        There is just no other way to get the right program flow.
+                if (calf_status == Calf_Status::ABORT) {
+                    if (planned_abortion_event != nullptr) {
+                        // Cancel a possible abortion scheduled upon conception, so that the only abortion taking place
+                        // will be that due to the infection
+                        //std::cout << (int) planned_abortion_event->type << std::endl;
+                        System::getInstance(nullptr)->invalidate_event(planned_abortion_event);
+                        planned_abortion_event = nullptr;
+                    }
+                    execution_time = time + system->rng.time_of_abortion_due_to_infection(time_of_pregnancy);
+                    system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));
+                    /*if(this->id() == 203458)
+                        std::cout << "At t=" << time << " scheduled abortion for t=" << execution_time << " through infection" << std::endl;*/
+                    // By invalidating the birth event here, we account for the cases where the abortion will be scheduled
+                    // after the scheduled time of the already scheduled birth event
+/*                if (planned_birth_event != nullptr) {
+                    System::getInstance(nullptr)->invalidate_event(planned_birth_event);
+                    planned_birth_event = nullptr;
+                }*/
 
-	}
-	// At this point, it can be a calf or not and pregnant or not.
-	infection_status = Infection_Status::TRANSIENTLY_INFECTED;
-	herd->remove_cow_from_susceptible( this );
-	herd->add_ti_cow(this);
+                }
+            }
+        }
+        // The cow is not pregnant.
+        // At this point it's not a calf.
+        execution_time = time + system->rng.duration_of_infection();
+        system->schedule_event( new Event( execution_time, Event_Type::RECOVERY, id() ) );
+        /// NOTE: The reason to schedule the RECOVERY separately for calves and non calves is not part of the BVD model.
+        /// There is just no other way to get the right program flow.
+
+    }
+    // At this point, the animal can be a calf or not and pregnant or not.
+    infection_status = Infection_Status::TRANSIENTLY_INFECTED;
+    herd->remove_cow_from_susceptible( this );
+    herd->add_ti_cow(this);
 }
 
 void Cow::execute_RECOVERY( const double& time )
@@ -547,14 +585,14 @@ void Cow::register_future_infection_rate_changing_event( Event* e )
 		Utilities::pretty_print( e, std::cerr);
 		exit(1);
 	}
-	if ( e->type == Event_Type::INFECTION ) //Infection Events don't move with the cow because the cow changes neighbours.
+	if ( e->type == Event_Type::INFECTION ) // Infection Events don't move with the cow because the cow changes neighbours.
 		return;
 	if ( e->id != id() )
 	{
 		std::cerr << "Tried to register an irc event pertaining to a different cow... Aborting" <<std::endl;
 		exit(1);
 	}
-	future_irc_events_that_move.insert( (Event*) e );
+	future_irc_events_that_move.insert( e );
 }
 
 Calf_Status Cow::stringToCalfStatus(const std::string& input){
@@ -597,7 +635,7 @@ inline void Cow::execute_END_OF_VACCINATION(const double& time){
 }
 //TODO should this function be const, i.e. funct(...) const {...}? There is a dependency in the scheduleInsemination function (c->scheduleVaccination(vaccTime))
 inline void Cow::scheduleVaccination(const double& time) const{
-    if(vaccExpiry != nullptr){
+    if(vaccExpiry != nullptr){  // An ad hoc check that a vaccination will not take place while the previous is still in effect
         if(*vaccExpiry > time)
             return;
     }
@@ -635,7 +673,7 @@ inline void Cow::runVaccination(const double& time){
                                                     System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense,
                                                     Event_Type::END_OF_VACCINATION, this->id() );
         system->schedule_event(this->end_of_vaccination_event);  // schedule the expiry of the vaccine's protective effect (push into the system queue)
-		vaccExpiry = &vaccBuf;
+		vaccExpiry = &vaccBuf;  // Assigning an address to a pointer for the correct vaccination time-framing.
 		*vaccExpiry = time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
         this->scheduleVaccination(time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense);  //schedule the next vaccination
         this->numberOfVaccinations++;
@@ -648,7 +686,7 @@ inline void Cow::runVaccination(const double& time){
         /// call of the end of vaccination function. We are merely scheduling the next vaccination after the predefined
         /// vaccination time of defence value. Therefore the end_of_vaccination_event cannot determine whether an animal
         /// has already been vaccinated or not in this case.
-		vaccExpiry = &vaccBuf;
+		vaccExpiry = &vaccBuf;  // As above
         *vaccExpiry = time + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
 		//std::cout << *vaccExpiry << std::endl;
         this->scheduleVaccination(time + System::getInstance(
@@ -694,7 +732,7 @@ bool Cow::testCow(const Event* e){
 
 	}else{
 		this->knownStatus = KnownStatus::NEGATIVE;
-		if(this->mother != NULL)  // If the cow has given birth at some point in the past
+		if(this->mother != nullptr)  // If the cow has given birth at some point in the past
 			this->mother->knownStatus = KnownStatus::NEGATIVE;
 	}
 	this->herd->removeCowFromUnknownList(this);
@@ -738,6 +776,8 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
 	if(c == nullptr)
 		c = this;
 	system->schedule_event( new Event( time, Event_Type::INSEMINATION, c->id() ) );
+/*	if(c->id() == 203458)
+		std::cout << "Insem. scheduled at t= " << time << std::endl;*/
 #ifdef _VACCINATION_DEBUG_
 	std::cout << "vaccination enabled: "<< system->activeStrategy->usesVaccination << std::endl;
 #endif
@@ -748,7 +788,7 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
         // assigning to it the time of vaccination before the scheduled insemination's time which is given. That
         // only if vaccTime has its initialised value.
         if(vaccTime == -1)  //initialisation value
-            vaccTime = time - System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination;    //when the animal is to be vaccinated
+            vaccTime = time - System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination;    //when the animal is to be vaccinated
         // Note that vaccTime is assigned by reference. Therefore its value outside the function will also change.
 
         // Check if the cow has been vaccinated before
@@ -767,8 +807,8 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
             }
                 // If not, if the insemination time's difference with the vaccTime is at or before the vaccination time before
                 // insemination, then schedule the vaccination at vaccTime
-            else if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination){
-				vaccExpiry = &vaccBuf;
+            else if(time - vaccTime >= System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination){
+				vaccExpiry = &vaccBuf;  // As above (see runVaccination() )
             	*vaccExpiry = vaccTime + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
 				c->scheduleVaccination(vaccTime);  //The vaccination is far enough from the insemination event. Do it!
 			}
@@ -780,8 +820,8 @@ void Cow::scheduleInsemination(const double& time, double& vaccTime, const Cow* 
             // If the animal has not been previously vaccinated of its vaccine has expired, vaccinate if we're
             // looking at the right time frame between insemination and vaccination (see previous comments)
         else{
-            if(time - vaccTime >= System::getInstance(NULL)->activeStrategy->vaccinationTimeBeforeInsemination){
-				vaccExpiry = &vaccBuf;
+            if(time - vaccTime >= System::getInstance(nullptr)->activeStrategy->vaccinationTimeBeforeInsemination){
+				vaccExpiry = &vaccBuf;  // As above (see runVaccination() )
 				*vaccExpiry = vaccTime + System::getInstance(nullptr)->activeStrategy->vaccinationTimeOfDefense;
 				c->scheduleVaccination(vaccTime);
 			}

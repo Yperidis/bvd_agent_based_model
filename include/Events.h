@@ -95,7 +95,7 @@ class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's con
     if (e1->type > e2->type) return false;
     if (e1->type < e2->type) return true;
     ///Reaching this point means that the types of e1 and e2 are also the same. In this case the event with the
-    ///smallest id will be executed first
+    ///smallest (animal) id will be executed first
     return e1->id < e2->id;
   }
 };

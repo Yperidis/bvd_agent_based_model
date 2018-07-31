@@ -4,6 +4,7 @@
 #include <gsl/gsl_randist.h>
 #include <limits>
 #include <iostream>
+#include <Model_Constants.h>
 #include "System.h"
 #include "BVDContainmentStrategy.h"
 Random_Number_Generator::Random_Number_Generator() //Constructor with random seed
@@ -291,12 +292,12 @@ double Random_Number_Generator::staggering_first_inseminations() {
 
 double Random_Number_Generator::insemination_result( bool first_pregnancy , bool* conception)
 {
-    double index = ran_unif_double(100,0);  //Comparison for the following triangular distribution draw
-    //This time refers to two inseminations where the first one has not been successful. Lambda function (C++11 feature)
+    double index = ran_unif_double(100,0);  // Comparison for the following triangular distribution draw
+    // This time refers to two inseminations where the first one has not been successful. Lambda function (C++11 feature)
     auto time_between_two_inseminations = [this](){return ran_triangular_double(bvd_const::time_between_inseminations.min,
                                                                                 bvd_const::time_between_inseminations.max,
                                                                                 bvd_const::time_between_inseminations.mod);};
-    if ( first_pregnancy ){    //According to our parameters' definition so far, a heifer will eventually be impregnated
+    if ( first_pregnancy ){    // According to our parameters' definition so far, a heifer will eventually be impregnated
         if (index < bvd_const::number_inseminations_heifer.zero){
             *conception = true;
             return 0.0;
@@ -306,7 +307,7 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
         } else if (index< bvd_const::number_inseminations_heifer.two){
             *conception = true;
             return (time_between_two_inseminations()
-                    + time_between_two_inseminations()); //Drawing twice from the previous triangular distribution
+                    + time_between_two_inseminations()); // Drawing twice from the previous triangular distribution
         } else if (index < bvd_const::number_inseminations_heifer.three){
             *conception = true;
             return (time_between_two_inseminations()
@@ -317,7 +318,6 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
             // Not right, I think. The waiting times between the inseminations have been neglected.
             // Cannot occur with the present model constants
             *conception = false;
-            //TODO the way execute_INSEMINATION() at Cow.cpp has been written makes returning anything else except the *conception redundant
             return ran_unif_double(bvd_const::time_till_death_takes_place, 0);
         }
     } else {
@@ -338,7 +338,6 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
             //time till death takes place 0-14 days
             // Not right, I think. The waiting times between the inseminations have been neglected.
             *conception = false;
-            //TODO the way execute_INSEMINATION() at Cow.cpp has been written makes returning anything else except the *conception redundant
             return ran_unif_double(bvd_const::time_till_death_takes_place, 0);
         }
     }
@@ -346,11 +345,11 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
 
 double Random_Number_Generator::conception_result( double time_of_pregnancy, Infection_Status is_of_mother , bool* birth )
 {
-  auto index = ran_unif_double(100., 0.);
+  auto index = ran_unif_double(100., 0.);  // The upper limit of a pregnancy has to agree with the set parameters
   if (index < bvd_const::conception_result.second_month)
   {
     *birth = false;
-    return ran_unif_double(bvd_const::conception_result_time.second_month, 0.);
+    return ran_unif_double(bvd_const::conception_result_time.second_month);
   }
   else if (index < bvd_const::conception_result.third_month)
   {
@@ -430,9 +429,9 @@ double Random_Number_Generator::time_of_death_infected_calf()
 
 double Random_Number_Generator::time_of_next_infection( double rate )
 {
-  // The GSL uses the anglo-american convention of parametrizing the exponential distribution by the average waiting time between two events.
+  // The GSL uses the anglo-saxon convention of parametrising the exponential distribution by the average waiting time between two events.
   // Those good old europeans that we are use the inverse, the number of events per time. Thus the 1.0/rate business here.
-  if ( rate > 0.0)
+  if ( rate > 0.0 )
     return  gsl_ran_exponential ( generator , 1.0/rate );
   return std::numeric_limits<double>::max();
 }
@@ -468,7 +467,7 @@ double Random_Number_Generator::timeOfFirstTest(){
 
 }
 double Random_Number_Generator::retestTime(){
-	return ran_unif_double( System::getInstance(nullptr)->activeStrategy->retestingTimeBlood , 20.0);
+	return ran_unif_double( System::getInstance(nullptr)->activeStrategy->retestingTimeBlood , 0.0);
 }
 double Random_Number_Generator::removeTimeAfterFirstTest(){  // between 3-34 days (see schematic)
     return ran_unif_double( 34., 3.0);

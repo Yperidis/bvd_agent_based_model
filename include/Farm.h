@@ -82,7 +82,7 @@ class Farm{
   	
   	Event_queue future_infection_rate_changing_events;
   	std::vector<Herd*> my_herds;
-  	std::unordered_map< Herd* , std::unordered_map< Herd*, double > > 	inter_herd_transmission_coefficients; //Convention: transmission_coefficients[to][from]
+  	std::unordered_map< Herd* , std::unordered_map< Herd*, double > > 	inter_herd_transmission_coefficients; // Convention: transmission_coefficients[to][from]
   	void execute_TRADE_event( Event *e );
   	
   	

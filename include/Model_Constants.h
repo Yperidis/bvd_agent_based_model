@@ -9,11 +9,11 @@ namespace bvd_const
   const double age_threshold_calf     = 180.; //(180 days = 6 months )
   //  const int    maximum_calving_number = 4;
   const double minimum_pregnancy_duration = 280.; // Minimum pregnancy duration
-  const double threshold_abortion_counts_as_calving = 240.; //8 months. Is that right?
-  const int     lethality_TI_calf     = 2;  //2 percentabortion
-  const int     time_till_abortion_takes_place = 2; //0-14 days
-  const int     time_till_death_takes_place = 14; //0-14 days
-  const double 	standard_trade_execution_time = 0.5; //time that a common trade needs to take place
+  const double threshold_abortion_counts_as_calving = 240.; // 8 months. Is that right?
+  const int     lethality_TI_calf     = 2;  // 2% of TI calves die from the infection
+  const int     time_till_abortion_takes_place = 2; // 2 percent abortion
+  const int     time_till_death_takes_place = 14; // 0-14 days
+  const double 	standard_trade_execution_time = 0.5; // time that a common trade needs to take place
   const double firstVaccAge = 186.;
   //FIXME With the input from the ini file the timeOfVaccinationPersistence is redundant
   const double timeOfVaccinationPersistance = 365.;
@@ -31,7 +31,7 @@ namespace bvd_const
   struct {
     double min = 280.;
     double max = 292.;
-  } pregnancy_duration ;
+  } pregnancy_duration;
   struct {
     double min = 42.;
     double max = 115.;
@@ -44,27 +44,27 @@ namespace bvd_const
   } period_of_pregnancy;
   struct{
     double PI=90.;
-    double abort=90. + 10.;    //Definitely an abortion if not PI in the first period of pregnancy
+    double abort=90. + 10.;    // Definitely an abortion if not PI in the first period of pregnancy
     double cripple=0.;
     double immune=0.;
-  } first_period_of_pregnancy; //There are biological grounds for the chosen values of 1st to 4th pregnancies.
+  } first_period_of_pregnancy; // There are biological grounds for the chosen values of 1st to 4th pregnancies.
   struct{
     double PI=45.;
     double abort=15.+45.;
     double cripple=15.+15.+45.;
-    double immune=25.+15.+15.+45.;    //Definitely immune if nothing else in the second period of pregnancy
+    double immune=25.+15.+15.+45.;    // Definitely immune if nothing else in the second period of pregnancy
   } second_period_of_pregnancy;
   struct{
     double PI=0.;
     double abort=20.;
     double cripple=25.+20.;
-    double immune=55.+25.+20.;    //Definitely immune if nothing else in the third period of pregnancy
+    double immune=55.+25.+20.;    // Definitely immune if nothing else in the third period of pregnancy
   } third_period_of_pregnancy;
   struct{
     double PI=0.;
     double abort=5.;
     double cripple=15.+5.;
-    double immune=80.+15.+5.;    //Definitely immune if nothing else in the fourth period of pregnancy
+    double immune=80.+15.+5.;    // Definitely immune if nothing else in the fourth period of pregnancy
   } fourth_period_of_pregnancy;
   struct{
     double heifer=2.; //17
@@ -111,13 +111,13 @@ namespace bvd_const
     double third_month=2.+7.;
     double fourth_month=1.+2.+7.;
     double rest_months=2.+1.+2.+7.;
-  } conception_result;    //probability percentages that an abortion will happen depending on certain months of the pregnancy
+  } conception_result;    // probability percentages that an abortion will happen depending on certain stages of the pregnancy
   struct{
     double second_month=60.;
     double third_month=90.;
     double fourth_month=120.;
     double rest_months=210.;
-  } conception_result_time;    //The corresponding interval limits in days, where the abortion is scheduled to take place
+  } conception_result_time;    // The corresponding interval limits in days, where the abortion is scheduled to take place
   struct{
     double first_year=50.;
     double second_year=67.; //30% of the ones remaining
@@ -125,8 +125,8 @@ namespace bvd_const
     double fourth_year=73.5;//30% of the ones remaining
   } probability_lifetime_PI;
   struct{
-    double min=5000.;
-    double max=5000.;
+    double min=0.;  // 5000? Previous value
+    double max=7.;  // 5000? Previous value
   } time_of_death_infected_calf;     //infected calf dies between 0-7 days
   struct{
     double min=3.;

@@ -54,9 +54,9 @@ const std::map< Event_Type  , std::string > Utilities::Event_tostr =
 
 void Utilities::pretty_print( Cow* c , std::ostream& out )
 {
-  out << "id: " << c->id() << ", Birth time: " << c->birth_time  << " female: " << c->female << std::endl;
-  out << "    Infection_status:" << IS_tostr.at(c->infection_status) << ", last_conception_time: " << c->last_conception_time ;
-  out << " calving_number: " << c-> calving_number << ", Calf_status: " << CS_tostr.at(c->calf_status)<<std::endl;
+  out << "id: " << c->id() << ", age: " << c->age() << ", Birth time: " << c->birth_time  << " female: " << c->female << std::endl;
+  out << "Infection_status:" << IS_tostr.at(c->infection_status) << ", last_conception_time: " << c->last_conception_time;
+  out << " calving_number: " << c-> calving_number << ", Calf_status: " << CS_tostr.at(c->calf_status) << std::endl;
 }
 
 void Utilities::pretty_print( const Event* e , std::ostream& out)

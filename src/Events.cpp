@@ -7,7 +7,7 @@ Event::Event(double exec_time , Event_Type event_type , int _id  )
   :execution_time{exec_time},
    type{event_type},
    id{_id},
-  dest(Destination_Type::COW),farm(nullptr),valid(true){}  //An event is set to be valid upon initialization
+  dest(Destination_Type::COW), farm(nullptr), valid(true){}  // An event is set to be valid upon initialization
 
 ///Return a Boolean, derived from the defined Event enumerable class, for all cases of infection rate changing events
 /// (according to Viet 2004 this should change for every change in the PI, TI and total population of the herd in the

@@ -113,5 +113,5 @@ The irc events pertaining to the cow being traded disappear from the source farm
 This is solved in the following way: 
 Destination farm: When checking the future irc events, for every event, it is checked whether its farm (the farm of the pertaining cow) is the same farm.
 Thus, events pertaining to a different farm are ignored. Done here.
-Source farm: The moving irc events of the cow need to be inserted in the set of future irc events of this farm. Therefore, a cow needs to keep trak of these events.
+Source farm: The moving irc events of the cow need to be inserted in the set of future irc events of this farm. Therefore, a cow needs to keep track of these events.
 This is done within the cow itself and by the system, when an event is scheduled.

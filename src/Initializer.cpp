@@ -358,13 +358,17 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
     //Future events in the system other than slaughter are scheduled only for female cows. See scheduleFutureEventsForCow()
     this->scheduleFutureEventsForCow(c, f, farm_idx, i, number, time);
 	f->system->addCow(c);
+
+/*	if(c->id() == 203458)
+	    std::cout << (int) c->infection_status << std::endl;*/
+
 	return c;
 }
 
 inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const int& farm_idx, int& i,const int& number, double& time){
     Event_Type et;
     double t;
-    System* s = System::getInstance(NULL);
+    System* s = System::getInstance(nullptr);
 
 	if (c->female){  //Block only for female cows
 
@@ -406,6 +410,8 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 			else{
 				et = Event_Type::INSEMINATION;    // otherwise schedule its insemination somewhere in [0, min(duration of pregnancy) )
 				t = timeOfLastInsemination;
+/*                if(c->id() == 203458)
+                    std::cout << "Insemination for t=" << t << std::endl;*/
 				if(timeOfLastInsemination < time)
 					std::cerr << "INSEMINATION TAKING PLACE BEFORE t=0. DEBUG ME!" << std::endl;
 			}
@@ -415,6 +421,8 @@ inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const in
 			// of insemination and the min(duration of pregnancy)
 			et = Event_Type::INSEMINATION;  // Vaccination is achieved through insemination
 			t  = insem_age - age + s->rng.staggering_first_inseminations();
+/*            if(c->id() == 203458)
+                std::cout << "Insemination for t=" << t << std::endl;*/
 		}
 		//(6) schedule the event.
 		s->schedule_event( new Event( t , et , c->id() ) );

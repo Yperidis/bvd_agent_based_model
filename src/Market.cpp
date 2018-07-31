@@ -313,8 +313,8 @@ void Market::registerSlaughterHouse(Slaughterhouse* sl){
 	this->slaughterHouses->push_back(sl);
 }
 void Market::scheduleTradeToSlaughterHouse(Cow* c){
-	if(c->herd->farm->getType() != WELL && c->herd->farm->getType() != SLAUGHTERHOUSE){    //Check: if not source and not drain then go to the drain
-		Trade_Event *e = new Trade_Event( this->s->getCurrentTime()+bvd_const::standard_trade_execution_time, c->id(),
+	if(c->herd->farm->getType() != WELL && c->herd->farm->getType() != SLAUGHTERHOUSE){    // Check: if not source and not drain then go to the drain
+		Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, c->id(),
 										  (*this->slaughterHouses)[0] );
 		if( !this->scheduleTrade(e) ){
 			std::cerr << "for some reason flushing to the slaughterhouse did not work" << std::endl;

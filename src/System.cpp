@@ -121,6 +121,7 @@ void System::schedule_event( Event* e )
         if ( c != nullptr )
         {
             c->planned_abortion_event = e;
+            //std::cout << "Event from abortion: " << (int) c->planned_abortion_event->type << std::endl;
         }
     }
 
@@ -129,7 +130,12 @@ void System::schedule_event( Event* e )
         std::cerr << "Unreasonable situation" << std::endl;
     }
 
-    if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr)   // Sanity check of the above block
+    if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr)   // Sanity check of the above birth block
+    {
+        std::cerr << "Unreasonable situation" << std::endl;
+    }
+
+    if (e->type == Event_Type::ABORTION && c->planned_abortion_event == nullptr)   // Sanity check of the above abortion block
     {
         std::cerr << "Unreasonable situation" << std::endl;
     }

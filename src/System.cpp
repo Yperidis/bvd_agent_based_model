@@ -108,7 +108,8 @@ double System::current_time(){ return _current_time; }
 /// This function places the event into the priority queue provided that some reasonable conditions are met
 void System::schedule_event( Event* e )
 {
-    if (e->type == Event_Type::BIRTH) {
+    if (e->type == Event_Type::BIRTH) {  // The two following blocks belong to the Cow.cpp housekeeping. However, due
+                                         // the dynamic way they are being allocated in memory from Cow.cpp we define them here.
         Cow* c = Cow::get_address( e->id );
         if ( c != nullptr ) // At this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
         {

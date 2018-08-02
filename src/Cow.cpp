@@ -248,13 +248,13 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 			vaccTime = end_of_vaccination_event->execution_time;
 		}
 		/// Schedule the next insemination after the above defined rest time has elapsed
-        if(this->id() == 244193) {
+/*        if(this->id() == 244193) {
             std::cout << "At t=" << time << " resting for: " << execution_time - time
                       << " days and scheduled insem. at t=" << execution_time << std::endl;
             if (planned_birth_event != nullptr)
                 std::cout << "At t=" << time << " and after birth, planned birth at t="
                                                 << planned_birth_event->execution_time << ". Debug!" << std::endl;
-        }
+        }*/
         this->scheduleInsemination(execution_time, vaccTime);
 	}
 }
@@ -276,8 +276,8 @@ void Cow::execute_BIRTH( const double& time  )
 			std::cerr << "WARNING! BIRTH TAKING PLACE AT ABORTION CONDITIONS AT t=" << time << std::endl;
             Utilities::pretty_print(this, std::cout);
 		}
-		//If the function is called for a non-pregnant cow or the carriage time is less than the minimum
-        //pregnancy duration a calf is certainly not born, so we should exit the function.
+		// If the function is called for a non-pregnant cow or the carriage time is less than the minimum
+        // pregnancy duration a calf is certainly not born, so we should exit the function.
 		return;
 	}
 
@@ -285,13 +285,13 @@ void Cow::execute_BIRTH( const double& time  )
 	bool first_birth = !has_been_pregnant_at_all_so_far;  // This is indeed the first birth (calving) of the cow
 	has_been_pregnant_at_all_so_far = true;
 	planned_birth_event = nullptr;  // Reset the flag for pregnancy of the cow, as its next birth event has not been planned yet
-	double calfVaccinationTime = -1.0;    //initialisation of the vaccination time (to be used for scheduling the insemination)
+	double calfVaccinationTime = -1.0;    // initialisation of the vaccination time (to be used for scheduling the insemination)
 	handle_rest_time_after_ABORTION_or_BIRTH( time );
 
 	/// Will the newborn calf be living? (This depends on whether the mother has reached previously this stage).
 	if ( !system->rng.is_this_a_deadbirth( first_birth ) )
 	{ /// Determine the status of the born calf. We assume it is not born in the TI state for simplicity. The initialised
-	///cows provide the first batch of calf statuses. Compare with the settings of Initializer.cpp
+	/// cows provide the first batch of calf statuses. Compare with the settings of Initializer.cpp
 		Infection_Status is;
 		switch ( calf_status )
 		{
@@ -299,9 +299,9 @@ void Cow::execute_BIRTH( const double& time  )
 			case Calf_Status::SUSCEPTIBLE:
 				is = Infection_Status::SUSCEPTIBLE;
 				break;
-			case Calf_Status::IMMUNE:
-				is = Infection_Status::IMMUNE;
-				break;
+			case Calf_Status::IMMUNE:  // According to the current design, if the calf status is immune, then the cow
+				is = Infection_Status::IMMUNE;  // has been infected during pregnancy (see the execute_INFECTION function)
+				break;							// and the calf has therefore acquired permanent immunity.
 			case Calf_Status::PERSISTENTLY_INFECTED:
 				is = Infection_Status::PERSISTENTLY_INFECTED;
 				break;
@@ -321,20 +321,21 @@ void Cow::execute_BIRTH( const double& time  )
 		double time_of_death;
 		// If this remains practically infinite (1.79769e+308), the cow will die anyway at some point,
 		//  because either it is male or if it is female it has a finite number of calvings
-        if ( is == Infection_Status::PERSISTENTLY_INFECTED ){ //PI animals will die earlier than others.
+        if ( is == Infection_Status::PERSISTENTLY_INFECTED ){  // PI animals will generally die earlier than others.
             time_of_death = time + system->rng.lifetime_PI();
+			system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
         }
         else{
             time_of_death =  time + system->rng.time_of_death_as_calf(); // If this returns -1, the animal will not die as a calf.
-            //FIXME When should the new animal die?
-            if ( time_of_death <= time ){    //If the calf survives, then it will never die as a cow (as S, T or R)
+            if ( time_of_death <= time ){    // If the calf survives, then it will never die as a cow (as S, T or R)
                 time_of_death = std::numeric_limits<double>::max();
+            } else{
+				// FIXME DEATH not implemented in Cow.cpp, but deleted at execute_next_event() in System.cpp.
+				system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
             }
         }
-        //FIXME DEATH not implemented in Cow.cpp, but deleted at execute_next_event() in System.cpp.
-		system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
 		double execution_time;
-		if ( calf->female ){/// Female calf: schedule first insemination if it doesn't die before.
+		if ( calf->female ){ /// Female calf: schedule first insemination if it doesn't die before.
 			execution_time = time + system->rng.first_insemination_age();
 			if ( time_of_death > execution_time ){    // you wouldn't inseminate an animal which is about to die or has already died now, would you?
 				this->scheduleInsemination( execution_time, calfVaccinationTime, calf );
@@ -354,7 +355,7 @@ void Cow::execute_BIRTH( const double& time  )
 			is = Infection_Status::IMMUNE;
 			double ma_end = time+system->rng.duration_of_MA();
 			if ( time_of_death > ma_end ){    // If the calf survives its MA period, then change its status to S after
-				//that period's expiry
+				// that period's expiry
 				system->schedule_event( new Event( ma_end , Event_Type::END_OF_MA , calf->id() ) );
 			}
 		}
@@ -393,8 +394,8 @@ void Cow::execute_ABORTION( const double& time )
 /*    if(this->id() == 94344)
         std::cout << "Passed" << std::endl;*/
 	if (planned_birth_event != nullptr) {
-        if(this->id() == 244193)
-            std::cout << "Invalidating at t=" << time << std::endl;
+/*        if(this->id() == 244193)
+            std::cout << "Invalidating at t=" << time << std::endl;*/
 		System::getInstance(nullptr)->invalidate_event(planned_birth_event);
 		planned_birth_event = nullptr;
 	}
@@ -465,20 +466,20 @@ void Cow::execute_CONCEPTION(const double& time )
 	}
 	// The outcome of a conception can be either a birth or an abortion
 	if ( birth ){
-        if(this->id() == 244193) {
+/*        if(this->id() == 244193) {
             std::cout << "At t=" << last_conception_time << " scheduled birth for t=" << execution_time << " through conception"
                       << std::endl;
             std::cout << "Calf status: " << (int) calf_status << std::endl;
-        }
+        }*/
 /*        if (planned_birth_event != nullptr)
             std::cout << "Event from birth: " << (int) planned_birth_event->type << std::endl;*/
 		system->schedule_event( new Event( execution_time, Event_Type::BIRTH, id() ) );
 	}
 	else{
-        if(this->id() == 244193)
+/*        if(this->id() == 244193)
             std::cout << "At t=" << time << " scheduled abortion for t=" << execution_time << " through conception" << std::endl;
         if (planned_abortion_event != nullptr)
-            std::cout << "Event from abortion: " << (int) planned_abortion_event->type << std::endl;
+            std::cout << "Event from abortion: " << (int) planned_abortion_event->type << std::endl;*/
 		system->schedule_event( new Event( execution_time, Event_Type::ABORTION, id() ) );
 	}
 
@@ -538,8 +539,8 @@ void Cow::execute_INFECTION( const double& time )
                 // otherwise the stage of the pregnancy (time_of_pregnancy) variable will have an unpredictable behaviour
                 double time_of_pregnancy = time - last_conception_time;
                 // Determine the outcome of the infection on the pregnancy/embryo. A cripple status is taken care of at the birth.
-                calf_status = system->rng.calf_outcome_from_infection(
-                        time_of_pregnancy);  // Note that the instant infection determines the calf outcome. Approximation.
+                calf_status = system->rng.calf_outcome_from_infection(time_of_pregnancy);  // Note that the instant
+																// infection determines the calf outcome. Approximation.
                 if (calf_status == Calf_Status::NO_CALF) {
                     std::cerr << "NO_CALF status upon infection of the pregnant cow. DEBUG." << std::endl;
                 }

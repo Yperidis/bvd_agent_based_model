@@ -180,7 +180,7 @@ void Initializer::set_default_farm_size_distribution(  int min, int max  )
 
 void Initializer::set_number_of_farms( int N )
 {
-	System *s = System::getInstance(NULL);
+	System *s = System::getInstance(nullptr);
   if ( N < 1 )     //Ensure that the system is initialised with at least one farm
     N=1;
   number_of_farms = N;
@@ -333,7 +333,7 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
 	lo = age_distr.at(farm_idx).min;
 	hi = age_distr.at(farm_idx).max;
 	mod= age_distr.at(farm_idx).mod;
-	System* s = System::getInstance(NULL);
+	System* s = System::getInstance(nullptr);
 	if(age <=0 )
 		age = s->rng.ran_triangular_double( lo, hi, mod );
 

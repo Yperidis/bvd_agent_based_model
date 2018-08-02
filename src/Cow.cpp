@@ -248,9 +248,14 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 			vaccTime = end_of_vaccination_event->execution_time;
 		}
 		/// Schedule the next insemination after the above defined rest time has elapsed
-        if(this->id() == 94344)
-            std::cout << "At t=" << time << " resting for: " << execution_time-time << " days and scheduled insem. at t=" << execution_time << std::endl;
-		this->scheduleInsemination(execution_time, vaccTime);
+        if(this->id() == 90267) {
+            std::cout << "At t=" << time << " resting for: " << execution_time - time
+                      << " days and scheduled insem. at t=" << execution_time << std::endl;
+            if (planned_birth_event != nullptr)
+                std::cout << "At t=" << time << " and after birth, planned birth at t="
+                                                << planned_birth_event->execution_time << ". Debug!" << std::endl;
+            this->scheduleInsemination(execution_time, vaccTime);
+        }
 	}
 }
 
@@ -276,9 +281,10 @@ void Cow::execute_BIRTH( const double& time  )
 		return;
 	}
 
-	calving_number--;    //counter for the number of calves the cow has given birth to (calving number)
-	bool first_birth = !has_been_pregnant_at_all_so_far;  //This is indeed the first birth (calving) of the cow
+	calving_number--;    // counter for the number of calves the cow has given birth to (calving number)
+	bool first_birth = !has_been_pregnant_at_all_so_far;  // This is indeed the first birth (calving) of the cow
 	has_been_pregnant_at_all_so_far = true;
+	planned_birth_event = nullptr;  // Reset the flag for pregnancy of the cow, as its next birth event has not been planned yet
 	double calfVaccinationTime = -1.0;    //initialisation of the vaccination time (to be used for scheduling the insemination)
 	handle_rest_time_after_ABORTION_or_BIRTH( time );
 
@@ -387,11 +393,15 @@ void Cow::execute_ABORTION( const double& time )
 /*    if(this->id() == 94344)
         std::cout << "Passed" << std::endl;*/
 	if (planned_birth_event != nullptr) {
-        if(this->id() == 94344)
+        if(this->id() == 90267)
             std::cout << "Invalidating at t=" << time << std::endl;
 		System::getInstance(nullptr)->invalidate_event(planned_birth_event);
 		planned_birth_event = nullptr;
 	}
+
+	if (planned_abortion_event != nullptr)
+	    planned_abortion_event = nullptr;
+
 	// Determine whether the abortion will be counted as a calving
 	if ( time - last_conception_time > bvd_const::threshold_abortion_counts_as_calving )
 	{
@@ -455,7 +465,7 @@ void Cow::execute_CONCEPTION(const double& time )
 	}
 	// The outcome of a conception can be either a birth or an abortion
 	if ( birth ){
-        if(this->id() == 94344) {
+        if(this->id() == 90267) {
             std::cout << "At t=" << last_conception_time << " scheduled birth for t=" << execution_time << " through conception"
                       << std::endl;
             std::cout << "Calf status: " << (int) calf_status << std::endl;
@@ -465,10 +475,10 @@ void Cow::execute_CONCEPTION(const double& time )
 		system->schedule_event( new Event( execution_time, Event_Type::BIRTH, id() ) );
 	}
 	else{
-        if(this->id() == 94344)
+        if(this->id() == 90267)
             std::cout << "At t=" << time << " scheduled abortion for t=" << execution_time << " through conception" << std::endl;
-/*        if (planned_abortion_event != nullptr)
-            std::cout << "Event from abortion: " << (int) planned_abortion_event->type << std::endl;*/
+        if (planned_abortion_event != nullptr)
+            std::cout << "Event from abortion: " << (int) planned_abortion_event->type << std::endl;
 		system->schedule_event( new Event( execution_time, Event_Type::ABORTION, id() ) );
 	}
 
@@ -535,7 +545,11 @@ void Cow::execute_INFECTION( const double& time )
                 }
                 if (calf_status == Calf_Status::ABORT) {
                     execution_time = time + system->rng.time_of_abortion_due_to_infection(time_of_pregnancy);
-                    if(this->id() == 94344)
+                    if (planned_abortion_event != nullptr){
+                    	System::getInstance(nullptr)->invalidate_event(planned_abortion_event);
+                    	planned_abortion_event = nullptr;
+                    }
+                    if(this->id() == 90267)
                         std::cout << "At t=" << time << " abortion scheduled through infection for t=" << execution_time << std::endl;
                     system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));
                 }

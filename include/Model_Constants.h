@@ -85,9 +85,9 @@ namespace bvd_const
     double mod=540.;
   } first_insemination_age;
   struct{
-    double first_two_days=2.5;
-    double first_six_month=12.5;
-    double first_twelve_month=14.;
+    double first_two_days=2.5;  // 2.5%
+    double first_six_month=12.5;  // 10%
+    double first_twelve_month=14.;  // 1.5%
   } propability_of_death_as_calf;
   struct{
     double first_two_days=2.5;
@@ -119,20 +119,20 @@ namespace bvd_const
     double rest_months=210.;
   } conception_result_time;    // The corresponding interval limits in days, where the abortion is scheduled to take place
   struct{
-    double first_year=50.;
-    double second_year=67.; //30% of the ones remaining
-    double third_year=72.;  //30% of the ones remaining
-    double fourth_year=73.5;//30% of the ones remaining
+    double first_year=50.;  // see the implementation of lieftime_PI to make sense of the numbers
+    double second_year=67.; // 17%
+    double third_year=72.;  // 5%
+    double fourth_year=73.5;// 1.5%
   } probability_lifetime_PI;
   struct{
     double min=0.;  // 5000? Previous value
     double max=7.;  // 5000? Previous value
-  } time_of_death_infected_calf;     //infected calf dies between 0-7 days
+  } time_of_death_infected_calf;     // infected calf dies between 0-7 days
   struct{
     double min=3.;
     double max=5.;
     double mod=4.;
-  } number_of_calvings; //Have to be positive doubles (effectively integers)
+  } number_of_calvings; // Have to be positive doubles (effectively integers)
   struct{
     double min=18.;
     double max=24.;

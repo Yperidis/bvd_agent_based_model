@@ -212,8 +212,8 @@ bool Random_Number_Generator::is_calf_female()
 {
   int index = ran_unif_int(100,0);
   if (index < 50)
-    return true;  //is female
-  return false;  //is male
+    return true;  // is female
+  return false;  // is male
 }
 
 double Random_Number_Generator::duration_of_MA()
@@ -276,7 +276,7 @@ double Random_Number_Generator::time_of_death_as_calf()
                            bvd_const::time_of_death_as_calf.first_six_month );
   }
   else{
-    return -1;    //survival as calf
+    return -1.;    // survival as calf
   }
 }
 

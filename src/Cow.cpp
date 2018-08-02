@@ -248,14 +248,14 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 			vaccTime = end_of_vaccination_event->execution_time;
 		}
 		/// Schedule the next insemination after the above defined rest time has elapsed
-        if(this->id() == 90267) {
+        if(this->id() == 244193) {
             std::cout << "At t=" << time << " resting for: " << execution_time - time
                       << " days and scheduled insem. at t=" << execution_time << std::endl;
             if (planned_birth_event != nullptr)
                 std::cout << "At t=" << time << " and after birth, planned birth at t="
                                                 << planned_birth_event->execution_time << ". Debug!" << std::endl;
-            this->scheduleInsemination(execution_time, vaccTime);
         }
+        this->scheduleInsemination(execution_time, vaccTime);
 	}
 }
 
@@ -393,7 +393,7 @@ void Cow::execute_ABORTION( const double& time )
 /*    if(this->id() == 94344)
         std::cout << "Passed" << std::endl;*/
 	if (planned_birth_event != nullptr) {
-        if(this->id() == 90267)
+        if(this->id() == 244193)
             std::cout << "Invalidating at t=" << time << std::endl;
 		System::getInstance(nullptr)->invalidate_event(planned_birth_event);
 		planned_birth_event = nullptr;
@@ -465,7 +465,7 @@ void Cow::execute_CONCEPTION(const double& time )
 	}
 	// The outcome of a conception can be either a birth or an abortion
 	if ( birth ){
-        if(this->id() == 90267) {
+        if(this->id() == 244193) {
             std::cout << "At t=" << last_conception_time << " scheduled birth for t=" << execution_time << " through conception"
                       << std::endl;
             std::cout << "Calf status: " << (int) calf_status << std::endl;
@@ -475,7 +475,7 @@ void Cow::execute_CONCEPTION(const double& time )
 		system->schedule_event( new Event( execution_time, Event_Type::BIRTH, id() ) );
 	}
 	else{
-        if(this->id() == 90267)
+        if(this->id() == 244193)
             std::cout << "At t=" << time << " scheduled abortion for t=" << execution_time << " through conception" << std::endl;
         if (planned_abortion_event != nullptr)
             std::cout << "Event from abortion: " << (int) planned_abortion_event->type << std::endl;
@@ -535,8 +535,8 @@ void Cow::execute_INFECTION( const double& time )
         if ( female && calf_status == Calf_Status::SUSCEPTIBLE ) // The cow is pregnant
         {
             if (planned_birth_event != nullptr) {  // Ascertain that the cow is indeed pregnant and not in its resting time,
-            	// otherwise the stage of the pregnancy (time_of_pregnancy) variable will have an unpredictable behaviour
-            double time_of_pregnancy = time - last_conception_time;
+                // otherwise the stage of the pregnancy (time_of_pregnancy) variable will have an unpredictable behaviour
+                double time_of_pregnancy = time - last_conception_time;
                 // Determine the outcome of the infection on the pregnancy/embryo. A cripple status is taken care of at the birth.
                 calf_status = system->rng.calf_outcome_from_infection(
                         time_of_pregnancy);  // Note that the instant infection determines the calf outcome. Approximation.
@@ -545,13 +545,35 @@ void Cow::execute_INFECTION( const double& time )
                 }
                 if (calf_status == Calf_Status::ABORT) {
                     execution_time = time + system->rng.time_of_abortion_due_to_infection(time_of_pregnancy);
-                    if (planned_abortion_event != nullptr){
-                    	System::getInstance(nullptr)->invalidate_event(planned_abortion_event);
-                    	planned_abortion_event = nullptr;
+                    if (execution_time > planned_birth_event->execution_time) {  // If the abortion is to take place
+                        // after the birth, then execute the abortion immediately
+                        execution_time = time;
+                        if (planned_abortion_event != nullptr){  // In case of a planned abortion upon conception...
+                            if (planned_abortion_event->execution_time > execution_time) {  // if it is to be executed
+                                // after the abortion due to infection invalidate the abortion from the conception to avoid
+                                // double abortion events and their consequences.
+                                System::getInstance(nullptr)->invalidate_event(planned_abortion_event);
+                                planned_abortion_event = nullptr;
+                            }
+                        }
+                        system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));
                     }
-                    if(this->id() == 90267)
+                    else if (execution_time < planned_birth_event->execution_time){  // If the abortion is to take place
+                        // before the birth, then schedule it at the defined execution time
+                        if (planned_abortion_event != nullptr){  // In case of a planned abortion upon conception...
+                            if (planned_abortion_event->execution_time > execution_time) {  // if it is to be executed
+                                // after the abortion due to infection invalidate the abortion from the conception to avoid
+                                // double abortion events and their consequences.
+                                System::getInstance(nullptr)->invalidate_event(planned_abortion_event);
+                                planned_abortion_event = nullptr;
+                            }
+                        }
+                        system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));
+                    }  // In case that the planned abortion is to be executed simultaneously with the birth we assume
+                       // that the birth will prevail. Therefore we leave everything as is.
+/*                    if(this->id() == 244193)
                         std::cout << "At t=" << time << " abortion scheduled through infection for t=" << execution_time << std::endl;
-                    system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));
+                    system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));*/
                 }
             }
         }

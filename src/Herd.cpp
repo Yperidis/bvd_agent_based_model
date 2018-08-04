@@ -294,6 +294,6 @@ void Herd::testAllCows(){
 	for(auto cow:all_my_cows){
 		System* s = this->farm->system;
 
-		s->schedule_event( new Event( s->getCurrentTime()+0.5, Event_Type::VIRUSTEST, cow->id() ) );
+		s->schedule_event( new Event( s->getCurrentTime() + 0.5, Event_Type::VIRUSTEST, cow->id() ) );
 	}
 }

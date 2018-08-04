@@ -18,9 +18,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e3a8871b-31be-4651-8530-53f3a68286a5" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/include/Model_Constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Model_Constants.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BVD_Random_Number_Generator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/BVD_Random_Number_Generator.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Cow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Herd.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Herd.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/System.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/System.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -37,8 +37,8 @@
       <file leaf-file-name="Cow.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Cow.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="347" column="101" lean-forward="true" selection-start-line="347" selection-start-column="101" selection-end-line="347" selection-end-column="101" />
+            <state relative-caret-position="244">
+              <caret line="779" column="100" lean-forward="true" selection-start-line="779" selection-start-column="100" selection-end-line="779" selection-end-column="100" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -49,8 +49,8 @@
       <file leaf-file-name="BVD_Random_Number_Generator.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/BVD_Random_Number_Generator.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="231" column="32" selection-start-line="231" selection-start-column="32" selection-end-line="231" selection-end-column="32" />
+            <state relative-caret-position="244">
+              <caret line="176" column="48" selection-start-line="176" selection-start-column="42" selection-end-line="176" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -58,8 +58,8 @@
       <file leaf-file-name="Model_Constants.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/Model_Constants.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="144" column="4" selection-start-line="144" selection-start-column="4" selection-end-line="144" selection-end-column="4" />
+            <state relative-caret-position="210">
+              <caret line="38" column="4" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -67,7 +67,7 @@
       <file leaf-file-name="Initializer.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Initializer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-510">
+            <state relative-caret-position="5763">
               <caret line="339" column="20" selection-start-line="339" selection-start-column="20" selection-end-line="339" selection-end-column="20" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
@@ -88,8 +88,8 @@
       <file leaf-file-name="System.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/System.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="111" column="128" selection-start-line="111" selection-start-column="128" selection-end-line="111" selection-end-column="128" />
+            <state relative-caret-position="347">
+              <caret line="254" column="28" selection-start-line="254" selection-start-column="28" selection-end-line="254" selection-end-column="28" />
               <folding>
                 <element signature="e#2400#2444#0" expanded="true" />
               </folding>
@@ -101,7 +101,7 @@
         <entry file="file://$PROJECT_DIR$/include/Cow.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="320">
-              <caret line="103" column="15" selection-start-line="103" selection-start-column="15" selection-end-line="103" selection-end-column="15" />
+              <caret line="119" column="15" selection-start-line="119" selection-start-column="15" selection-end-line="119" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -109,7 +109,7 @@
       <file leaf-file-name="Events.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/Events.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
+            <state relative-caret-position="-34">
               <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
             </state>
           </provider>
@@ -119,10 +119,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>last_conception_time</find>
-      <find>valid</find>
-      <find>rest</find>
-      <find>execute_insem</find>
       <find>invalid</find>
       <find>next_infection_event</find>
       <find>getManaged</find>
@@ -149,6 +145,10 @@
       <find>calf_out</find>
       <find>time_of_death</find>
       <find>calf</find>
+      <find>push</find>
+      <find>DEATH</find>
+      <find>VIRUS</find>
+      <find>virus</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/src</dir>
@@ -186,7 +186,6 @@
         <option value="$PROJECT_DIR$/src/TableBasedOutput.cpp" />
         <option value="$PROJECT_DIR$/src/FarmManager.cpp" />
         <option value="$PROJECT_DIR$/src/Market.cpp" />
-        <option value="$PROJECT_DIR$/src/Herd.cpp" />
         <option value="$PROJECT_DIR$/include/Events.h" />
         <option value="$PROJECT_DIR$/include/Farm.h" />
         <option value="$PROJECT_DIR$/src/Utilities.cpp" />
@@ -194,10 +193,11 @@
         <option value="$PROJECT_DIR$/src/Events.cpp" />
         <option value="$PROJECT_DIR$/src/Farm.cpp" />
         <option value="$PROJECT_DIR$/src/Initializer.cpp" />
-        <option value="$PROJECT_DIR$/src/System.cpp" />
-        <option value="$PROJECT_DIR$/src/Cow.cpp" />
         <option value="$PROJECT_DIR$/src/BVD_Random_Number_Generator.cpp" />
         <option value="$PROJECT_DIR$/include/Model_Constants.h" />
+        <option value="$PROJECT_DIR$/src/System.cpp" />
+        <option value="$PROJECT_DIR$/src/Cow.cpp" />
+        <option value="$PROJECT_DIR$/src/Herd.cpp" />
       </list>
     </option>
   </component>
@@ -416,11 +416,12 @@
       <workItem from="1533135644264" duration="6627000" />
       <workItem from="1533142600308" duration="2692000" />
       <workItem from="1533203053648" duration="17210000" />
+      <workItem from="1533297672253" duration="5181000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="912452000" />
+    <option name="totallyTimeSpent" value="917633000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -437,10 +438,9 @@
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4631861" visible="true" weight="0.24855188" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49763033" weight="0.32838774" />
-      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.45129016" weight="0.32937685" />
       <window_info anchor="bottom" id="CMake" order="11" sideWeight="0.4997367" weight="0.32937685" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5229068" side_tool="true" weight="0.2611276" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4839389" weight="0.32739863" />
+      <window_info active="true" anchor="bottom" id="Find" order="1" sideWeight="0.4839389" visible="true" weight="0.32739863" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.4986835" weight="0.32937685" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47709322" weight="0.2611276" />
       <window_info id="Structure" order="2" sideWeight="0.5368139" side_tool="true" weight="0.24855188" />
@@ -454,6 +454,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.45129016" weight="0.32937685" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -569,27 +570,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/include/Model_Constants.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="38" column="16" selection-start-line="38" selection-start-column="16" selection-end-line="38" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Output.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="75" column="28" selection-start-line="75" selection-start-column="24" selection-end-line="75" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/include/hdf5/serial/H5public.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2652">
-          <caret line="183" column="28" selection-start-line="183" selection-start-column="28" selection-end-line="183" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/hdf5/serial/H5LTpublic.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
@@ -730,13 +710,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TableBasedOutput.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="215" column="25" selection-start-line="215" selection-start-column="25" selection-end-line="215" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/Initializer.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="595">
@@ -807,20 +780,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Herd.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="118" column="18" selection-start-line="118" selection-start-column="18" selection-end-line="118" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Utilities.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="58" column="116" selection-start-line="58" selection-start-column="116" selection-end-line="58" selection-end-column="116" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Events.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -828,24 +787,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Farm.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1241">
-          <caret line="73" column="11" selection-start-line="73" selection-start-column="11" selection-end-line="73" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Farm.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="986">
           <caret line="58" column="11" selection-start-line="58" selection-start-column="11" selection-end-line="58" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Events.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -887,26 +832,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Cow.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="103" column="15" selection-start-line="103" selection-start-column="15" selection-end-line="103" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/System.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="111" column="128" selection-start-line="111" selection-start-column="128" selection-end-line="111" selection-end-column="128" />
-          <folding>
-            <element signature="e#2400#2444#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Initializer.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-510">
+        <state relative-caret-position="5763">
           <caret line="339" column="20" selection-start-line="339" selection-start-column="20" selection-end-line="339" selection-end-column="20" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
@@ -914,24 +842,97 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Simple_One_Herd_Farm.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Farm.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="849">
+          <caret line="83" column="23" selection-start-line="83" selection-start-column="23" selection-end-line="83" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CowWellFarm.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="5" column="42" lean-forward="true" selection-start-line="5" selection-start-column="42" selection-end-line="5" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Slaughterhouse.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Cow.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="119" column="15" selection-start-line="119" selection-start-column="15" selection-end-line="119" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/System.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="254" column="28" selection-start-line="254" selection-start-column="28" selection-end-line="254" selection-end-column="28" />
+          <folding>
+            <element signature="e#2400#2444#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/include/Model_Constants.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="144" column="4" selection-start-line="144" selection-start-column="4" selection-end-line="144" selection-end-column="4" />
+        <state relative-caret-position="210">
+          <caret line="38" column="4" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/BVD_Random_Number_Generator.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="231" column="32" selection-start-line="231" selection-start-column="32" selection-end-line="231" selection-end-column="32" />
+        <state relative-caret-position="244">
+          <caret line="176" column="48" selection-start-line="176" selection-start-column="42" selection-end-line="176" selection-end-column="54" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/Events.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-34">
+          <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TableBasedOutput.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="118" column="33" selection-start-line="118" selection-start-column="33" selection-end-line="118" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Utilities.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="43" column="16" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Herd.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Cow.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="347" column="101" lean-forward="true" selection-start-line="347" selection-start-column="101" selection-end-line="347" selection-end-column="101" />
+        <state relative-caret-position="244">
+          <caret line="779" column="100" lean-forward="true" selection-start-line="779" selection-start-column="100" selection-end-line="779" selection-end-column="100" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

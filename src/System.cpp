@@ -248,11 +248,11 @@ void System::execute_next_event()
     if(e->valid) // => e is valid.
     {
         Cow* c = Cow::get_address( e->id );
-        _current_time = e->execution_time;    //the current time becomes the execution time of the event from the main queue
+        _current_time = e->execution_time;    // the current time becomes the execution time of the event from the main queue
         // Calls of events are always logged regardless of what is happening in their member functions
         this->output->logEvent(e);
         if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
-            delete c;    //Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
+            delete c;    // Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
         }
         else{
             switch ( e->dest )

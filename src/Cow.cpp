@@ -239,7 +239,7 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 
 		// vaccTime is reinitialised here if the vaccination effect has expired, i.e. is a nullptr
 		double vaccTime;
-		//TODO Should the vaccExpiry variable play a role here as well?
+		// TODO Should the vaccExpiry variable play a role here as well?
 		if (end_of_vaccination_event == nullptr) {
 			vaccTime = -1.0;
 		}
@@ -344,7 +344,7 @@ void Cow::execute_BIRTH( const double& time  )
 		else {/// Male cow: schedule culling if it survives.
 			execution_time = time + system->rng.life_expectancy_male_cow();
 			if ( time_of_death > execution_time ) {    // if the male calf survives beyond its life expectancy kill it
-                //FIXME DEATH not implemented, but deleted at execute_next_event() in System.cpp.
+                // FIXME DEATH not implemented, but deleted at execute_next_event() in System.cpp.
 				system->schedule_event( new Event( execution_time, Event_Type::DEATH, calf->id() ) );
 			}
 		}
@@ -362,9 +362,9 @@ void Cow::execute_BIRTH( const double& time  )
 		calf->infection_status = is;    // According to what has been already set that can be S, P or R
 
 		children.insert( calf );  // An unordered set for each animal, where its newborn calves are recorded
-        //TODO what does the push_cow implementation mean in the well and slaughter farms?
+        // TODO what does the push_cow implementation mean in the well and slaughter farms?
 		herd->farm->push_cow( calf );    // Add the calf in the herd of the farm of its mother
-		herd->reevaluateGroup(this); // Resetting the trading criteria according to the new arrivals
+		herd->reevaluateGroup(this); // Resetting the trading criteria according to the new arrivals in case these are in effect
 		// log time of birth to mother cow in order to use it in output
 		int index = 0;
 		while(birthTimesOfCalves[index] != -1.0) index++;    // Find the scheduled calf to be born at the present time

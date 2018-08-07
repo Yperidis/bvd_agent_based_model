@@ -79,7 +79,9 @@ If you experience problems in the build process, try running `autoreconf -i`. If
 ## Running the code
 After the successful compilation and linking an executable called 'bvd_agent_based_model' (through the automake tools build this will be called 'bvd_agent_simulation' due to legacy reasons) can be found in the `build`-directory, which should now appear in the working directory `bvd_agent_based_model`. So far it only has two options which can be added on the command line, namely `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies various parameters of the simulated system. Some sample ini files can be found in the folder `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (respectively `./build/bvd_agent_simulation --ini iniFiles/Test.ini` for the automake build case), if your current working directory is the root directory of the the repository. A detailed description of the set parameters is provided in the Test.ini file in the iniFiles folder.
 
-Note that a csv file with two columns separated by an upper colon `;` is needed as a farm list input to the simulation. 
+Note that a csv file with two columns separated by an upper colon `;` is needed as a farm list input to the simulation. There should optionally be a header indicating in a human readable way the attributes of each column. 
+Both columns should consist of non-negative integers. The first column should be in an ascending order and represents the animal count. The second column should depend on the fields of the first and represents the corresponding 
+number of farms.
 
 
 # Development

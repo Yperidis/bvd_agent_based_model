@@ -463,7 +463,7 @@ void System::_execute_event( Event* e )  // System level events
 	    	farm->jungtierCheck();
 
     	}
-		if(this->activeStrategy->usesJungtierFenster){
+		if(this->activeStrategy->usesJungtierFenster){  // The strategy might have changed in the elapsed jungtierzeit, so we need to check
 			schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
 		}
 		break;

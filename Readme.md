@@ -22,7 +22,8 @@ Use macports or home-brew to install
 * hdf5 
 * sqlite
 * gsl
-* clang-omp	
+* clang-omp
+* cmake
 * automake
 * autoconf
 * libtool
@@ -45,7 +46,9 @@ At the current state of the project, the easiest build would be through [Cygwin]
     * sqlite
     * gsl
     * cmake
+
       Additionally for the automake build case:
+      
     * make
     * automake
     * autoconf
@@ -76,39 +79,49 @@ If you experience problems in the build process, try running `autoreconf -i`. If
 ## Running the code
 After the successful compilation and linking an executable called 'bvd_agent_based_model' (through the automake tools build this will be called 'bvd_agent_simulation' due to legacy reasons) can be found in the `build`-directory, which should now appear in the working directory `bvd_agent_based_model`. So far it only has two options which can be added on the command line, namely `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies various parameters of the simulated system. Some sample ini files can be found in the folder `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (respectively `./build/bvd_agent_simulation --ini iniFiles/Test.ini` for the automake build case), if your current working directory is the root directory of the the repository. A detailed description of the set parameters is provided in the Test.ini file in the iniFiles folder.
 
+Note that a csv file with two columns separated by an upper colon `;` is needed as a farm list input to the simulation. 
+
 
 # Development
-A roadmap following the needs of the FLI and the TU Berlin has been proposed for the continuation and extension of the project.
-## Roadmap
+A programme following the needs of the FLI and the TU Berlin has been proposed for the continuation and extension of the project.
+
+## Programme
+
 Several tasks have already been defined for the development of the code.
 
 * Simulation Capability
-	  * At the moment (March 2018) the behavior of the market is determined by simple rules of supply and demand, which are dictated by a condition to preserve the trading farm's animal population. This leads to some kind of worst case scenario. In order to come up with more realistic results, a market model based on loyalties between premises could be considered.
-	  * The largest amount of time is used by the market in the process of choosing cattle to put them into the offer and demand queues by the market, and doing the matchmaking. Making this part of the simulation thread safe and doing it in N threads should increase the performance of the code significantly.
+   * At the moment (March 2018) the behavior of the market is determined by simple rules of supply and demand, which are dictated by a condition to preserve the trading farm's animal population. This leads to some kind of worst case scenario. In order to come up with more realistic results, a market model based on loyalties between premises could be considered.
+   * The largest amount of time is used by the market in the process of choosing cattle to put them into the offer and demand queues by the market, and doing the matchmaking. Making this part of the simulation thread safe and doing it in N threads should increase the performance of the code significantly.
+
 * Output
-	  * Fix the SQLite output 
-	  * Include support for CSV file output
-	  * Support turning on and off different output data (to minimize data size). This has been partly implemented in the debug code.
-	  * Consider including in the source code a compression of the output data upon runtime.
+    * Fix the SQLite output 
+    * Include support for CSV file output
+    * Support turning on and off different output data (to minimize data size). This has been partly implemented in the debug code.
+    * Consider including in the source code a compression of the output data upon runtime.
+
 * Tests
 	* Several tests should be written utilizing the [framework Catch](https://github.com/philsquared/Catch). A unit test scheme would be recommended.
-* usability 
-	  * Make it possible to generate makefiles which exclude certain files if for example HDF5 support is not needed. The cmake implementation can largely account for that. Likewise for suppressing selected parts of output data. An implementation is already working for UNIX-like systems (see the CMakeLists.txt at the parent directory of the project).
+	
+* Usability 
+    * Make it possible to generate makefiles which exclude certain files if for example HDF5 support is not needed. The cmake implementation can largely account for that and is apready implemented. Likewise for suppressing selected parts of output data. An implementation is already working for UNIX-like systems (see the CMakeLists.txt at the parent directory of the project).
 
 * Miscellaneous
 	* Make project follow conventions 
 		* Include system libraries in header files and project files in cpp files
-		* Clean up system
 		* Move all options to BVDSettings
+		* Clean up system
+		
+* Default Behavior
+    * The project should be set up in such a way so as to run for default values even without any input or an ini file.
   
 
 ## Contribute
-You can easily contribute to this project by forking it and starting pull requests. If you are interested in the corresponding research, feel free to reach out to one of the main developers of this package. Note that we're trying to stick to the infamous [git flow](https://danielkummer.github.io/git-flow-cheatsheet/). 
+You can easily contribute to this project by forking it and making pull requests. If you are interested in the corresponding research, feel free to reach out to one of the main developers of this package. Note that we're trying to stick to the infamous [git flow](https://danielkummer.github.io/git-flow-cheatsheet/). 
 
 ## History
-This project has been developed during a collaboration between Philipp Hövel and his working group at the TU Berlin, and the FLI, which belongs to the German federal ministry of agriculture. The idea has been to implement an event-driven, agent based simulation for the spread of BVD on the German cattle trade network with the cattle serving as agents, so as to emulate the BVD and trading dynamics and develop mitigation strategies for the containment of BVD in Germany.
+This project has been developed during a collaboration between Philipp Hövel and his working group at the TU Berlin, and the FLI, which belongs to the German federal ministry of agriculture. The idea has been to implement an event-driven, agent based simulation for the spread of BVD on the German cattle trade network with the cattle serving as agents, so as to emulate the BVD and trading dynamics, and develop and test mitigation strategies for the containment of BVD in Germany in conjunction with a cost-benefit analysis.
 
-The project started in November 2015 by Thomas Isele, PhD and then continued by Inia Steinbach, M.Sc. and Pascal Blunk, M.Sc.. The data for the simulation as well as all information on the disease as well as German legislation was provided by Jörn Gethmann, PhD (FLI) and Hartmut Lentz, PhD (FLI).
+The project started in November 2015 by Thomas Isele, Ph.D. and then was continued by Inia Steinbach, M.Sc. and Pascal Blunk, M.Sc.. The data for the simulation (csv farm lists) as well as all information on the disease as well as German legislation was provided by Jörn Gethmann, Ph.D. (FLI) and Hartmut Lentz, Ph.D. (FLI).
 
 
 ## Includes from other projects

@@ -6,7 +6,7 @@ namespace bvd_const
 {
   const double lambda_TI              = 0.03; // Default value (Viet 2004) 0.03
   const double lambda_PI              = 0.5; // Default value (Viet 2004) 0.5
-  const double age_threshold_calf     = 180.; //(180 days = 6 months )
+  const double age_threshold_calf     = 180.; // (180 days = 6 months )
   //  const int    maximum_calving_number = 4;
   const double minimum_pregnancy_duration = 280.; // Minimum pregnancy duration
   const double threshold_abortion_counts_as_calving = 240.; // 8 months. Is that right?
@@ -17,8 +17,8 @@ namespace bvd_const
   const double firstVaccAge = 186.;
   //FIXME With the input from the ini file the timeOfVaccinationPersistence is redundant
   const double timeOfVaccinationPersistance = 365.;
-  const double probabilityOfOnlyOneTestForThatCow = 0.92; //0.7488;    //upper limit for the probability of a second test for
-    //the cow. See cowGetsASecondChance() at BVD_Radnom.Number_Generator.cpp
+  const double probabilityOfSecondTestForThatCow = 0.08; // upper limit for the probability of a second test for
+    // the cow. See cowGetsASecondChance() at BVD_Radnom.Number_Generator.cpp
   struct {
 	  double DAILY = 1.0;
 	  double WEEKLY = 7.0;
@@ -158,9 +158,6 @@ struct {
     double max = 30.;
     double mod = 11.;
   } time_of_first_test ;
-
-
-
 
 }
 

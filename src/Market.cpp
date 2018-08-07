@@ -94,7 +94,7 @@ Market::~Market(){
   	this->farms = nullptr;
 }
 void Market::register_offer( Offer * offer){
-	if(offer->src->getType() == SLAUGHTERHOUSE){    //We do not accept offers from slaughterhouses by definition
+	if(offer->src->getType() == SLAUGHTERHOUSE){    // We do not accept offers from slaughterhouses by definition
 		delete offer;
 		//std::cerr << "WARNING: ATTEMPTED TO REGISTER OFFER FROM THE SLAUGHTERHOUSE." << std::endl;
 		return;
@@ -103,8 +103,8 @@ void Market::register_offer( Offer * offer){
 	Cow::UnorderedSet* cows = offer->getCows();
 	cowqueue* offerQueue = nullptr;
 	demandqueue* demandQueue = nullptr;
-	for(auto cow : *cows){//for every cow
-		//find the right queues depending on age and breeding activity
+	for(auto cow : *cows){  // for every cow
+		// find the right queues depending on age and breeding activity
 		switch(cow->knownStatus){
 
 			case KnownStatus::POSITIVE:

@@ -32,14 +32,14 @@ enum class Event_Type
       MANAGE				= -4,  // System event
       EARTAG 				= -5,  // Redundant by the TEST event
       TEST					= -100,  // Cow event
-      ANTIBODYTEST			= -101,  // Cow event. Equivalent to JUNGTIER_SMALL_GROUP
+      ANTIBODYTEST			= -101,  // Cow event. So far equivalent to JUNGTIER_SMALL_GROUP. Is not otherwise implemented.
       VIRUSTEST				= -102,  // Cow event. Appears at the herd level.
       VACCINATION			= -103,  // Redundant by the VACCINATE event
       QUARANTINEEND			= -104,  // Farm event
       JUNGTIER				= -105,  // Not implemented
       JUNGTIER_EXEC			= -106,  // System event
       JUNGTIER_SMALL_GROUP = -107,  // Farm event. Equivalent to ANTIBODYTEST. Appears at the Farm level.
-      ChangeContainmentStrategy = -108  //System event
+      ChangeContainmentStrategy = -108  // System event (should have the highest priority to have an effect)
       };
 
 // At least the numbers of the system events should stay in this particular order because

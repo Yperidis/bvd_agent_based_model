@@ -364,7 +364,7 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
 
 	return c;
 }
-
+// TODO For the initialised cows an ear tag test is never scheduled
 inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const int& farm_idx, int& i,const int& number, double& time){
     Event_Type et;
     double t;

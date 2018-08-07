@@ -371,7 +371,7 @@ void Farm::executeQuarantineEndEvent(const Event* e){
 
 void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your mum feels clean
 	if(this->myType == SLAUGHTERHOUSE || this->myType == WELL) return;
-	//TODO Gerneralise the test mechanisms of any herds
+	// TODO Generalise the test mechanisms of any herds
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
 	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){
@@ -381,6 +381,7 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 			onePositiveTest = true;
 			break;
 		}
+		// TODO A log event takes place also at the system at execute_next_event()
 		this->system->output->logEvent(e);
 		delete e;
 	}
@@ -392,15 +393,15 @@ void Farm::testAllCows(){
 		herd->testAllCows();
 }
 
-int Farm::getNumberOfCowsToTest() const{
+int Farm::getNumberOfCowsToTest() const{  // For the young calf window with 95% confidence
 
 	int N = this->total_number();
 	int n =0;
 	if(N > 180) n= 14;
-	else if(N < 180 &&  N > 60) n = 13;
-	else if(N < 60 && N > 30) n = 12;
-	else if(N < 30 && N > 20) n = 11;
-	else if(N < 20 && N > 10) n = 10;
+	else if(N <= 180 &&  N > 60) n = 13;
+	else if(N <= 60 && N > 30) n = 12;
+	else if(N <= 30 && N > 20) n = 11;
+	else if(N <= 20 && N > 10) n = 10;
 	else n = 8;
 
 	return n;

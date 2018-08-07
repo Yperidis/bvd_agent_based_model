@@ -457,7 +457,7 @@ unsigned int Random_Number_Generator::getSeed(){
 }
 bool Random_Number_Generator::cowGetsASecondChance(){
 	double rndNum = this->ran_unif_double( 1.0, 0.0);
-	return (rndNum < bvd_const::probabilityOfOnlyOneTestForThatCow);
+	return (rndNum < bvd_const::probabilityOfSecondTestForThatCow);
 }
 
 double Random_Number_Generator::timeOfFirstTest(){

@@ -50,7 +50,7 @@ Cow::Cow( double time, Cow* my_mother, bool isFemale){
 }
 
 //Function for initialising cows introduced in the system independently of the simulation
-//TODO Introduce the external cows to existing farms
+// TODO Introduce the external cows to existing farms
 Cow::Cow(std::string cowName){
 
 	double introTime = System::reader->GetReal(cowName, "introductiontime", 500);
@@ -93,7 +93,7 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 		herd = nullptr;
 	}
 	all_living_cows[ _id ]= this;
-	//TODO Why calving_number+1?
+	// TODO Why calving_number+1?
 	birthTimesOfCalves = new double[calving_number+1];
 	for(int i=0; i < calving_number+1; i++){
 		birthTimesOfCalves[i] = -1.0;    //initialisation of the times for each calf the cow is scheduled to give birth to
@@ -171,7 +171,7 @@ void Cow::execute_event( Event* e )
 		case Event_Type::RECOVERY     :
 			execute_RECOVERY( e->execution_time );
 			break;
-		case Event_Type::VIRUSTEST:    //Presently we do not distinguish the effects of the different tests
+		case Event_Type::VIRUSTEST:    // Presently we do not distinguish the effects of the different tests
 		case Event_Type::ANTIBODYTEST:
 		case Event_Type::TEST:
 			this->testCow(e);
@@ -188,8 +188,8 @@ void Cow::execute_event( Event* e )
 }
 
 Cow_Trade_Criteria Cow::getCowTradeCriteria(){
-	double date = this->system->getCurrentTime();
-	double age = date - this->birth_time;
+	double date = system->getCurrentTime();
+	double age = date - birth_time;
 	static double calfMaxAge = bvd_const::age_threshold_calf;
 	if(!this->female){
 		if(age <= calfMaxAge){
@@ -209,14 +209,14 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 		return PREGNANT;
 	}
 	if( !children.empty() ){
-		//TODO return OLD_COW
+		// TODO return OLD_COW
 		if(age > 1488.) // 1488 =48*31. Setting the criterion for the cow to be old at about 4 years.
 			return OLD_COW;
 		return DAIRY_COW;
 	}else{
 		if(age <= calfMaxAge){
 			return CALF;
-		}else if(age <= 527.){//527*17*31//TODO implement random distribution when breeding begins
+		}else if(age <= 527.){//527*17*31 // TODO implement random distribution when breeding begins
 			return HEIFER_PRE_BREEDING;
 		}else
 			return HEIFER_RDY_BREEDING;
@@ -261,11 +261,10 @@ void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 
 void Cow::execute_BIRTH( const double& time  )
 {
-    //TODO check if this accounts only for abortions and stillbirths or if there is something else going on
     /// At this block segment we are referring to the cow's status
 	if ( calf_status == Calf_Status::NO_CALF || (time - last_conception_time) < bvd_const::pregnancy_duration.min ){
 
-	    //FIXME Sometimes the pretty_print precedes the standard output prompt at runtime. May have to do with the standard output response.
+	    // FIXME Sometimes the pretty_print precedes the standard output prompt at runtime. May have to do with the standard output response.
 		if (calf_status == Calf_Status::NO_CALF) {
 			std::cerr << "WARNING! CALF STATUS NO_CALF CALLED AT BIRTH! NON-PREGNANT COW IS CALLED FOR BIRTH @t="
                       << time << std::endl;
@@ -330,7 +329,6 @@ void Cow::execute_BIRTH( const double& time  )
             if ( time_of_death <= time ){    // If the calf survives, then it will never die as a cow (as S, T or R)
                 time_of_death = std::numeric_limits<double>::max();
             } else{
-				// FIXME DEATH not implemented in Cow.cpp, but deleted at execute_next_event() in System.cpp.
 				system->schedule_event( new Event( time_of_death , Event_Type::DEATH , calf->id() ) );
             }
         }
@@ -344,7 +342,6 @@ void Cow::execute_BIRTH( const double& time  )
 		else {/// Male cow: schedule culling if it survives.
 			execution_time = time + system->rng.life_expectancy_male_cow();
 			if ( time_of_death > execution_time ) {    // if the male calf survives beyond its life expectancy kill it
-                // FIXME DEATH not implemented, but deleted at execute_next_event() in System.cpp.
 				system->schedule_event( new Event( execution_time, Event_Type::DEATH, calf->id() ) );
 			}
 		}
@@ -362,7 +359,6 @@ void Cow::execute_BIRTH( const double& time  )
 		calf->infection_status = is;    // According to what has been already set that can be S, P or R
 
 		children.insert( calf );  // An unordered set for each animal, where its newborn calves are recorded
-        // TODO what does the push_cow implementation mean in the well and slaughter farms?
 		herd->farm->push_cow( calf );    // Add the calf in the herd of the farm of its mother
 		herd->reevaluateGroup(this); // Resetting the trading criteria according to the new arrivals in case these are in effect
 		// log time of birth to mother cow in order to use it in output
@@ -487,7 +483,7 @@ void Cow::execute_CONCEPTION(const double& time )
 
 void Cow::execute_DEATH( const double& time )
 {
-	//FIXME not implemented. However, an equivalent utility is in execute_next_event in System.cpp. Never called due to that. Redundant?
+	// FIXME not implemented. However, an equivalent utility is in execute_next_event in System.cpp. Never called due to that. Redundant?
 	std::cout << "WARNING! Tried to execute DEATH but not implemented" << std::endl;
 }
 
@@ -637,6 +633,7 @@ Calf_Status Cow::stringToCalfStatus(const std::string& input){
 	return Calf_Status::NO_CALF;
 
 }
+
 Infection_Status Cow::stringToInfectionStatus(const std::string& input){
 	if(input.compare("SUSCEPTIBLE") == 0)
 		return Infection_Status::SUSCEPTIBLE;
@@ -649,29 +646,24 @@ Infection_Status Cow::stringToInfectionStatus(const std::string& input){
 
 	return Infection_Status::SUSCEPTIBLE;
 }
-//The end of the vaccination effect
+
 inline void Cow::execute_END_OF_VACCINATION(const double& time){
 	if(this->infection_status == Infection_Status::IMMUNE){  // This should not concern non-S animals prior to vaccination
 	                                                         // see the implementation at runVaccination()
 		this->execute_END_OF_MA(time);
 	}
-	this->end_of_vaccination_event = nullptr;    //For any animal the vaccination effect is annulled
+	this->end_of_vaccination_event = nullptr;    // For any animal the vaccination effect is annulled
 
 }
-//TODO should this function be const, i.e. funct(...) const {...}? There is a dependency in the scheduleInsemination function (c->scheduleVaccination(vaccTime))
+
 inline void Cow::scheduleVaccination(const double& time) const{
     if(vaccExpiry != nullptr){  // An ad hoc check that a vaccination will not take place while the previous is still in effect
         if(*vaccExpiry > time)
             return;
     }
-    //else
-	//	std::cerr << "NO VACCINE EXPIRATION DEFINED!" << std::endl;
 	double vaccTime = time;
-	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )  //make sure that the animal does not receive a vaccination before it reaches the appropriate age
+	if(time - this->birth_time - bvd_const::firstVaccAge < 0 )  // make sure that the animal does not receive a vaccination before it reaches the appropriate age
 		vaccTime = this->birth_time + bvd_const::firstVaccAge + 1;
-
-//If the animal can be vaccinated (i.e. passed the previous conditional of test of age) we do not check here
-//whether it should (i.e. if it has already been vaccinated) at the running time.
     system->schedule_event( new Event( vaccTime, Event_Type::VACCINATE, this->id() ) );
 }
 
@@ -724,31 +716,30 @@ bool Cow::testCow(const Event* e){
 	if(firstTestTime <= 0.0)    // initialisation value is -1
 		this->firstTestTime = system->getCurrentTime();
 	lastTestTime = system->getCurrentTime();
-	if(this->isTestedPositive(e)){    // True positive or true negative
+	if(this->isTestedPositive(e)){    // True or false positive
 		if(System::getInstance(nullptr)->activeStrategy->quarantineAfterPositiveTest)
-			//TODO Put the farm under quarantine for a true negative too? See the implementation of isTestedPositive()
 			this->herd->farm->putUnderQuarantine();
 
 		// If the cow has not been tested positive yet set its known status to "POSITIVE_ONCE".
 		this->knownStatus = this->hasBeenTestedPositiveYet ? KnownStatus::POSITIVE_TWICE : KnownStatus::POSITIVE_ONCE;
 		// If the test is a virus test, indeed test the cow once. Otherwise, if the cow is to be tested again, make this
 		// variable false. If the cow is not to be tested again, indeed this variable should be true.
-		bool testOnce = e->type == Event_Type::VIRUSTEST ? true : !(this->testAgain());  // Presently, only TEST events reach here
-		// for non young-calf window strategy (individual basis). Only then is the VIRUSTEST possible (for the whole herd).
-		bool testASecondTime = !(this->hasBeenTestedPositiveYet || testOnce); //Do not test again (false) if the cow
+		bool testOnce = e->type == Event_Type::VIRUSTEST ? true : !(this->testAgain());  // For ear tag, only TEST events reach here
+		// for non young-calf window strategy (individual basis). Only for YTF is the VIRUSTEST possible (for the whole herd).
+		bool testASecondTime = !(this->hasBeenTestedPositiveYet || testOnce); // Do not test again (false) if the cow
 		// has already been tested positive (so this is the second time we test it) or if it should be tested only once.
 		if(testASecondTime)
 			this->scheduleNextTest();
 		else if(testOnce) {
 			double removeTime = system->rng.removeTimeAfterFirstTest();
 			system->schedule_event(new Event(system->getCurrentTime() + removeTime,
-											 Event_Type::REMOVECOW, this->id()));  //statistics show that cows
+											 Event_Type::REMOVECOW, this->id()));  // statistics show that cows
 			// which have only been tested once and then removed, have been removed immediately
 		}
-		else{
+		else{  // fate of the animal after the second positive test
 			double removeTime = system->rng.removeTimeAfterSecondTest();
 			system->schedule_event( new Event( system->getCurrentTime() + removeTime, Event_Type::REMOVECOW, this->id() ) );
-			if(this->hasBeenTestedPositiveYet)  // Sanity check. To have reached here is has to have been tested positive already
+			if(this->hasBeenTestedPositiveYet)  // Sanity check. To have reached here is to have been tested positive already
 				for(auto calf : this->children)
 					calf->knownStatus = KnownStatus::POSITIVE_MOTHER;
 			}
@@ -758,7 +749,11 @@ bool Cow::testCow(const Event* e){
 	}else{
 		this->knownStatus = KnownStatus::NEGATIVE;
 		if(this->mother != nullptr)  // If the cow has given birth at some point in the past
-			this->mother->knownStatus = KnownStatus::NEGATIVE;
+			this->mother->knownStatus = KnownStatus::NEGATIVE;  // This accounts for calves being generated after the
+                                                                // declaration of a mother as positive. If the offer
+        // to the slaughterhouse has been registered before the time of this (the first test) it is possible that a
+        // non PI calf might end up to the slaughterhouse due to its mother's positive status.
+        // TODO Consider the effect of the above comment on the calves and the positive mother
 	}
 	this->herd->removeCowFromUnknownList(this);
 	return this->hasBeenTestedPositiveYet;
@@ -766,7 +761,7 @@ bool Cow::testCow(const Event* e){
 
 bool Cow::isTestedPositive(const Event* e){
 	bool resultIsCorrect = system->rng.bloodTestRightResult();    // This tells us if the test was successful or not i.e.
-	// either a true positive or a true negative, or a false positive or a false negative
+	// either if true of any of the two statuses or if false.
 
 	bool correctHealthState;
 	switch(e->type){
@@ -787,11 +782,13 @@ bool Cow::isTestedPositive(const Event* e){
 	// tests to be antigen tests (second case of the switch block) so far in the code. ATTENTION:
 	// The name and the logic should be reconsidered if we start making distinctions for the different tests.
 }
+
 inline bool Cow::testAgain(){
-	return system->rng.cowGetsASecondChance();    //The upper probability limit for that is set at the model constants.h
+	return system->rng.cowGetsASecondChance();    // The upper probability limit for that is set at the model constants.h
 }
+
 inline void Cow::scheduleNextTest(){
-	double retestTime = system->rng.retestTime();    //uniform random number chosen between 20. and the defined
+	double retestTime = system->rng.retestTime();    // uniform random number chosen between 20. and the defined
     // retestingTimBlood float (must be > 20.)
 	system->schedule_event( new Event( system->getCurrentTime() + retestTime ,Event_Type::TEST, this->id() ) );
 }
@@ -867,10 +864,11 @@ void Cow::setGroup(Cow::UnorderedSet* set){
 		this->Group->insert(this);
 	}
 }
+
 Cow::UnorderedSet* Cow::getGroup(){
 	return this->Group;
 }
-//TODO: Implement the bookkeeping for infection rate changes within a farm
+// TODO: Implement the bookkeeping for infection rate changes within a farm
 //      There is a function for registering future infection rate changing events.
 //      This function will be called by the scheduling routine of system.
 

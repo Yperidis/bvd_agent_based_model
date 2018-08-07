@@ -1,10 +1,12 @@
 # Preamble
-This program, written in C++ (C++11 standard), simulates the spread of bovine viral diarrhea disease (BVD) in a trading network of farms. It has been developed at the Institute of Theoretical Physics (ITP), [from the team of professor Hövel](http://www.itp.tu-berlin.de/ag_empirische_netzwerke_und_neurodynamik/hoevel/members/parameter/en/) at the TU Berlin, and is a collaboration between that team and the epidemiological department of the [Friedrich Loeffler Institute](https://www.fli.de/en/institutes/institute-of-epidemiology-ife/) (FLI).
+This program, written in C++ (C++11 standard), simulates the spread of bovine viral diarrhea disease (BVD) in a trade network of farms. It has been developed at the Institute of Theoretical Physics (ITP), [from the team of professor Hövel](http://www.itp.tu-berlin.de/ag_empirische_netzwerke_und_neurodynamik/hoevel/members/parameter/en/) at the TU Berlin, and is a collaboration between that team and the epidemiological department of the [Friedrich Loeffler Institute](https://www.fli.de/en/institutes/institute-of-epidemiology-ife/) (FLI).
 
 # Use of the code
 ## Compilation
-Like most open source projects, this project has not been build for users who do not already posses some knowledge in building C++ code on a UNIX platform. Of course, making the code more accessible is a main aim. 
-The cmake implementation should make it easier in principle to build a solution in [Visual Studio](https://www.visualstudio.com/). So far cmake builds successfully on macOS and Linux systems.
+The code is presently built via [Cmake](https://cmake.org/). It has been tested on a Linux (Debian) system and on Windows 7 Professional via [Cygwin](https://cygwin.com/). The CMakeLists file has been set up for 
+a Mac enviornment as well, but it has not been tested yet. An ongoing effort is being made to build a solution of the project for [Visual Studio 2017](https://www.visualstudio.com/). 
+
+Finally, it is possible to compile the project through the [automake](https://www.gnu.org/software/automake/) suite of tools, but the procedure is more involved (has been tested and works though in Linux-Debian and through Cygwin in Windows 7 Professional). The instructions below should facilitate any of the two selected builds.
 
 ### Step by Step Guide
 First you need to install all of the packages listed here. Unfortunately, it is still necessary to have all libraries such as HDF5 and SQLite included, even if you're just using CSV export. In the future this might change.
@@ -26,7 +28,7 @@ Use macports or home-brew to install
 * libtool
 
 ##### Linux
-Use your package manager of choice to install
+Use the package manager of your choice to install
 * git
 * gsl
 * sqlite
@@ -39,10 +41,12 @@ At the current state of the project, the easiest build would be through [Cygwin]
 
 * Make sure the following packages are installed via Cygwin (the debug versions are not necessary).
     * g++ 
-    * make
     * hdf5
     * sqlite
     * gsl
+    * cmake
+      Additionally for the automake build case:
+    * make
     * automake
     * autoconf
     * libtool
@@ -51,16 +55,26 @@ At the current state of the project, the easiest build would be through [Cygwin]
 
 
 #### Cloning and Building
-* Clone this repository via `git clone https://github.com/Yperidis/bvd_agent_based_model.git` and make it your working directory the `bvd_agent_based_model`.
+
+##### Cmake Case
+
+* Clone this repository via `git clone https://github.com/Yperidis/bvd_agent_based_model.git`, unpack the project in a directory called `bvd_agent_based_model` and make it your working directory.
+* Run `cmake ./` from the `bvd_agent_based_model` directory. If you are running this on Windows do this from the Cygwin command-line console.
+* If you are on Windows, modify the generated Makefile by adding on line 5 the library calls "-lhdf5 -lhdf5_hl".
+* Run `Make` (similarly from the Cygwin terminal if you are on Windows).
+
+##### Automake Tools Case
+
+* Clone this repository via `git clone https://github.com/Yperidis/bvd_agent_based_model.git`, unpack the project in a directory called `bvd_agent_based_model` and make it your working directory.
 * Run the `./configure` script in the `bvd_agent_based_model` directory. If you are running this on Windows do this from the Cygwin command-line console.
-* If you are on Windows, modify the Makefile by adding on line 5 the library calls "-lhdf5 -lhdf5_hl".
-* Run `Make`. 
+* If you are on Windows, modify the generated Makefile by adding in line 5 the library calls "-lhdf5 -lhdf5_hl".
+* Run `Make` (similarly from the Cygwin terminal if you are on Windows).
 
 If you experience problems in the build process, try running `autoreconf -i`. If this does not work, open an issue [(please follow the guidelines)](https://guides.github.com/features/issues/) on the matter.
 
 
 ## Running the code
-After the successful compilation and lining an executable called 'bvd_agent_based_model' (on Windows this will be called 'bvd_agent_simulation' due to legacy reasons) can be found in the `build`-directory. So far it only has two options which can be added on the command line, namely `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies the behavior of the simulated system. Some sample ini files can be found in the folder `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (respectively `./build/bvd_agent_simulation --ini iniFiles/Test.ini` on Windows), if your current working directory is the main directory of the the repository. A detailed description of the set parameters is provided in the Test.ini file in the iniFiles folder.
+After the successful compilation and linking an executable called 'bvd_agent_based_model' (through the automake tools build this will be called 'bvd_agent_simulation' due to legacy reasons) can be found in the `build`-directory, which should now appear in the working directory `bvd_agent_based_model`. So far it only has two options which can be added on the command line, namely `--help` and `--ini`. The latter has to be invoked in order to provide an ini file which then specifies various parameters of the simulated system. Some sample ini files can be found in the folder `/iniFiles/` so that the program can be run by executing `./build/bvd_agent_based_model --ini iniFiles/Test.ini` (respectively `./build/bvd_agent_simulation --ini iniFiles/Test.ini` for the automake build case), if your current working directory is the root directory of the the repository. A detailed description of the set parameters is provided in the Test.ini file in the iniFiles folder.
 
 
 # Development
@@ -104,7 +118,7 @@ The directory `projectImports` includes libraries provided by other sources. So 
 # Research
 
 ## Pascal Blunk's master thesis
-[Pascal's](https://github.com/Gerungofulus/) thesis is the first milestone of this project and can be found at [git repository](https://github.com/Gerungofulus/Masterarbeit/settings).
+[Pascal Blunk's](https://github.com/Gerungofulus/) master thesis is the first milestone of this project and can be found at [git repository](https://github.com/Gerungofulus/Masterarbeit/settings). Inia Steinbach also used a premature form of this code for some results found in her master thesis.
 
 
 # Acknowledgements

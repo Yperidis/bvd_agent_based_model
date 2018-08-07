@@ -45,7 +45,7 @@ AdvancedOutput::~AdvancedOutput()
 
 }
 void AdvancedOutput::logBirth(const Cow *c){
-	if(c == NULL) return;
+	if(c == nullptr) return;
 	this->handler->logBirth(c);
 }
 
@@ -53,7 +53,7 @@ void AdvancedOutput::logFarms(const double time,const std::vector< Farm* >*farms
 	this->handler->logFarms(time, farms);
 }
 void AdvancedOutput::logEvent(const Event *e){
-	if(e == NULL) return;
+	if(e == nullptr) return;
 	this->handler->logEvent(e);
 }
 

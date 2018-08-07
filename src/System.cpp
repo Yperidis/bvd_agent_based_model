@@ -12,8 +12,8 @@
 #include "Events.h"
 #include "BVDContainmentStrategy.h"
 #include "BVDSettings.h"
-System* System::_instance = 0;
-INIReader* System::reader = 0;
+System* System::_instance = nullptr;
+INIReader* System::reader = nullptr;
 System* System::getInstance(INIReader* reader){
 	static CGuard g;   // Garbage Collection (Speicherbereinigung)
 	if (!_instance){
@@ -23,7 +23,6 @@ System* System::getInstance(INIReader* reader){
 
 		double dt_log  = reader->GetReal("simulation", "dt_log", 1.0);
 		double dt_output = reader->GetReal("simulation", "dt_output", 100.0);
-        //TODO Does this feature work as it should when set to true in parallel to PercentagesShallBeAppliedonWells? See CowWellFarmManager.cpp
 		bool dynamic_reintroduction = reader->GetBoolean("modelparam", "PercentagesShallBeAppliedOnWellsDynamically", false);
 		std::string dtmanage = reader->Get("trade" , "tradeRegularity", "DAILY");
 		double dt_manage = bvd_const::tradingTimeIntervall.DAILY;
@@ -414,7 +413,7 @@ void System::run_until( double end_time )
   schedule_event( new System_Event( _current_time + _dt_write,  Event_Type::WRITE_OUTPUT ) );
   schedule_event( new System_Event( _current_time + _dt_manage, Event_Type::MANAGE ) );
   if(this->mySettings->strategies.size() > 0)
-	schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
+	schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy) );
   stop=false;
   while( !( stop || queue.empty() ) ){    //The simulation continues until it either reaches the end time or the main event queue is empty
 	  execute_next_event();
@@ -437,7 +436,7 @@ double System::getCurrentTime(){
 Market* System::getMarket(){
 	return this->market;
 }
-void System::_execute_event( Event* e )
+void System::_execute_event( Event* e )  // System level events
 {
 
   switch( e->type )
@@ -465,7 +464,7 @@ void System::_execute_event( Event* e )
 
     	}
 		if(this->activeStrategy->usesJungtierFenster){
-			schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit,Event_Type::JUNGTIER_EXEC));
+			schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
 		}
 		break;
 	case Event_Type::ChangeContainmentStrategy:
@@ -473,9 +472,9 @@ void System::_execute_event( Event* e )
 			delete this->activeStrategy;
 			this->activeStrategy = this->mySettings->strategies.top();
 			this->mySettings->strategies.pop();
-			schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy));
+			schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy) );
 			if(this->activeStrategy->usesJungtierFenster){
-				schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit,Event_Type::JUNGTIER_EXEC));
+				schedule_event(new System_Event( e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
 			}
 		}
 		break;
@@ -486,7 +485,7 @@ void System::_execute_event( Event* e )
     case Event_Type::LOG_OUTPUT:
 
       log_state();
-      schedule_event(new System_Event( _current_time + _dt_log , Event_Type::LOG_OUTPUT ) );
+      schedule_event(new System_Event( _current_time + _dt_log, Event_Type::LOG_OUTPUT ) );
       break;
     case Event_Type::WRITE_OUTPUT:
 			std::cout << "Writing file after " << _current_time << " days:\t" ;
@@ -498,7 +497,7 @@ void System::_execute_event( Event* e )
             std::cout << "Event queue size is " << this->queue.size() << std::endl;
             std::cout << "PI prevalence at reintroduction is now " << this->getFirstWell()->printInfectionValues() << std::endl;
 #endif
-			schedule_event(new System_Event( _current_time + _dt_write , Event_Type::WRITE_OUTPUT ) );
+			schedule_event(new System_Event( _current_time + _dt_write, Event_Type::WRITE_OUTPUT ) );
 
 			break;
     case Event_Type::MANAGE:
@@ -537,9 +536,9 @@ void System::handleSystemError(int sig){
 }
 
 System::CGuard::~CGuard(){
-	if(System::_instance != NULL){
+	if(System::_instance != nullptr){
 		delete System::_instance;
-		System::_instance = NULL;
+		System::_instance = nullptr;
 	}
 }
 

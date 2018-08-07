@@ -103,7 +103,7 @@ void TableBasedOutput::logFarms(const double time,const std::vector< Farm* >*far
 void TableBasedOutput::logEvent(const Event *e){
 	Cow* c = Cow::get_address( e->id );
 
-		if(c != NULL){
+		if(c != nullptr){
 			switch(e->type){
 				case Event_Type::TRADE:
 					this->logTrade((Trade_Event*) e);
@@ -175,7 +175,7 @@ void TableBasedOutput::logTrade(const Trade_Event* event){
 	double destFarmID = (double) event->farm->id;
 	double srcFarmID;
 //	std::cout << " g" << std::endl;
-	if(c->herd != NULL && c->herd->farm != NULL)
+	if(c->herd != NULL && c->herd->farm != nullptr)
 		srcFarmID = (double) c->herd->farm->id;
 	else
 		srcFarmID = -1.0;
@@ -220,15 +220,16 @@ TestDataPoint TableBasedOutput::testEventToDataPoint(const Event*e, const Cow* c
 	point.sex = c->female;
 	point.result = (int) c->knownStatus;
 	point.infectiousState = (double) c->infection_status;
-	//TODO No additional information with this point. Redundant?
+	// TODO No additional information with this point. Redundant?
 	point.knownState = (double) c->knownStatus;
 	return point;
 }
+
 CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const Cow* cow){
 	CowDataPoint point{};
 
 	double age ;
-	if(event == NULL){
+	if(event == nullptr){
 
 		age = cow->age();//System::getInstance(NULL)->getCurrentTime() - cow->birth_time;
 	}
@@ -282,10 +283,10 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
 
 	double firstCalvingTime = -1.0;
 	double eventType = -1.0;
-	if(event != NULL)
+	if(event != nullptr)
 		eventType = (double) event->type;
 
-	if(cow->birthTimesOfCalves != NULL && cow->birthTimesOfCalves[0] != -1.0)
+	if(cow->birthTimesOfCalves != nullptr && cow->birthTimesOfCalves[0] != -1.0)
 		firstCalvingTime = cow->birthTimesOfCalves[0] - cow->birth_time;
 
 	//point = {(double) (cow->id()),cow->last_conception_time,(double) female,age, (double) (j-1),  eventType, firstCalvingTime, cow->birth_time, (double) cow->knownStatus, cow->firstTestTime, cow->lastTestTime};

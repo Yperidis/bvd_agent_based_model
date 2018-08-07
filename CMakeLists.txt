@@ -7,6 +7,7 @@ project(bvd_agent_based_model)
 get_filename_component(PARENTDIR ${CMAKE_BINARY_DIR} DIRECTORY)
 set(EXECUTABLE_OUTPUT_PATH ${PARENTDIR}/build)
 message(STATUS "Cmake EXECUTABLE OUTPUT DIR is ${EXECUTABLE_OUTPUT_PATH}")
+message(STATUS "Cmake binary dir is ${CMAKE_BINARY_DIR}")
 
 #set(CMAKE_VERBOSE_MAKEFILE TRUE)
 

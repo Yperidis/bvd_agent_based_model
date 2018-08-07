@@ -34,8 +34,8 @@ Herd::~Herd()
 void Herd::pull_cow( Cow* c )
 {
 	c->Group->erase(c);
-  c->herd=NULL;
-  c->Group = NULL;
+  c->herd= nullptr;
+  c->Group = nullptr;
   this->removeCowFromUnknownList(c);
   switch (c->infection_status)
     {
@@ -95,6 +95,7 @@ int Herd::getNumTI(){return this->number_of_TI;}
 int Herd::getNumPI(){return this->number_of_PI;}
 int Herd::getNumR(){return this->number_of_R;}
 int Herd::getNumS(){return this->number_of_S;}
+
 int Herd::total_number()
 {
   return   this->number_of_PI +
@@ -103,6 +104,7 @@ int Herd::total_number()
     this->number_of_R;
 }
 inline void Herd::add_pi_cow(Cow* cow){this->pi_cows.push_back ( cow );this->number_of_PI_increase();}
+
 inline void Herd::remove_pi_cow(Cow* cow){
   std::vector<Cow*>::iterator it;
   it = std::find( this->pi_cows.begin() ,this->pi_cows.end() , cow );
@@ -129,9 +131,11 @@ inline void Herd::remove_cow_from_susceptible( Cow* c )
   else
     std::cerr << "Error: Tried removing cow from S but could not find it. This should not happen!!"<<std::endl;
 }
+
 std::vector<Cow*>* Herd::getPIs(){
 	return &(this->pi_cows);
 }
+
 Cow* Herd::random_S_cow()
 {
   //Select an element from susceptible_cows randomly.
@@ -188,6 +192,7 @@ void Herd::reevaluateGroupsOfAllCows(){
 		this->reevaluateGroup(cow);
 	}
 }
+
 inline void Herd::reevaluateGroup( Cow* cow) {
 	 cow->setGroup(this->getRelevantGroup(cow->getCowTradeCriteria()));
 }
@@ -195,6 +200,7 @@ int Herd::getNumberOfCowsInGroup(Cow_Trade_Criteria crit){
 	Cow::UnorderedSet* group = this->getRelevantGroup(crit);
 	return group->size();
 }
+
 void Herd::getNRandomCowsFromGroup(int n,Cow_Trade_Criteria crit, Cow::UnorderedSet* setOfCows){
 	#ifdef _HERD_DEBUG_
 		std::cout << "HERD: trying to select " << n << " cows for offer for crit "<< crit << std::endl;
@@ -240,6 +246,7 @@ inline Cow::UnorderedSet* Herd::getRelevantGroup(Cow_Trade_Criteria crit){
 	
 		return (*this->cowgroups)[crit];
 }
+
 void Herd::putIntoRelevantGroup(Cow* cow){
 	Cow::UnorderedSet* relevantGroup = this->getRelevantGroup(cow->getCowTradeCriteria());
 	cow->Group = relevantGroup;
@@ -249,21 +256,25 @@ void Herd::putIntoRelevantGroup(Cow* cow){
 inline void Herd::number_of_PI_increase(int n){
 	this->number_of_PI += n;
 }
+
 inline void Herd::number_of_TI_increase(int n){
 	this->number_of_TI += n;
 }
+
 inline void Herd::number_of_PI_decrease(int n){
 	if(	this->number_of_PI >= n)
 		this->number_of_PI -= n;
 	else
 		this->number_of_PI = 0;
 }
+
 inline void Herd::number_of_TI_decrease(int n){
 	if(	this->number_of_TI >= n)
 		this->number_of_TI -= n;
 	else
 		this->number_of_TI = 0;
 }
+
 Cow::UnorderedSet Herd::getNUnknownCows(int N){
 	N = N > unknownCows.size() ? unknownCows.size() : N;
 
@@ -285,15 +296,16 @@ Cow::UnorderedSet Herd::getNUnknownCows(int N){
 void Herd::addCowToUnknownList(Cow* cow){
 	unknownCows.insert(cow);
 }
+
 void Herd::removeCowFromUnknownList(Cow* cow){
 	Cow::UnorderedSet::iterator myIter = unknownCows.find(cow);
 	if(myIter != unknownCows.end())
 		unknownCows.erase(myIter);
 }
+
 void Herd::testAllCows(){
 	for(auto cow:all_my_cows){
 		System* s = this->farm->system;
-
 		s->schedule_event( new Event( s->getCurrentTime() + 0.5, Event_Type::VIRUSTEST, cow->id() ) );
 	}
 }

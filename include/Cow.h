@@ -55,7 +55,7 @@ enum class KnownStatus{
 	POSITIVE = 3,
 	POSITIVE_ONCE = 4,
 	POSITIVE_TWICE = 5	,
-	POSITIVE_MOTHER = 6
+	POSITIVE_MOTHER = 6  // this means that the animal had a positive mother
 };
 
 

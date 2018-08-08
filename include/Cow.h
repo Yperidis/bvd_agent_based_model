@@ -96,7 +96,8 @@ class Cow
 		void execute_event( Event * );
 		Cow_Trade_Criteria getCowTradeCriteria();
 		void register_future_infection_rate_changing_event( Event * e );
-		//Even though the farm keeps track of these as well for all cows, these are necessary as a cow might carry future infection rate changing events which would apply to a different farm after a trade.
+		// Even though the farm keeps track of these events as well for all cows, their definition at the cow level here
+        // is necessary, as a cow might carry future infection rate changing events which would apply to a different farm after a trade.
 		std::unordered_set<Event* > future_irc_events_that_move;
 		double *birthTimesOfCalves;
 

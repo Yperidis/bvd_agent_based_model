@@ -374,7 +374,7 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 	// TODO Generalise the test mechanisms of any herds
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
-	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){
+	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){  // selection from an unordered set of animals-->for all intents and purposes random
 		Event * e= new Event(this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id());
 
 		if(cow->isTestedPositive(e)){
@@ -393,8 +393,8 @@ void Farm::testAllCows(){
 		herd->testAllCows();
 }
 
-int Farm::getNumberOfCowsToTest() const{  // For the young calf window with 95% confidence
-
+int Farm::getNumberOfCowsToTest() const{  // For the young calf window with 95% confidence (upper limit for the # of the
+                                          // infected animals of the herd size N)
 	int N = this->total_number();
 	int n =0;
 	if(N > 180) n= 14;

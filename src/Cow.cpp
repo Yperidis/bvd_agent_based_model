@@ -115,7 +115,7 @@ Cow::~Cow()
 	if (mother != nullptr)
 		mother->children.erase(this);
 	herd->pull_cow( this );
-	delete[] birthTimesOfCalves;
+	//delete[] birthTimesOfCalves;
 	all_living_cows.erase( id() );
 }
 
@@ -373,7 +373,6 @@ void Cow::execute_BIRTH( const double& time  )
 		}
 		this->timeOfLastCalving = time;
 		System::getInstance(nullptr)->addCow(calf);
-
 	}  // Case of stillbirth. Do nothing.
 }
 
@@ -765,10 +764,10 @@ bool Cow::isTestedPositive(const Event* e){
 
 	bool correctHealthState;
 	switch(e->type){
-		case Event_Type::JUNGTIER_SMALL_GROUP:
-		case Event_Type::ANTIBODYTEST:
-			correctHealthState = this->infection_status == Infection_Status::IMMUNE;
-			break;
+		case Event_Type::JUNGTIER_SMALL_GROUP:  // Presently ANTIBODYTEST does not reach here and if it would it would
+		case Event_Type::ANTIBODYTEST:			// be identical to the VIRUSTEST (this is wrong of course in reality)
+			//correctHealthState = this->infection_status == Infection_Status::IMMUNE;
+			//break;
 		case Event_Type::TEST:
 		case Event_Type::VIRUSTEST:
 			correctHealthState = (this->infection_status == Infection_Status::PERSISTENTLY_INFECTED) ||
@@ -778,7 +777,7 @@ bool Cow::isTestedPositive(const Event* e){
 			exit(9);
 	}
 	return !resultIsCorrect ^ correctHealthState; // (not A) XOR B. Operation at the bit level due to the
-	// class enum values. This will only be true for a true positive or a false positive. We assume all the
+	// class enum values. The returned value will only be true for a true positive or a false positive. We assume all the
 	// tests to be antigen tests (second case of the switch block) so far in the code. ATTENTION:
 	// The name and the logic should be reconsidered if we start making distinctions for the different tests.
 }

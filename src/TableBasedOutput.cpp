@@ -55,7 +55,7 @@ TableBasedOutput::~TableBasedOutput(){
 }
 #pragma mark -
 #pragma mark Logging functions
-void TableBasedOutput::logFarms(const double time,const std::vector< Farm* >*farms){
+void TableBasedOutput::logFarms(const double time, const std::vector< Farm* >*farms){
 
 	this->farmDataTimes->push_back(time);
 	FarmDataSave * data = new FarmDataSave();
@@ -66,9 +66,9 @@ void TableBasedOutput::logFarms(const double time,const std::vector< Farm* >*far
 			pisOfFarm = farm->getPIs();
 
 			for(auto pi: *pisOfFarm){
-				if(pi != NULL && pi->id() > 0 ){
+				if(pi != nullptr && pi->id() > 0 ){
 
-					piData->push_back(createCowDataPointForCow(NULL,pi));
+					piData->push_back(createCowDataPointForCow(nullptr,pi));
 				}
 			}
 
@@ -244,13 +244,14 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
 	int j = 0;
 	int state;
 	while(cow->birthTimesOfCalves != nullptr && cow->birthTimesOfCalves[j] != -1.0){
-		///Log the ICT events if the cow in question is to be culled, slaughtered or to die
-		if(event != nullptr && (event->type == Event_Type::CULLING || event->type == Event_Type::SLAUGHTER || event->type == Event_Type::DEATH )){
+		/// Log the ICT events if the cow in question is to be culled, slaughtered or to die (i.e. at end of its life)
+		if(event != nullptr && (event->type == Event_Type::CULLING || event->type == Event_Type::SLAUGHTER || event->type == Event_Type::DEATH ) ){
 
 			state = 0;
 			if(lastCalvingTime > 0.0 ){
+				// TODO Consider the correct calculation of the ICT here
 				double intermediateCalvingTime = cow->birthTimesOfCalves[j] - lastCalvingTime;
-				//TODO Except for the PI number, the way the variable "state" is defined (now commented) doesn't make sense as the health status output.
+				// TODO Except for the PI number, the way the variable "state" is defined (now commented) doesn't make sense as the health status output.
 				if(std::abs(intermediateCalvingTime) > 1e-1){
 					if (cow->infection_status == Infection_Status::SUSCEPTIBLE)
 						state = 1;
@@ -258,7 +259,7 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
                         state = 1.0;*/
 					if(cow->infection_status == Infection_Status::PERSISTENTLY_INFECTED)
 						state = 2;
-					//TODO Should the cow be TI when this data is channeled to the output?
+					// TODO Should the cow be TI when this data is channeled to the output?
 					if(cow->infection_status == Infection_Status::TRANSIENTLY_INFECTED)
 						state = 3;
 					if(cow->infection_status == Infection_Status::IMMUNE)
@@ -268,17 +269,14 @@ CowDataPoint TableBasedOutput::createCowDataPointForCow(const Event* event,const
 					p.id = (double) cow->id();
 					p.intermediateCalvingTime = intermediateCalvingTime;
 					p.healthState = state;
-					this->intermediateCalvingTimes->push_back(	p );
-				}else{
-					//				std::cout << lastCalvingTime << " " << cow->birthTimesOfCalves[j] << std::endl;
-					//				std::cout << intermediateCalvingTime << std::endl;
+					this->intermediateCalvingTimes->push_back( p );
+				}
+				else{
 				}
 			}
-
 			lastCalvingTime = cow->birthTimesOfCalves[j];
 		}
 		j++;
-
 	}
 
 	double firstCalvingTime = -1.0;
@@ -310,7 +308,7 @@ void TableBasedOutput::createIntermediateCalvingTimePoints(Cow*c){}
 
 #pragma mark -
 #pragma mark Storage Management
-inline void TableBasedOutput::writeCowToSave(const Event* event,const Cow* cow,CowDataSave* save){
+inline void TableBasedOutput::writeCowToSave(const Event* event, const Cow* cow, CowDataSave* save){
 
 	save->push_back(createCowDataPointForCow(event,cow));
 }

@@ -283,13 +283,15 @@ Cow::UnorderedSet Herd::getNUnknownCows(int N){
 	Cow* c;
 	while(it != unknownCows.end()){
 		c = *it;
-		retSet.insert(c);
-		unknownCows.erase(it);
+		if(c->age() >= bvd_const::time_of_first_test.min)  // Ascertain that the picked cows will not be younger than
+			retSet.insert(c);								// the minimum first test age...
+		unknownCows.erase(it);  // ... otherwise erase that iterator and redefine it at the beginning of the unordered set
 		it=unknownCows.begin();
+
 		if(--N <= 0)
 			break;
 	}
-	
+
 	return retSet;
 }
 
@@ -305,7 +307,7 @@ void Herd::removeCowFromUnknownList(Cow* cow){
 
 void Herd::testAllCows(){
 	for(auto cow:all_my_cows){
-		System* s = this->farm->system;
-		s->schedule_event( new Event( s->getCurrentTime() + 0.5, Event_Type::VIRUSTEST, cow->id() ) );
-	}
+		System* s = this->farm->system;  // It is assumed that the tests for all the animals will take place within half a day
+		s->schedule_event( new Event( s->getCurrentTime() + 0.5, Event_Type::VIRUSTEST, cow->id() ) );  // from the time
+	}						  			// of the infected's identification through the jungtierCheck scheme
 }

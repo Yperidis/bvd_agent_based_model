@@ -67,8 +67,8 @@ At the current state of the project, the easiest build would be through [Cygwin]
 * Run `Make` (similarly from the Cygwin terminal if you are on Windows).
 
 ##### Automake Tools Case
-
 * Clone this repository via `git clone https://github.com/Yperidis/bvd_agent_based_model.git`, unpack the project in a directory called `bvd_agent_based_model` and make it your working directory.
+* Copy or transfer all the contents of the `/Automake_build_files` folder to the working directory.
 * Run the `./configure` script in the `bvd_agent_based_model` directory. If you are running this on Windows do this from the Cygwin command-line console.
 * If you are on Windows, modify the generated Makefile by adding in line 5 the library calls "-lhdf5 -lhdf5_hl".
 * Run `Make` (similarly from the Cygwin terminal if you are on Windows).
@@ -102,7 +102,7 @@ Several tasks have already been defined for the development of the code.
     * Consider including in the source code a compression of the output data upon runtime.
 
 * Tests
-	* Several tests should be written utilizing the [framework Catch](https://github.com/philsquared/Catch). A unit test scheme would be recommended.
+	* Several tests should be written utilizing the [framework Catch](https://github.com/philsquared/Catch). A unit test scheme would be recommended (see the effort started in the folder `/tests`).
 	
 * Usability 
     * Make it possible to generate makefiles which exclude certain files if for example HDF5 support is not needed. The cmake implementation can largely account for that and is apready implemented. Likewise for suppressing selected parts of output data. An implementation is already working for UNIX-like systems (see the CMakeLists.txt at the parent directory of the project).

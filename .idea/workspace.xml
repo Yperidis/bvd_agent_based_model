@@ -18,13 +18,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e3a8871b-31be-4651-8530-53f3a68286a5" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Cow.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Cow.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iniFiles/Test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/iniFiles/Test.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Cow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cow.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Farm.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Farm.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Herd.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Herd.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TableBasedOutput.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/TableBasedOutput.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Breeding_module_parameter_gnu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Breeding_module_parameter_gnu.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -64,15 +58,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="418">
               <caret line="287" column="122" selection-start-line="287" selection-start-column="122" selection-end-line="287" selection-end-column="122" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Herd.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/Herd.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1105">
-              <caret line="65" column="20" selection-start-line="65" selection-start-column="20" selection-end-line="65" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -186,7 +171,6 @@
         <option value="$PROJECT_DIR$/src/SQLiteHandler.cpp" />
         <option value="$PROJECT_DIR$/src/CowWellFarm.cpp" />
         <option value="$PROJECT_DIR$/iniFiles/Test.ini" />
-        <option value="$PROJECT_DIR$/src/Breeding_module_parameter_gnu.cpp" />
         <option value="$PROJECT_DIR$/src/Slaughterhouse.cpp" />
         <option value="$PROJECT_DIR$/include/Initializer.h" />
         <option value="$PROJECT_DIR$/src/CowWellFarmManager.cpp" />
@@ -214,6 +198,7 @@
         <option value="$PROJECT_DIR$/src/Farm.cpp" />
         <option value="$PROJECT_DIR$/src/Cow.cpp" />
         <option value="$PROJECT_DIR$/src/Herd.cpp" />
+        <option value="$PROJECT_DIR$/src/Breeding_module_parameter_gnu.cpp" />
       </list>
     </option>
   </component>
@@ -245,7 +230,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -272,6 +256,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -442,11 +427,12 @@
       <workItem from="1533636432670" duration="19796000" />
       <workItem from="1533726299738" duration="16214000" />
       <workItem from="1533751796236" duration="279000" />
+      <workItem from="1533906265021" duration="649000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="959669000" />
+    <option name="totallyTimeSpent" value="960318000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -461,7 +447,7 @@
     <frame x="0" y="0" width="1920" height="1164" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4631861" visible="true" weight="0.24855188" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4631861" visible="true" weight="0.24855188" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49763033" weight="0.32838774" />
       <window_info anchor="bottom" id="CMake" order="11" sideWeight="0.4997367" weight="0.32937685" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5229068" side_tool="true" weight="0.2611276" />
@@ -598,13 +584,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/include/Cow.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
-          <caret line="57" column="76" selection-start-line="57" selection-start-column="76" selection-end-line="57" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/Events.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
@@ -950,6 +929,16 @@
           <caret line="35" column="12" selection-start-line="35" selection-start-column="12" selection-end-line="35" selection-end-column="12" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Breeding_module_parameter_gnu.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="79" column="18" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>

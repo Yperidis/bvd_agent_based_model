@@ -77,7 +77,7 @@ int days_till_calve_dies()					//gives the days untill a calve dies within its f
 	}
 }
 
-int number_of_insaminations(int calvingnumber)		//number of total insaminations, dependent on the number of calvings the cow went through
+int number_of_inseminations(int calvingnumber)		//number of total inseminations, dependent on the number of calvings the cow went through
 {
 	int index = und(1001);
 	printf("zufall: %d\n", index);

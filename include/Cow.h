@@ -21,9 +21,9 @@ class Cow;
 enum Cow_Trade_Criteria{
 	CALF = 0,  //Female
 	HEIFER_PRE_BREEDING = 1,
-	HEIFER_RDY_BREEDING =2,
-	INFERTILE =3,
-	PREGNANT =4,
+	HEIFER_RDY_BREEDING = 2,
+	INFERTILE = 3,
+	PREGNANT = 4,
 	DAIRY_COW = 5,
 	OLD_COW = 6,
 	MALE_CALF = 7,

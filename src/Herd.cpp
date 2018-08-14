@@ -196,12 +196,13 @@ void Herd::reevaluateGroupsOfAllCows(){
 inline void Herd::reevaluateGroup( Cow* cow) {
 	 cow->setGroup(this->getRelevantGroup(cow->getCowTradeCriteria()));
 }
+
 int Herd::getNumberOfCowsInGroup(Cow_Trade_Criteria crit){
 	Cow::UnorderedSet* group = this->getRelevantGroup(crit);
 	return group->size();
 }
 
-void Herd::getNRandomCowsFromGroup(int n,Cow_Trade_Criteria crit, Cow::UnorderedSet* setOfCows){
+void Herd::getNRandomCowsFromGroup(int n, Cow_Trade_Criteria crit, Cow::UnorderedSet* setOfCows){
 	#ifdef _HERD_DEBUG_
 		std::cout << "HERD: trying to select " << n << " cows for offer for crit "<< crit << std::endl;
 		std::cout << "HERD: By now the number of cows that is already in this set is " << setOfCows->size() << std::endl;
@@ -212,7 +213,7 @@ void Herd::getNRandomCowsFromGroup(int n,Cow_Trade_Criteria crit, Cow::Unordered
 		setOfCows->insert(group->begin(), group->end());
 	}
 	int * indices = new int[n];
-	this->farm->system->rng.getNRandomNumbersInRange(n,0,group->size(), indices);
+	this->farm->system->rng.getNRandomNumbersInRange(n, 0, group->size(), indices);
 	#ifdef _HERD_DEBUG_
 		std::cout << "got a group of " << group->size() << "cows" << std::endl;
 	#endif

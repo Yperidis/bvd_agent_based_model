@@ -21,7 +21,7 @@ enum class Event_Type
       INFECTION             = 107,  // Cow event appearing in the infection rate change of the Farm as well
       RECOVERY              = 108,  // Cow event
       TRADE                 = 300,  // Trade Events should always be the last events to be handled on the same day. Farm event
-      REMOVECOW				= 301,  // Cow event
+      REMOVECOW				= 301,  // Cow event (movement event and therefore similar to TRADE)
       SLAUGHTER				= 200,  // System event
       CULLING				= 201,  // System event
       VACCINATE				= 202,  // Cow event

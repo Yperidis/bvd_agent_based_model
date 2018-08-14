@@ -131,7 +131,7 @@ std::vector<Cow*>* Farm::getPIs(){
 	std::vector<Cow*>* returnVec = new std::vector<Cow*>(size, nullptr);
 	//returnVec->reserve(size);
 	for(auto herd : this->my_herds){
-		returnVec->insert(returnVec->end(), herd->getPIs()->begin(), herd->getPIs()->end());
+		returnVec->insert( returnVec->end(), herd->getPIs()->begin(), herd->getPIs()->end() );
 	}
 	return returnVec;
 }
@@ -270,7 +270,7 @@ void Farm::execute_event( Event *e )
 
 void Farm::execute_TRADE_event( Event* e )
 {
-    // The farm that executes this event is the destination farm of the trade.
+    // The farm calling this event is the destination farm of the trade.
     Cow* c = Cow::get_address( e->id );
     if ( c == nullptr ) {
         // Dead cows are not traded. Only dead parrots are.
@@ -320,7 +320,6 @@ void Farm::execute_TRADE_event( Event* e )
     for ( auto c_e : c->future_irc_events_that_move )
         future_infection_rate_changing_events.push( c_e );
 
-
     this->infection_rate_has_changed( e );
 }
 
@@ -343,6 +342,7 @@ void Farm::print_state( std::ostream& out , int level_of_detail)
 void Farm::holdSize(){
 	this->manager->readjustToFarmSize();
 }
+
 // This function extracts and returns the farm that pertains to an event.
 Farm* Farm::farm_of_event(const Event* e)
 {
@@ -357,11 +357,13 @@ Farm* Farm::farm_of_event(const Event* e)
 	}
 	return f;
 }
+
 //Find first event with executiontime > current time and farm==this
 bool Farm::its_the_one(const Event *e,const Event* current )
 {
 	return ((e->execution_time >= current->execution_time) && (this->farm_of_event(e)==this) && (e != current ));
 }
+
 void Farm::executeQuarantineEndEvent(const Event* e){
 	if(e == this->lastQuarantineEndEvent){
 		this->quarantine = false;

@@ -8,7 +8,7 @@ class SimpleFarmManager: public FarmManager{
 		~SimpleFarmManager();
 		
 	private:
-		void calculateDemand(std::set<Demand*>* requests);//requests which are created in this function will be deleted in
+		void calculateDemand(std::set<Demand*>* requests);  // requests which are created in this function will be deleted in
 		int calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows);
 		void chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows); 
 		

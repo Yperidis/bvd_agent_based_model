@@ -4,8 +4,8 @@
 #include <ostream>
 #include "Cow.h"
 
-//class Cow;         //Forward declaration.. Real declaration in Cow.h
-class Event;       //Forward declaration.. Real declaration in Events.h
+//class Cow;         // Forward declaration.. Real declaration in Cow.h
+class Event;       // Forward declaration.. Real declaration in Events.h
 class Farm;
 
 

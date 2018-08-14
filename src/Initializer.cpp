@@ -318,6 +318,7 @@ void Initializer::initialize_random_farm( Farm* farm , int farm_idx )
 	std::cout << "finished setting up the farm" << std::endl;
 #endif
 }
+
 void Initializer::initialize_farm_of_size(Farm* farm, int size){
 
 }
@@ -364,7 +365,7 @@ Cow* Initializer::createCow(const int& farm_idx, int& i, const int& number, Farm
 
 	return c;
 }
-// TODO For the initialised cows an ear tag test is never scheduled
+// TODO For the initialised cows an ear tag test is never scheduled as it is only triggered by birth
 inline void Initializer::scheduleFutureEventsForCow(Cow* c, Farm* farm, const int& farm_idx, int& i,const int& number, double& time){
     Event_Type et;
     double t;

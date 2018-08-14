@@ -79,8 +79,7 @@ class System
  	void scheduleVaccinationEvents();
  	void scheduleJungtierfensterEvents();
 	CowWellFarmManager* _firstCowWellFarm;
-	Event_queue queue;
-	Event_queue memorySaveQ;
+	Event_queue queue, memorySaveQ;
 	double _current_time;
 	std::unordered_set< Event* > invalidated_events;
 	std::vector< Farm* >         farms;

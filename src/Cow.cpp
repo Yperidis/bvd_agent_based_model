@@ -147,7 +147,7 @@ void Cow::execute_event( Event* e )
 			execute_ABORTION( e->execution_time );
 			break;
 		case Event_Type::REMOVECOW:
-			this->herd->farm->manager->registerCowForSale(this);  //This should lead to the slaughterhouse manager
+			this->herd->farm->manager->registerCowForSale(this);  // This should lead to the slaughterhouse manager
 			break;
 		case Event_Type::INSEMINATION :
 //			if(e->execution_time - this->birth_time < 200.)
@@ -854,13 +854,13 @@ void Cow::setGroup(Cow::UnorderedSet* set){
 	if(set == this->Group)
 		return;
 	Cow::UnorderedSet::iterator myIterator;
-	if(this->Group != nullptr && (myIterator = this->Group->find(this)) != this->Group->end()){
+	if(this->Group != nullptr && (myIterator = this->Group->find(this) ) != this->Group->end()){
 		this->Group->erase(myIterator);
 	}
-	this->Group = set;
+	this->Group = set;  // Setting the relevant group...
 
 	if(this->Group != nullptr  && (myIterator = this->Group->find(this)) == this->Group->end()) {
-		this->Group->insert(this);
+		this->Group->insert(this);  // ...and inserting the cow at hand in it
 	}
 }
 

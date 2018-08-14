@@ -126,12 +126,14 @@ void System::schedule_event( Event* e )
     }
 
     Cow* c = Cow::get_address(e->id);
+    if(c != nullptr)
+/*        if(c->id()==100)
+            std::cout << "Pass 1. Animal ID: " << c->id() << std::endl;*/
     if (e->type == Event_Type::ABORTION && c->calf_status == Calf_Status::NO_CALF) {
         std::cerr << "Unreasonable situation" << std::endl;
     }
 
-    if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr)   // Sanity check of the above birth block
-    {
+    if (e->type == Event_Type::BIRTH && c->planned_birth_event == nullptr){  // Sanity check of the above birth block
         std::cerr << "Unreasonable situation" << std::endl;
     }
 
@@ -143,14 +145,17 @@ void System::schedule_event( Event* e )
     // (1) put the event into the main queue
     queue.push( e );
     // (2) find the farm to which this event pertains and register the event there if it is an infection rate changing event.
-    if( this->queue.top()->type == Event_Type::INFECTION && e->id == this->queue.top()->id){
+    if( this->queue.top()->type == Event_Type::INFECTION && e->id == queue.top()->id){
         this->output->logResultingEventOfInfection(e);
     }
     /// Note that we handle separately the future irc events in case of trade and in case of other irc causes. In this
-    /// fashion an irc cannot be in the future irc event queue.
+    /// way we avoid an irc being in the future irc event queue.
     if ( e->is_trade_event() )
     {
         Cow* c = Cow::get_address( e->id );
+/*        if(c != nullptr)
+            if(c->id()==100)
+                std::cout << "Pass 2. Animal ID: " << c->id() << std::endl;*/
         if ( c != nullptr ) // At this point, c==NULL could happen, because a trade can be scheduled after the offer for a cow that in the meantime has died.
         {
             e->farm->register_future_infection_rate_changing_event( e );
@@ -161,6 +166,9 @@ void System::schedule_event( Event* e )
     else if ( e->is_infection_rate_changing_event() )
     { // So far, all infection_rate_changing events have dest == COW
         Cow* c = Cow::get_address( e->id );
+/*        if(c != nullptr)
+            if(c->id()==100)
+                std::cout << "Pass 3. Animal ID: " << c->id() << std::endl;*/
         if ( c != nullptr ) // At this point, c==NULL should NEVER happen (because trade has been excluded)!!!
         {
             /// If both the herd and the farm exist register a future infection rate changing event at the farm level
@@ -242,6 +250,7 @@ void System::execute_next_event()
     if (e->execution_time < _current_time){    //the current time should be initialized from the ini file
         std::cerr << "Error, got an event that is earlier than the current time. Exiting" << std::endl;
         Utilities::pretty_print(e, std::cout);
+        exit(1);
     }
 
     if(e->valid) // => e is valid.
@@ -279,9 +288,12 @@ void System::execute_next_event()
         //(2) An end_of_vaccination_event is not nullptr for a susceptible animal with a successful vaccination working
         //    probability, i.e. there has been
         //
+        //(3) An abortion due to infection is scheduled before an already scheduled abortion due to conception
+        //
         //According to Farm.cpp an event can only be invalid if
         //(1) An infection rate change occurs
         //(2) A trade event is executed
+        // In both cases the INFECTION event is what can be invalidated
     }
     else{
         // Only infections, abortions and births can be invalid events due to irc events and abortions upon infections respectively
@@ -300,12 +312,12 @@ void System::execute_next_event()
     }
 
     Event* event;
+    // TODO Consider the necessary time horizon for the condition here. This would free up some stack memory.
     while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) && (event->execution_time + 500. < this->_current_time )){
         delete event;    // delete the events of the buffer queue and its elements if they are scheduled for anytime less than the current time
-                        // plus 500 and they are actual events (nullptr)
+                        // plus 500 and they are actual events (not a nullptr)
         memorySaveQ.pop();
     }
-
 }
 
 void System::invalidate_event( Event* e )
@@ -314,7 +326,7 @@ void System::invalidate_event( Event* e )
 	//invalidated_events.insert( e );
 /*    if (e->id == 309290)
         std::cerr << "Insemination of 309290 invalidated at t=" << e->execution_time << std::endl;*/
-    //TODO Potential memory leak. Since the event has been invalidated, shouldn't we delete as well? Check the invalidation purpose at README.org
+    // TODO Can and should we delete the event here? How would that affect the priority queue? See execute_next_even function.
 	if(memorySaveQ.size() > 10000000){
 		std::cout << (int) e->type << std::endl;
 		Utilities::printStackTrace(15);
@@ -346,7 +358,7 @@ void System::unregister_farm( Farm* f )
 
 void System::register_market( Market* m )
 {
-	if(market != NULL){
+	if(market != nullptr){
 		delete market;}
   market = m;
 }
@@ -504,7 +516,7 @@ void System::_execute_event( Event* e )  // System level events
     	for (auto farm : farms){
 
 			if (this->_dynamic_reintroduction) {    // This block regulates the introduction of PIs from the source farm
-			    // according to the current PI population
+			                                       // according to the current PI population
 				CowWellFarmManager* ptr =  dynamic_cast<CowWellFarmManager*> (farm->manager);
 				if (ptr != nullptr) {
 					std::tuple<double, double> res = calculatePrevalence();

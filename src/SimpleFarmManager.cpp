@@ -14,8 +14,9 @@ SimpleFarmManager::~SimpleFarmManager(){}
 void SimpleFarmManager::calculateDemand(std::set<Demand*>* requests){
 	this->standardCalculateDemand(requests);
 }
-int SimpleFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows){//calculate number of groups to sell
-	return this->standardCalculateNumberOfAnimalsPerGroup(criteria,overallNumber, groupNum, cows);
+// calculate number of groups to sell
+int SimpleFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria, int overallNumber, int groupNum, Cow::UnorderedSet* cows){
+	return this->standardCalculateNumberOfAnimalsPerGroup(criteria, overallNumber, groupNum, cows);
 }
 void SimpleFarmManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows){
 	

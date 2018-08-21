@@ -197,7 +197,6 @@ void Initializer::set_number_of_farms( int N )
       }else{
 	      initialTypes.push_back(FarmInitialConditionsType::clean);
       }
-
     }
 }
 void Initializer::set_number_of_slaughterhouses( int N ){
@@ -219,9 +218,6 @@ void Initializer::set_number_of_animals_in_farm(    int farm_idx , int no_of_ani
     no_animal.at( farm_idx ) = no_of_animals;
 }
 
-
-
-
 //TODO Make the age distribution function have an effect on the initialisation
 void Initializer::set_age_distribution_in_farm( int farm_idx , double min , double max , double mod )
 {
@@ -230,7 +226,6 @@ void Initializer::set_age_distribution_in_farm( int farm_idx , double min , doub
   if( min > 0 && mod >= min && max >=mod )
     age_distr.at( farm_idx ) = {min,max,mod};
 }
-
 
 
 void Initializer::initialize_system( System* s )

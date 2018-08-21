@@ -223,6 +223,7 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 
 	}
 }
+
 void Cow::handle_rest_time_after_ABORTION_or_BIRTH( double time )
 {
 	double execution_time = time + system->rng.time_of_rest_after_calving(calving_number);
@@ -376,7 +377,6 @@ void Cow::execute_BIRTH( const double& time  )
 	}  // Case of stillbirth. Do nothing.
 }
 
-
 void Cow::execute_ABORTION( const double& time )
 {
 	if (!female) {
@@ -416,6 +416,8 @@ void Cow::execute_INSEMINATION( const double& time )
 		std::cerr << "Insemination of 309290 at t=" << time << std::endl;*/
 	bool conception;    //if not initialised, then this is False by default
 	double execution_time = time + system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception );
+/*	if (id() == 100)
+		std::cout << system->rng.insemination_result( !has_been_pregnant_at_all_so_far , &conception ) << std::endl;*/
 
 	if (conception){
 		// The cow will become pregnant.
@@ -759,9 +761,8 @@ bool Cow::testCow(const Event* e){
 }
 
 bool Cow::isTestedPositive(const Event* e){
-	bool resultIsCorrect = system->rng.bloodTestRightResult();    // This tells us if the test was successful or not i.e.
-	// either if true of any of the two statuses or if false.
-
+	bool resultIsCorrect = system->rng.bloodTestRightResult();    // This sets the outcome of the sensitivity success probability.
+                                                                    // The specificity is set to 1 by default.
 	bool correctHealthState;
 	switch(e->type){
 		case Event_Type::JUNGTIER_SMALL_GROUP:  // Presently ANTIBODYTEST does not reach here and if it would it would
@@ -776,7 +777,9 @@ bool Cow::isTestedPositive(const Event* e){
 		default: std::cerr << "no test given" << std::endl;
 			exit(9);
 	}
-	return !resultIsCorrect ^ correctHealthState; // (not A) XOR B. Operation at the bit level due to the
+	return resultIsCorrect && correctHealthState;  // AND for failure of the sensitivity success rate in all cases except
+                                                // for its concurrent success and the animal being actually sick.
+	//return !resultIsCorrect ^ correctHealthState; // (not A) XOR B. Operation at the bit level due to the
 	// class enum values. The returned value will only be true for a true positive or a false positive. We assume all the
 	// tests to be antigen tests (second case of the switch block) so far in the code. ATTENTION:
 	// The name and the logic should be reconsidered if we start making distinctions for the different tests.

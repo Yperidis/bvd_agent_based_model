@@ -16,21 +16,23 @@ CowWellFarmManager::CowWellFarmManager(Farm *f, System* s):FarmManager(f,s){
 }
 
 
-void CowWellFarmManager::calculateDemand(std::set<Demand*>* requests){}//the farm doesn't have any demand
-int CowWellFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria crit,int overallNumber,int groupNum, Cow::UnorderedSet* cows){
+void CowWellFarmManager::calculateDemand(std::set<Demand*>* requests){}  // the farm doesn't have any demand
+
+int CowWellFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria crit, int overallNumber, int groupNum, Cow::UnorderedSet* cows){
 	if(crit == PREGNANT)
 		return this->numberOfCowsToTrade;
 	
 	return 0;
 		
 }
+
 void CowWellFarmManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows){
 	if(crit != PREGNANT)
 		return;
 	Cow *c;
 	do{
 
-		c = new Cow(system->current_time(), NULL);
+		c = new Cow(system->current_time(), nullptr);
 		c->calf_status = Calf_Status::SUSCEPTIBLE;
 		double percent = system->rng.ran_unif_double(1.0,0.0);
 		if(percent < this->tis){

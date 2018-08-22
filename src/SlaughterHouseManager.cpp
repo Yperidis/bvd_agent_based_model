@@ -31,10 +31,10 @@ void SlaughterHouseManager::calculateDemand(std::set<Demand*>* requests){
 	requests->insert(d);
 }
 
-//TODO The slaughterhouse should never sell cows.
-int SlaughterHouseManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows){
+int SlaughterHouseManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria, int overallNumber, int groupNum, Cow::UnorderedSet* cows){
 	return this->dumpingCapacityPerType;
 }
+
 void SlaughterHouseManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows){}
 
 void SlaughterHouseManager::registerCowForSale(const Cow* cow){}

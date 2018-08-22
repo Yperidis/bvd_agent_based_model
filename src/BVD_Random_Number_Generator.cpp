@@ -7,26 +7,26 @@
 #include <Model_Constants.h>
 #include "System.h"
 #include "BVDContainmentStrategy.h"
-Random_Number_Generator::Random_Number_Generator() //Constructor with random seed
+Random_Number_Generator::Random_Number_Generator() // Constructor with a random seed
 {
 
- seed = (time(NULL)  + rand());    //set a random seed
- init(seed);
+ seed = (time(nullptr)  + rand() );    // set a random seed. rand() returns a random integer between 0 and 2147483647 inclusive
+ init(seed);                           // time(nullptr) returns the current UTC time since 00::00::00 of January 1st 1970
 
 }
 
-Random_Number_Generator::Random_Number_Generator( unsigned int seed ):seed(seed) //Constructor with fixed seed
+Random_Number_Generator::Random_Number_Generator( unsigned int seed ):seed(seed) // Constructor with a fixed seed
 {
-
-  init(seed);
+  init(seed);  // Sets the seed for all the random generator calls of the simulation
 }
+
 void Random_Number_Generator::init( unsigned int seed){
 	gsl_rng_env_setup();
   const gsl_rng_type * T = gsl_rng_default;
   generator = gsl_rng_alloc (T);
-  gsl_rng_set (generator,seed);
-
+  gsl_rng_set (generator, seed);
 }
+
 int Random_Number_Generator::ran_unif_int( int hi, int lo)
 {
   if ( hi < lo )
@@ -36,6 +36,7 @@ int Random_Number_Generator::ran_unif_int( int hi, int lo)
     }
   return lo + gsl_rng_uniform_int(generator, hi-lo);
 }
+
 double Random_Number_Generator::ran_unif_double( double hi, double lo)
 {
   if ( hi < lo )

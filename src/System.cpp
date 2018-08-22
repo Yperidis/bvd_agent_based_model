@@ -451,93 +451,93 @@ Market* System::getMarket(){
 void System::_execute_event( Event* e )  // System level events
 {
 
-  switch( e->type )
+    switch( e->type )
     {
-	// case Event_Type::EARTAG:
-	// 	std::cout << "set eartag" << std::endl;
-	// 	strategies.eartag = !strategies.eartag;
-	// 	break;
-	// case Event_Type::VACCINATION:
-	// 	std::cout << "set vaccination" << std::endl;
-	// 	strategies.vaccination = !strategies.vaccination;
-	// 	break;
-	// case Event_Type::JUNGTIER:
-	// 	std::cout << "set jungtier" << std::endl;
-	// 	strategies.jungtierfenster = !strategies.jungtierfenster;
-	// 	if(strategies.jungtierfenster){
-	//
-	// 		schedule_event(new System_Event(e->execution_time + jungtierzeit,Event_Type::JUNGTIER_EXEC));
-	// 	}
-	// 	break;
-	case Event_Type::JUNGTIER_EXEC:
-		for (auto farm : farms){
+        // case Event_Type::EARTAG:
+        // 	std::cout << "set eartag" << std::endl;
+        // 	strategies.eartag = !strategies.eartag;
+        // 	break;
+        // case Event_Type::VACCINATION:
+        // 	std::cout << "set vaccination" << std::endl;
+        // 	strategies.vaccination = !strategies.vaccination;
+        // 	break;
+        // case Event_Type::JUNGTIER:
+        // 	std::cout << "set jungtier" << std::endl;
+        // 	strategies.jungtierfenster = !strategies.jungtierfenster;
+        // 	if(strategies.jungtierfenster){
+        //
+        // 		schedule_event(new System_Event(e->execution_time + jungtierzeit,Event_Type::JUNGTIER_EXEC));
+        // 	}
+        // 	break;
+        case Event_Type::JUNGTIER_EXEC:
+            for (auto farm : farms){
 
-	    	farm->jungtierCheck();
+                farm->jungtierCheck();
 
-    	}
-		if(this->activeStrategy->usesJungtierFenster){  // The strategy might have changed in the elapsed jungtierzeit, so we need to check
-			schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
-		}
-		break;
-	case Event_Type::ChangeContainmentStrategy:
-		if(this->mySettings->strategies.size() > 0){
-			delete this->activeStrategy;
-			this->activeStrategy = this->mySettings->strategies.top();
-			this->mySettings->strategies.pop();
-			schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy) );
-			if(this->activeStrategy->usesJungtierFenster){
-				schedule_event(new System_Event( e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
-			}
-		}
-		break;
-    case Event_Type::STOP:
-    	output->write_to_file(_current_time);
-      	stop = true;
-      	break;
-    case Event_Type::LOG_OUTPUT:
+            }
+            if(this->activeStrategy->usesJungtierFenster){  // The strategy might have changed in the elapsed jungtierzeit, so we need to check
+                schedule_event(new System_Event(e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
+            }
+            break;
+        case Event_Type::ChangeContainmentStrategy:
+            if(this->mySettings->strategies.size() > 0){
+                delete this->activeStrategy;
+                this->activeStrategy = this->mySettings->strategies.top();
+                this->mySettings->strategies.pop();
+                schedule_event( new System_Event( this->mySettings->strategies.top()->startTime, Event_Type::ChangeContainmentStrategy) );
+                if(this->activeStrategy->usesJungtierFenster){
+                    schedule_event(new System_Event( e->execution_time + this->activeStrategy->jungtierzeit, Event_Type::JUNGTIER_EXEC) );
+                }
+            }
+            break;
+        case Event_Type::STOP:
+            output->write_to_file(_current_time);
+            stop = true;
+            break;
+        case Event_Type::LOG_OUTPUT:
 
-      log_state();
-      schedule_event(new System_Event( _current_time + _dt_log, Event_Type::LOG_OUTPUT ) );
-      break;
-    case Event_Type::WRITE_OUTPUT:
-			std::cout << "Writing file after " << _current_time << " days:\t" ;
-			output->write_to_file(_current_time);
-			std::cout << "Done. " << std::endl;
+            log_state();
+            schedule_event(new System_Event( _current_time + _dt_log, Event_Type::LOG_OUTPUT ) );
+            break;
+        case Event_Type::WRITE_OUTPUT:
+            std::cout << "Writing file after " << _current_time << " days:\t" ;
+            output->write_to_file(_current_time);
+            std::cout << "Done. " << std::endl;
 #ifdef _RUNNING_DEBUG_
-            std::cout << "Total number of heads is " << this->countCows() << std::endl;
+        std::cout << "Total number of heads is " << this->countCows() << std::endl;
 			std::cout << "Farm demands met: " << this->countHappyFarms() << std::endl;
             std::cout << "Event queue size is " << this->queue.size() << std::endl;
             std::cout << "PI prevalence at reintroduction is now " << this->getFirstWell()->printInfectionValues() << std::endl;
 #endif
-			schedule_event(new System_Event( _current_time + _dt_write, Event_Type::WRITE_OUTPUT ) );
+            schedule_event(new System_Event( _current_time + _dt_write, Event_Type::WRITE_OUTPUT ) );
 
-			break;
-    case Event_Type::MANAGE:
-    	for (auto farm : farms){
+            break;
+        case Event_Type::MANAGE:
+            for (auto farm : farms){
 
-			if (this->_dynamic_reintroduction) {    // This block regulates the introduction of PIs from the source farm
-			                                       // according to the current PI population
-				CowWellFarmManager* ptr =  dynamic_cast<CowWellFarmManager*> (farm->manager);
-				if (ptr != nullptr) {
-					std::tuple<double, double> res = calculatePrevalence();
-					ptr->changeInfectionReplacement(std::get<0>(res), std::get<1>(res));
-				}
-			}
+                if (this->_dynamic_reintroduction) {    // This block regulates the introduction of PIs from the source farm
+                    // according to the current PI population
+                    CowWellFarmManager* ptr =  dynamic_cast<CowWellFarmManager*> (farm->manager);
+                    if (ptr != nullptr) {
+                        std::tuple<double, double> res = calculatePrevalence();
+                        ptr->changeInfectionReplacement(std::get<0>(res), std::get<1>(res));
+                    }
+                }
 
-	    	farm->getManaged();
+                farm->getManaged();
 
-    	}
-    	this->market->flushQueues();
-    	#ifdef _SYSTEM_DEBUG_
-				std::cout << "System: schedule new management event at " << (_current_time + _dt_manage)  << std::endl;
-		#endif
-		schedule_event( new System_Event( _current_time + _dt_manage , Event_Type::MANAGE ) );
-		#ifdef _SYSTEM_DEBUG_
-				std::cout << "System scheduled next management event" << std::endl;
-		#endif
-    break;
-    default:
-      break;
+            }
+            this->market->flushQueues();
+#ifdef _SYSTEM_DEBUG_
+            std::cout << "System: schedule new management event at " << (_current_time + _dt_manage)  << std::endl;
+#endif
+            schedule_event( new System_Event( _current_time + _dt_manage , Event_Type::MANAGE ) );
+#ifdef _SYSTEM_DEBUG_
+            std::cout << "System scheduled next management event" << std::endl;
+#endif
+            break;
+        default:
+            break;
     }
 
 }

@@ -66,9 +66,9 @@ int main(int argnum, char *arguments[], char *environment[])
 	std::cout << "The simulation took " << duration << " minutes" << std::endl;
 
 	//Step 5: The system s now contains all cows, farms, events etc. as they result from the run.
-	// Output has been written to file as desired and can be used.
+	// Output has been written to a file as desired and can be used.
 	// Tests on the system state, further runs continuing from this state are possible.
 	
 	// However, we quit here, by explicitly deleting s, which prints one line of total stats (how many events and cows have been processed.)
-	//delete s;
+	// through the System destructor (see System.cpp).
 }

@@ -160,7 +160,7 @@ void Market::register_offer( Offer * offer ){
 
 }
 
-void Market::register_demand( Demand * demand){
+void Market::register_demand( Demand * demand ){
 	if(dump && demand->src->getType() == SLAUGHTERHOUSE){  // don't accept demand from slaughterhouses when dumping
 		delete demand;
 		return;

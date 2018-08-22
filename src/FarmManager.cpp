@@ -108,8 +108,8 @@ void FarmManager::manage(){
 		std::cout << "FarmManager: starting offering process" << std::endl;
     #endif
 
-	// TODO Should this concern the well?
-	if (this->myFarm->getType() == SLAUGHTERHOUSE){    // A slaughterhouse does not offer animals
+	// TODO What is the role of this conditional here?
+	if (this->myFarm->getType() == SLAUGHTERHOUSE){
         delete requests;  // The newly created "requests" should now release its reserved memory
         return;
 	}
@@ -221,7 +221,7 @@ void FarmManager::chooseCowsToOffer(Cow::UnorderedSet* cowsToSell){
 			crit = (*it2);
 			int groupnum = (*it)->size();
 
-			num = calculateNumberOfAnimalsPerGroup(crit,numberOfCowsToSell,groupnum, cowsToSell);
+			num = calculateNumberOfAnimalsPerGroup(crit, numberOfCowsToSell, groupnum, cowsToSell);
 //			std::cout << num << std::endl;
 			if(num > 0)
 				this->chooseCowsToOfferFromGroupAndAddToSellingGroup(num,crit , cowsToSell);
@@ -246,21 +246,27 @@ int FarmManager::standardCalculateOverallNumberToSell(){
 	int difference = 0;
 	//int numberOfAnimalsWithType = 0;
 	double tmp = this->replacementPercentage;
+	/// If under quarantine the farm cannot buy any animals for herd rejuvenation purposes
 	if(this->myFarm->isUnderQuarantine()){
 		this->replacementPercentage = 0.0;
 	}
 	std::vector<Herd*>* herds = this->myFarm->getHerds();
 
 	for (int i=0; i < herds->size(); i++){
-		//take the number of cows that we want to have. Subtract the percentage that we want to replace and the number
+		// take the number of cows that we want to have. Subtract the percentage that we want to replace and the number
         // of existing cows. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
-		difference = (int) (this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number() ;//implicit floor for performance
-		if(difference < 0 )
-			numberOfCowsToSell -= difference;
+		difference = (int) (this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number();  // implicit floor for performance
+		if(difference < 0 ) {
+            numberOfCowsToSell -= difference;
+            //if(numberOfCowsToSell > 5000)
+                //std::cout << "Farm ID: " << myFarm->id << std::endl;
+            //std::cout << numberOfCowsToSell << std::endl;
+        }
 /*		else
 			// TODO Sell more of your cows if you need more cows?
 			numberOfCowsToSell += difference;*/
 	}
+	/// The replacement percentage has a global scope for all the farms, therefore, if changed, we reinstate it
 	if(this->myFarm->isUnderQuarantine()){
 		this->replacementPercentage = tmp;
 	}
@@ -284,7 +290,6 @@ int FarmManager::standardCalculateOverallNumberToBuy(bool replace){
 //			numberOfMissingCows -= difference;
 	}
 	return numberOfMissingCows;
-
 }
 
 int FarmManager::standardCalculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria crit,int overallNumber,int groupNum, Cow::UnorderedSet* cows){

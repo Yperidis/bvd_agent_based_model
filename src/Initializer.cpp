@@ -32,7 +32,7 @@ Initializer::Initializer(INIReader* inireader)
   set_default_farm_size_distribution( ); 
   
   std::string  type = reader->Get("system", "type", "rndFarms");
-	this->smallFarmMax = reader->GetInteger("input", "smallFarmSizeMax", 0);
+	this->smallFarmMax = reader->GetInteger("modelparam", "smallFarmSizeMax", 0);
   if(type.compare("rndFarms") == 0){
 	  this->simType = rndFarms;
   }else if(type.compare("inputFarmFile") == 0){
@@ -233,7 +233,7 @@ void Initializer::initialize_system( System* s )
   
   Farm* farm;
   Cow::set_system( s );
-	
+
 
 	for (int i=0 ; i<number_of_farms ; i++ ){
 		if(this->smallFarmMax < no_animal.at(i)){    // Initialize simple or small (no annual replacement requirement) herd farm
@@ -256,7 +256,7 @@ void Initializer::initialize_system( System* s )
 	    s->register_farm(farm);
     }
 
-	//For debugging purposes
+	// For debugging purposes
 #ifdef _FARM_INITIALIZER_DEBUG_
     std::ofstream outputfile;
     outputfile.open ("farms.csv");
@@ -269,9 +269,11 @@ void Initializer::initialize_system( System* s )
             case WELL:
                 outputfile << f->id << ";" << "WELL" << "\n";
                 break;
-            default:
-                outputfile << f->id << ";" << "FARM" << "\n";
+            case SMALL_FARM:
+                outputfile << f->id << ";" << "SMALL FARM" << "\n";
                 break;
+			default:
+				outputfile << f->id << ";" << "SIMPLE FARM" << "\n";
         }
     }
     outputfile.close();
@@ -292,7 +294,7 @@ void Initializer::initialize_random_farm( Farm* farm , int farm_idx )
 	System* s = farm->system;
 	int i;
 
-	double time = 0.;    //Start of time for a random farm
+	double time = 0.;    // Start of time for a random farm
 	int number = no_animal.at(farm_idx);
 	double hi,lo;
 	lo = log10((double)def_farm_size_distr.min);

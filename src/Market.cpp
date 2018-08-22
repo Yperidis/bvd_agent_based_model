@@ -157,7 +157,6 @@ void Market::register_offer( Offer * offer ){
 	}
 
 	delete offer;
-
 }
 
 void Market::register_demand( Demand * demand ){

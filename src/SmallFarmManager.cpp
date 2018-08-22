@@ -16,9 +16,11 @@ void SmallFarmManager::calculateDemand(std::set<Demand*>* requests){
 	Demand *d = new Demand(PREGNANT, numToBuy, this->myFarm);
 	requests->insert(d);
 }
-int SmallFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows){//calculate number of groups to sell
+
+int SmallFarmManager::calculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria criteria,int overallNumber,int groupNum, Cow::UnorderedSet* cows){  // calculate number of groups to sell
 	return this->standardCalculateNumberOfAnimalsPerGroup(criteria,overallNumber, groupNum, cows);
 }
+
 void SmallFarmManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numberOfCowsToSell, Cow_Trade_Criteria crit, Cow::UnorderedSet* cows){
 	
 	this->standardOfferingMethod(numberOfCowsToSell, crit, cows);

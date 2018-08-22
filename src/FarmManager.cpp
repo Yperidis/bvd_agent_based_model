@@ -120,11 +120,11 @@ void FarmManager::manage(){
 	if(!this->isUnderQuarantine()){
 		this->postOffer(cowsToSell);
 	}else{
-		//TODO: this is actually just a quick fix for a problem occurring when quarantine is used. Make this nice code!
+		// TODO: this is actually just a quick fix for a problem occurring when quarantine is used. Make this nice code!
 		for(auto cow : *cowsToSell){
 			this->system->getMarket()->sellDirectlyToSlaughterHouse(cow);
 		}
-		//TODO addressing the memory leak of the previously assigned container. To be changed with the rest of the block.
+		// TODO addressing the memory leak of the previously assigned container. To be changed with the rest of the block.
 		delete cowsToSell;  // The newly created cowsToSell should now release its reserved memory
 	}
 
@@ -224,7 +224,7 @@ void FarmManager::chooseCowsToOffer(Cow::UnorderedSet* cowsToSell){
 			num = calculateNumberOfAnimalsPerGroup(crit, numberOfCowsToSell, groupnum, cowsToSell);
 //			std::cout << num << std::endl;
 			if(num > 0)
-				this->chooseCowsToOfferFromGroupAndAddToSellingGroup(num,crit , cowsToSell);
+				this->chooseCowsToOfferFromGroupAndAddToSellingGroup(num, crit, cowsToSell);
 		}
 	}
 }
@@ -255,6 +255,7 @@ int FarmManager::standardCalculateOverallNumberToSell(){
 	for (int i=0; i < herds->size(); i++){
 		// take the number of cows that we want to have. Subtract the percentage that we want to replace and the number
         // of existing cows. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
+        // TODO Small farm implementation?
 		difference = (int) (this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number();  // implicit floor for performance
 		if(difference < 0 ) {
             numberOfCowsToSell -= difference;
@@ -280,6 +281,7 @@ int FarmManager::standardCalculateOverallNumberToBuy(bool replace){
 	for (int i=0; i < herds->size(); i++){
 		if(replace){
             // if the difference is negative, this herd does not need any new cows
+            // TODO The deduction from the replacement percentage is never compensated for simple types of farms.
 			difference = (int) ceil( this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage) ) - (*herds)[i]->total_number();
 		}else{
 			difference = this->plannedNumberOfCows[i] - (*herds)[i]->total_number();
@@ -292,17 +294,18 @@ int FarmManager::standardCalculateOverallNumberToBuy(bool replace){
 	return numberOfMissingCows;
 }
 
-int FarmManager::standardCalculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria crit,int overallNumber,int groupNum, Cow::UnorderedSet* cows){
+int FarmManager::standardCalculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria crit, int overallNumber, int groupNum, Cow::UnorderedSet* cows){
 	#ifdef _FARM_MANAGER_DEBUG_
 			std::cout << "FarmManager: calculating how many cows to sell for the current criteria " << crit << std::endl;
 		#endif
 
+	// TODO The numberOfAnimalsWithType should not be a scalar in case of more than one herd per farm.
 	int numberOfAnimalsWithType = 0;
 	std::vector<Herd*>* herds = this->myFarm->getHerds();
 	for (int i=0; i < herds->size(); i++)
 		numberOfAnimalsWithType = (*herds)[i]->getNumberOfCowsInGroup(crit);
 
-	int datnum = (int) ((double)(overallNumber - cows->size())/groupNum);
+	int datnum = (int) ( (double)( overallNumber - cows->size() )/groupNum ) ;
 	switch(this->sellingStrategy){
 		case OLD_COWS_FIRST:
 			if(cows == nullptr){
@@ -324,7 +327,7 @@ int FarmManager::standardCalculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria cri
 //		if((int) (overallNumber*(double ) numberOfAnimalsWithType / (double) this->myFarm->total_number()) <= 0){
 //		std::cout << this->standardCalculateOverallNumberToBuy() << "\t" << cows->size() << "\t" ;
 //		std::cout << "calc: " <<  overallNumber << "\t" << numberOfAnimalsWithType << std::endl;}
-		return (int) (overallNumber*(double ) numberOfAnimalsWithType / (double) this->myFarm->total_number());
+		return (int) ( overallNumber * (double) numberOfAnimalsWithType / (double) this->myFarm->total_number() );
 		}
 }
 
@@ -365,8 +368,8 @@ void FarmManager::standardOfferingMethod(int numberOfCowsToSell, Cow_Trade_Crite
 			totalNumber -= cows->size();
 			if(totalNumber <= 0)
 				break;
-			//after knowing how many cows to take, generate random indices, which kinds of cows you will choose
-			//add those cows to the set
+			// after knowing how many cows to take, generate random indices, which kinds of cows you will choose and
+			// add those cows to the set
 		}
 	}
 }

@@ -76,7 +76,7 @@ void Utilities::printStackTrace(int number){
 	printf("backtrace() returned %d addresses\n", size);
 	// print out all the frames to stderr
 	strings = backtrace_symbols(array, size);
-	if (strings == NULL) {
+	if (strings == nullptr) {
 		perror("backtrace_symbols");
 		exit(EXIT_FAILURE);
 	}

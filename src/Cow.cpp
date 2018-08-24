@@ -194,7 +194,7 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 	if(!this->female){
 		if(age <= calfMaxAge){
 			return MALE_CALF;
-		}else if(age <= 6.*31.)
+		}else if(age <= 15.*30.)
 			return YOUNG_BULL;
 		else
 			return OLD_BULL;
@@ -210,13 +210,13 @@ Cow_Trade_Criteria Cow::getCowTradeCriteria(){
 	}
 	if( !children.empty() ){
 		// TODO return OLD_COW
-		if(age > 1488.) // 1488 =48*31. Setting the criterion for the cow to be old at about 4 years.
+		if(age > 1440.) // 1488 =48*30. Setting the criterion for the cow to be old at about 4 years.
 			return OLD_COW;
 		return DAIRY_COW;
 	}else{
 		if(age <= calfMaxAge){
 			return CALF;
-		}else if(age <= 527.){//527*17*31 // TODO implement random distribution when breeding begins
+		}else if(age <= 510.){  // 510=17*30 // TODO implement random distribution when breeding begins
 			return HEIFER_PRE_BREEDING;
 		}else
 			return HEIFER_RDY_BREEDING;

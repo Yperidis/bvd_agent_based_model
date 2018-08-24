@@ -42,36 +42,36 @@ FarmManager::FarmManager(Farm* farm, System *s):myFarm(farm), system(s){
 	switch(sellingStrategy){
 		case OLD_COWS_FIRST:
 			list = new FarmManager::CriteriaList();
-			list->insert(list->end(),INFERTILE);
-			list->insert(list->end(),MALE_CALF);
-			list->insert(list->end(),YOUNG_BULL);
-			list->insert(list->end(),OLD_BULL);
+			list->insert(list->end(), INFERTILE);
+			list->insert(list->end(), MALE_CALF);
+			list->insert(list->end(), YOUNG_BULL);
+			list->insert(list->end(), OLD_BULL);
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 
 			list = new FarmManager::CriteriaList();
-			list->insert(list->end(),OLD_COW);
+			list->insert(list->end(), OLD_COW);
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 
 			list = new FarmManager::CriteriaList();
-			list->insert(list->end(),HEIFER_PRE_BREEDING);
+			list->insert(list->end(), HEIFER_PRE_BREEDING);
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 
 			list = new FarmManager::CriteriaList();
-			list->insert(list->end(),HEIFER_RDY_BREEDING);
+			list->insert(list->end(), HEIFER_RDY_BREEDING);
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 
 			list = new FarmManager::CriteriaList();
-			list->insert(list->end(),CALF);
+			list->insert(list->end(), CALF);
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 
 			list = new FarmManager::CriteriaList();
-			list->insert(list->end(),PREGNANT);
-			list->insert(list->end(),DAIRY_COW);
+			list->insert(list->end(), PREGNANT);
+			list->insert(list->end(), DAIRY_COW);
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 		default:
 			list = new FarmManager::CriteriaList();
-			for(int i = Cow_Trade_Criteria::NUMBEROFTYPES -1; i >= 0 ; i--){
-				list->insert(list->end(),static_cast<Cow_Trade_Criteria>(i));
+			for(int i = Cow_Trade_Criteria::NUMBEROFTYPES - 1; i >= 0 ; i--){
+				list->insert( list->end(), static_cast<Cow_Trade_Criteria>(i) );
 			}
 			sellingPriorityList->insert(sellingPriorityList->end(), list);
 	}
@@ -108,7 +108,7 @@ void FarmManager::manage(){
 		std::cout << "FarmManager: starting offering process" << std::endl;
     #endif
 
-	// TODO What is the role of this conditional here?
+	// A slaughterhouse should not post any offers. Therefore its management ends here.
 	if (this->myFarm->getType() == SLAUGHTERHOUSE){
         delete requests;  // The newly created "requests" should now release its reserved memory
         return;
@@ -194,7 +194,7 @@ void FarmManager::postDemand(std::set<Demand*>* requests){
 
 inline void FarmManager::postOffer(Cow::UnorderedSet* cowsToSell){
 
-	Offer* o = new Offer(cowsToSell, this->myFarm);    //This block of memory will be released at the end of
+	Offer* o = new Offer(cowsToSell, this->myFarm);    // This block of memory will be released at the end of
     // register_offer() in Market.cpp
 	this->system->getMarket()->register_offer(o);
 }
@@ -216,8 +216,8 @@ void FarmManager::chooseCowsToOffer(Cow::UnorderedSet* cowsToSell){
 	if (numberOfCowsToSell < this->sellingMargin)
 		return;
 	FarmManager::CriteriaList::iterator it2;
-	for(it = sellingPriorityList->begin(); it != sellingPriorityList->end(); it++){
-		for(it2 = (*it)->begin(); it2 != (*it)->end(); it2++){
+	for(it = sellingPriorityList->begin(); it != sellingPriorityList->end(); it++){  // Exterior list. Iterate through the lists of groups in the priority list.
+		for(it2 = (*it)->begin(); it2 != (*it)->end(); it2++){  // Interior list. Iterate through the animal groups in the list.
 			crit = (*it2);
 			int groupnum = (*it)->size();
 
@@ -256,7 +256,7 @@ int FarmManager::standardCalculateOverallNumberToSell(){
 		// take the number of cows that we want to have. Subtract the percentage that we want to replace and the number
         // of existing cows. -> number of cows that are needed. If this is negative, the value of this number is the number of cows we want to sell.
         // TODO Small farm implementation?
-		difference = (int) (this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage)) - (*herds)[i]->total_number();  // implicit floor for performance
+		difference = (int) ( this->plannedNumberOfCows[i]*(1.0-this->replacementPercentage) ) - (*herds)[i]->total_number();  // implicit floor for performance
 		if(difference < 0 ) {
             numberOfCowsToSell -= difference;
             //if(numberOfCowsToSell > 5000)
@@ -309,10 +309,12 @@ int FarmManager::standardCalculateNumberOfAnimalsPerGroup(Cow_Trade_Criteria cri
 	switch(this->sellingStrategy){
 		case OLD_COWS_FIRST:
 			if(cows == nullptr){
-				std::cerr << "With selling strategy OLD_COWS_FIRST you actually need to give me the damn pointer to a list of cows that is supposed to be sold, tard!";
+				std::cerr << "With selling strategy OLD_COWS_FIRST you actually need to give me the damn pointer to "
+				 "a list of cows that is supposed to be sold, tard!";
 				exit(9000);
 			}
-			// either return the number of animals of that group or the difference between the overall needed number of cows and the number of cows that is already going to be sold
+			// either return the number of animals of that group or the difference between the overall needed number of
+			// cows and the total number of cows that is going to be sold rescaled to the group size in question
 
 			return datnum > numberOfAnimalsWithType ? numberOfAnimalsWithType : datnum;
 

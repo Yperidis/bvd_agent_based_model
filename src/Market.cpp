@@ -18,7 +18,7 @@ Cow::UnorderedSet*  Offer::getCows(){
 	//setOFCows = *(this->cows);
 }
 
-Demand::Demand(Cow_Trade_Criteria criteria, int number, Farm* source):crit(criteria),numberOfDemandedCows(number),src(source){
+Demand::Demand(Cow_Trade_Criteria criteria, int number, Farm* source):crit(criteria), numberOfDemandedCows(number), src(source){
 	if(number <=0)
 		this->numberOfDemandedCows = 0;
 }
@@ -40,11 +40,11 @@ Market::Market(System* system):s(system){
 	slaughterHouses = new std::vector<Slaughterhouse*>() ;
 	sources = new std::vector<CowWellFarm*>();
 
-	filters = new std::vector<TradingFilter*>();
-	filters->push_back( new WellSlaughterhouseFilter());
+	filters = new std::vector<TradingFilter*>();  // introducing filters to the market (defined in TradeFilter.cpp)
+	filters->push_back( new WellSlaughterhouseFilter() );
 	filters->push_back( new SameFarmFilter() );
 	ignoreTypeOfDemand = System::reader->GetBoolean("trade", "ignoreTypeOfDemand" , false);
-	if(ignoreTypeOfDemand){
+	if(ignoreTypeOfDemand){  // in this case the market will ignore the type of demands and apply those of this block
 		cowl = new std::queue<Cow*>();
 		demandl = new std::queue<Demand*>();
 		cowQs->push_back(cowl);
@@ -61,10 +61,10 @@ Market::Market(System* system):s(system){
 		buyingQueueTradeCriteriaPriorities->push_back(YOUNG_BULL);
 		buyingQueueTradeCriteriaPriorities->push_back(OLD_COW);
 		buyingQueueTradeCriteriaPriorities->push_back(INFERTILE);
+        buyingQueueTradeCriteriaPriorities->push_back(MALE_CALF);
 		buyingQueueTradeCriteriaPriorities->push_back(OLD_BULL);
-		buyingQueueTradeCriteriaPriorities->push_back(MALE_CALF);
 	}else{
-		for(int i=0; i < NUMBEROFTYPES; i++){
+		for(int i=0; i < NUMBEROFTYPES; i++){  // the market respects type demands
 			cowl = new std::queue<Cow*>();
 			demandl = new std::queue<Demand*>();
 			cowQs->push_back(cowl);
@@ -97,7 +97,7 @@ Market::~Market(){
 void Market::register_offer( Offer * offer ){
 	if(offer->src->getType() == SLAUGHTERHOUSE){    // We do not accept offers from slaughterhouses by definition
 		delete offer;
-		//std::cerr << "WARNING: ATTEMPTED TO REGISTER OFFER FROM THE SLAUGHTERHOUSE." << std::endl;
+		std::cerr << "WARNING: ATTEMPTED TO REGISTER OFFER FROM THE SLAUGHTERHOUSE." << std::endl;
 		return;
 	}
 
@@ -114,9 +114,9 @@ void Market::register_offer( Offer * offer ){
 
 				this->scheduleTradeToSlaughterHouse(cow);
 				continue;
-			break;
+			break;  // made redundant from the loop, but good to retain as a flow control reminder
 			default:{
-				std::pair< std::queue<Cow*>*, std::queue<Demand*>* > pair=
+				std::pair< std::queue<Cow*>*, std::queue<Demand*>* > pair =
 						this->getRelevantQueues( cow->getCowTradeCriteria() );
 				offerQueue = pair.first;
 				demandQueue = pair.second;
@@ -126,7 +126,7 @@ void Market::register_offer( Offer * offer ){
 				int i = 0;
 				if(offerQueue->size() == 0){
 					demandqueue* dbuffQ = new demandqueue();
-					while(demandQueue->size() > 0 && pushOnOfferQueue){
+					while(demandQueue->size() > 0 && pushOnOfferQueue){  // search for a match between demanded groups of animals and offered ones
 						i++;
 						d=demandQueue->front();
 						if(d->numberOfDemandedCows <= 0){
@@ -134,11 +134,11 @@ void Market::register_offer( Offer * offer ){
 							delete d;
 							continue;
 						}else{
-							if(!this->doTheTrading(cow,d)){
+							if(!this->doTheTrading(cow, d)){  // declining the trade due to self-matching
 								demandQueue->pop();
 								dbuffQ->push(d);
 							}else{
-								pushOnOfferQueue = false;
+								pushOnOfferQueue = false;  // end of search
 							}
 						}
 
@@ -165,7 +165,8 @@ void Market::register_demand( Demand * demand ){
 		return;
 	}
 
-	std::pair< std::queue<Cow*>*, std::queue<Demand*>* > pair = this->getRelevantQueues(demand->crit);
+	std::pair< std::queue<Cow*>*, std::queue<Demand*>* > pair = this->getRelevantQueues(demand->crit); // the setting to ignore or not the type
+                                                                                                        // of demand here is implicit
 	std::queue<Cow*>* offerQueue = pair.first;
 	std::queue<Demand*>* demandQueue = pair.second;
 	//this->getRelevantQueues(demand->crit, offerQueue, demandQueue);
@@ -179,15 +180,15 @@ void Market::register_demand( Demand * demand ){
 	#endif
 }
 
-void Market::flushQueues(){
+void Market::flushQueues(){  // Called after the end of a management period
 
 	for(int i=0; i< NUMBEROFTYPES; i++){
-		std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues(static_cast<Cow_Trade_Criteria>(i));
+		std::pair<std::queue<Cow*>*, std::queue<Demand*>*> pair = this->getRelevantQueues( static_cast<Cow_Trade_Criteria>(i) );
 		while(!pair.first->empty()){
 			if(this->dump){
 				if(this->slaughterHouses->size() <= 0){
-					std::cerr << "If you're using slaughterhouse type dump, you need to actually add slaughterhouses to the system" << std::endl;
-					exit(85);
+					std::cerr << "If you're using slaughterhouse type dump, you need to have slaughterhouses in the system" << std::endl;
+					exit(1);
 				}
 				Cow* c = pair.first->front();
 				this->scheduleTradeToSlaughterHouse(c);
@@ -199,11 +200,11 @@ void Market::flushQueues(){
 		while(!demandQueue->empty()){
 			Demand *d = demandQueue->front();
 			if(this->dump && this->sources->size() > 0){
-				while(d->numberOfDemandedCows > 0){  // fill up the needs in the farms
+				while(d->numberOfDemandedCows > 0){  // fill up the needs of the farms
 
 					Trade_Event *e = new Trade_Event(this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, (*this->sources)[0]->getACowId(), d->src);
-					if(!this->scheduleTrade(e)){
-						std::cerr << "for some reason filling the holes didn't work" << std::endl;
+					if( !this->scheduleTrade(e) ){
+						std::cerr << "ATTENTION! ATTEMPTED SELF-TRADE THROUGH THE QUEUE FLUSHING WHILE DUMPING" << std::endl;
 						delete e;
 						continue;
 					}
@@ -231,7 +232,7 @@ void Market::matchTradingPartners(cowqueue* offerQueue, demandqueue* demandQueue
 			d = nullptr;
 		}
 	}
-	this->cleanUpBufferQueue(offerQueue,bufferQueue);
+	this->cleanUpBufferQueue(offerQueue, bufferQueue);
 }
 
 void Market::matchDemandToOfferQueue(Demand* demand, cowqueue* offerQueue){
@@ -241,7 +242,7 @@ void Market::matchDemandToOfferQueue(Demand* demand, cowqueue* offerQueue){
 		Cow* cow = offerQueue->front();
 		offerQueue->pop();
 
-		if(!this->doTheTrading(cow, demand)){
+		if(!this->doTheTrading(cow, demand)){  // assure that the realised trade is not self-trade
 			bufferQueue->push(cow);
 		}
 	}
@@ -249,16 +250,17 @@ void Market::matchDemandToOfferQueue(Demand* demand, cowqueue* offerQueue){
 
 }
 template<typename T>
-void Market::cleanUpBufferQueue(std::queue<T>* trueQ, std::queue<T>* bufferQ){
+void Market::cleanUpBufferQueue(std::queue<T>* trueQ, std::queue<T>* bufferQ){  // this is where the actual offer-demand matching takes place
 	while(bufferQ->size() > 0){
 		// this is not optimal when it comes to timing, but should work for now.
 		// FIXME: when timing problems arise: solve that problem
 		T thing = bufferQ->front();
-		trueQ->push(thing);
+		trueQ->push(thing);  // The trueQ refers to the offer or demand queue, depending on where it was called from
 		bufferQ->pop();
 	}
 	delete bufferQ;
 }
+
 inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelevantQueues(const Cow_Trade_Criteria crit){
 
 	std::pair<Market::cowqueue*, Market::demandqueue*> retPair = std::pair<cowqueue*, demandqueue*>();
@@ -272,8 +274,9 @@ inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelev
 	return retPair;
 
 }
+
 bool Market::doTheTrading(Cow* cow, Demand* d){
-	Trade_Event *e = new Trade_Event(this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src);
+	Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
 	bool ret = this->scheduleTrade(e);
 	if(ret){
 		#ifdef _MARKET_DEBUG_
@@ -286,13 +289,14 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
 	(d->numberOfDemandedCows)--;
 	return ret;
 }
+
 bool Market::scheduleTrade(Trade_Event* event){
-	for(TradingFilter* filter: *this->filters){
-		if(!(*filter)(event))  // case of self-trade
+	for(TradingFilter* filter : *this->filters){
+		if(!(*filter)(event))  // case of self-trade or direct trade from well to slaughterhouse
 			return false;
 	}
 	// TODO This came up with an input farm size distribution of two farms, each with 20 animals.
-	if(this->lastID == event->id){
+	if(this->lastID == event->id){  // case of animal being doubly scheduled for trade. Should be redundant from the above self-trade. Check!
 //		std::cerr << "I don't remember, why I'm doing this" <<std::endl;
 //		Utilities::printStackTrace(15);
 	}
@@ -338,12 +342,12 @@ void Market::sellDirectlyToSlaughterHouse(const Cow* cow){
 
 void Market::setFarms(std::vector<Farm*>* newfarms){
 
-	this->farms = newfarms;
-	for (auto f : *newfarms){
-		if(f->getType() == WELL)
-			this->registerSourceFarm((CowWellFarm*) f);
-		else if(f->getType() == SLAUGHTERHOUSE){
-			this->registerSlaughterHouse((Slaughterhouse*) f);
-		}
-	}
+    this->farms = newfarms;
+    for (auto f : *newfarms){
+        if(f->getType() == WELL)
+            this->registerSourceFarm((CowWellFarm*) f);
+        else if(f->getType() == SLAUGHTERHOUSE){
+            this->registerSlaughterHouse((Slaughterhouse*) f);
+        }
+    }
 }

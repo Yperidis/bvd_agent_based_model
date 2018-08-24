@@ -126,7 +126,7 @@ void System::schedule_event( Event* e )
     }
 
     Cow* c = Cow::get_address(e->id);
-    if(c != nullptr)
+    //if(c != nullptr)
 /*        if(c->id()==100)
             std::cout << "Pass 1. Animal ID: " << c->id() << std::endl;*/
     if (e->type == Event_Type::ABORTION && c->calf_status == Calf_Status::NO_CALF) {
@@ -195,7 +195,7 @@ void System::scheduleFutureCowIntros(){
 		std::vector<Farm*>::iterator it;
 		int farmID;
 		double intTime;
-		f = NULL;
+		f = nullptr;
 		no = a + 1;
 		oss << "inputCow" << no;
 		cowName = oss.str();
@@ -219,7 +219,7 @@ void System::scheduleFutureCowIntros(){
 			std::cout << "cow " << no << " is introduced to the system in farm " << farmID << " at time t=" << intTime << std::endl;
 //			std::cout << f << std::endl;
 
-			Trade_Event *e = new Trade_Event(intTime,c->id(),f);
+			Trade_Event *e = new Trade_Event(intTime, c->id(),f);
 
 			this->schedule_event(e);
 
@@ -259,7 +259,7 @@ void System::execute_next_event()
         _current_time = e->execution_time;    // the current time becomes the execution time of the event from the main queue
         // Calls of events are always logged regardless of what is happening in their member functions
         this->output->logEvent(e);
-        if(e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ) {
+        if( e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ){
             delete c;    // Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
         }
         else{
@@ -631,11 +631,12 @@ std::string System::countHappyFarms() {
             }
         }
     }
-    return "under: " + std::to_string(less_than) + ", OK: " + std::to_string(satisfied_farms) + ", over: " + std::to_string(more_than) + ", more or less OK: " + std::to_string(moreorless);
+    return "under: " + std::to_string(less_than) + ", OK: " + std::to_string(satisfied_farms) + ", over: " +
+           std::to_string(more_than) + ", more or less OK: " + std::to_string(moreorless);
 }
 
-//Calls the existing well farm out of the farm list. If it doesn't exist
-//the system gets nothing (null pointer).
+// Calls the existing well farm out of the farm list. If it doesn't exist
+// the system gets nothing (null pointer).
 CowWellFarmManager* System::getFirstWell() {
     if (_firstCowWellFarm == nullptr) {
         for(auto f: this->farms) {
@@ -644,7 +645,7 @@ CowWellFarmManager* System::getFirstWell() {
             }
             return _firstCowWellFarm;
         }
-    } else {
+    }else{
         return _firstCowWellFarm;
     }
 }

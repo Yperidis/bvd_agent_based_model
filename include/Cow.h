@@ -19,7 +19,7 @@ class Cow;
 
 //
 enum Cow_Trade_Criteria{
-	CALF = 0,  //Female
+	CALF = 0,  // Female
 	HEIFER_PRE_BREEDING = 1,
 	HEIFER_RDY_BREEDING = 2,
 	INFERTILE = 3,
@@ -29,7 +29,7 @@ enum Cow_Trade_Criteria{
 	MALE_CALF = 7,
 	YOUNG_BULL = 8,
 	OLD_BULL = 9,
-	NUMBEROFTYPES = 10//if you add more cow trade criteria, you need to change this number according to the number of criteria
+	NUMBEROFTYPES = 10  // if you add more cow trade criteria, you need to change this number according to the number of criteria
 };
 
 /// The possible states of an embryo. (NO_CALF meaning that there is no embryo at the moment)
@@ -64,7 +64,7 @@ enum class KnownStatus{
 class Cow_Pointer_Sort_Criterion
 {
  public:
-  bool operator() (Cow const * const c1 , Cow const * const c2);
+  bool operator() (Cow const * const c1, Cow const * const c2);
 };
 
 

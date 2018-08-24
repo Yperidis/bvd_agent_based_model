@@ -188,10 +188,10 @@ void Initializer::set_number_of_farms( int N )
 
   for (int i=0 ; i < N ; i++ )
     {
-      age_distr.push_back( def_age_distr );    //Initialise a vector with the default age distribution for every farm created
-      no_animal.push_back( -1 );    //Initialise a vector for the animal number with an initial entry for every farm created
-      //if(No_farm_animals.at(i) > 100){    //For assigning PI infected farms according to an animal count criterion
-      if(s->rng.ran_unif_double( 1.0, 0.0) <= this->percentageOfPreviouslyInfected){  //Assigning randomly (from a uniform
+      age_distr.push_back( def_age_distr );    // Initialise a vector with the default age distribution for every farm created
+      no_animal.push_back( -1 );    // Initialise a vector for the animal number with an initial entry for every farm created
+      //if(No_farm_animals.at(i) > 100){    // For assigning PI infected farms according to an animal count criterion
+      if(s->rng.ran_unif_double( 1.0, 0.0 ) <= this->percentageOfPreviouslyInfected){  // Assigning randomly (from a uniform
           // rnd distribution) PI-infected and clean farms, according to a threshold defined in the ini file
 	      initialTypes.push_back(FarmInitialConditionsType::previouslyInfected);
       }else{

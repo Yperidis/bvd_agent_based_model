@@ -415,11 +415,11 @@ double Random_Number_Generator::lifetime_PI()
   else if (index <= bvd_const::probability_lifetime_PI.second_year)
     return ran_unif_double(730,365);
   else if (index <= bvd_const::probability_lifetime_PI.third_year)
-    return ran_unif_double(1095,731);
+    return ran_unif_double(1095,730);
   else if (index <= bvd_const::probability_lifetime_PI.fourth_year)
-    return ran_unif_double(1460,1096);
+    return ran_unif_double(1460,1095);
   else
-    return ran_unif_double(3650 , 1461);
+    return ran_unif_double(3650 , 1460);
 }
 
 double Random_Number_Generator::time_of_death_infected_calf()

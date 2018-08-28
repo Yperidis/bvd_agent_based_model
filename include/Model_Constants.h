@@ -78,6 +78,7 @@ namespace bvd_const
   struct{
     double min=180.;
     double max=270.;
+    double mod=210.;
   } duration_of_MA;
   struct{
     double min=480.;

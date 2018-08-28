@@ -246,7 +246,7 @@ void Farm::infection_rate_has_changed( Event * e ){ // e points to the event by 
         Cow* infection_victim = infection_herd->random_S_cow();
 
         // (6) Schedule INFECTION event.
-        system->schedule_event( new Event( infection_time , Event_Type::INFECTION , infection_victim->id() ) );
+        system->schedule_event( new Event( infection_time, Event_Type::INFECTION, infection_victim->id() ) );
     }
 }
 

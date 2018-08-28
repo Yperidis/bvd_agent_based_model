@@ -530,7 +530,7 @@ void Cow::execute_INFECTION( const double& time )
     else // It's not a calf.
         // At this point, the calf status can only be NO_CALF, INFERTILE or SUSCEPTIBLE (because the infection status before this event must have been SUSCEPTIBLE).
     {    // INFERTILE is taken care of directly, within the standard trading time though, so effectively only NO_CALF and SUSCEPTIBLE are possible here.
-        if ( female && calf_status == Calf_Status::SUSCEPTIBLE ) // The cow is pregnant
+        if ( female && calf_status == Calf_Status::SUSCEPTIBLE ) // The animal is a cow and susceptible
         {
             if (planned_birth_event != nullptr) {  // Ascertain that the cow is indeed pregnant and not in its resting time,
                 // otherwise the stage of the pregnancy (time_of_pregnancy) variable will have an unpredictable behaviour

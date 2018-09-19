@@ -765,10 +765,10 @@ bool Cow::isTestedPositive(const Event* e){
                                                                     // The specificity is set to 1 by default.
 	bool correctHealthState;
 	switch(e->type){
-		case Event_Type::JUNGTIER_SMALL_GROUP:  // Presently ANTIBODYTEST does not reach here and if it would it would
-		case Event_Type::ANTIBODYTEST:			// be identical to the VIRUSTEST (this is wrong of course in reality)
-			//correctHealthState = this->infection_status == Infection_Status::IMMUNE;
-			//break;
+		case Event_Type::JUNGTIER_SMALL_GROUP:  
+		case Event_Type::ANTIBODYTEST:			
+			correctHealthState = this->infection_status == Infection_Status::IMMUNE;
+			break;
 		case Event_Type::TEST:
 		case Event_Type::VIRUSTEST:
 			correctHealthState = (this->infection_status == Infection_Status::PERSISTENTLY_INFECTED) ||
@@ -778,11 +778,9 @@ bool Cow::isTestedPositive(const Event* e){
 			exit(9);
 	}
 	return resultIsCorrect && correctHealthState;  // AND for failure of the sensitivity success rate in all cases except
-                                                // for its concurrent success and the animal being actually sick.
+                                                // for its concurrent success and the animal being actually sick in the virus test (ear tag) or being immune in the antibody test.
 	//return !resultIsCorrect ^ correctHealthState; // (not A) XOR B. Operation at the bit level due to the
-	// class enum values. The returned value will only be true for a true positive or a false positive. We assume all the
-	// tests to be antigen tests (second case of the switch block) so far in the code. ATTENTION:
-	// The name and the logic should be reconsidered if we start making distinctions for the different tests.
+	// class enum values. The returned value will only be true for a true positive or a false positive.
 }
 
 inline bool Cow::testAgain(){

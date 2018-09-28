@@ -31,9 +31,9 @@ enum class Event_Type
       STOP                  = -3,  // System event
       MANAGE				= -4,  // System event
       EARTAG 				= -5,  // Redundant by the TEST event
-      TEST					= -100,  // Cow event
+      TEST					= -100,  // Cow event. Tissue test (scheduled at birth and realised only once). Different only in name than VIRUSTEST in the code (to distinguish for a financial analysis)
       ANTIBODYTEST			= -101,  // Cow event. So far equivalent to JUNGTIER_SMALL_GROUP. Is not otherwise implemented.
-      VIRUSTEST				= -102,  // Cow event. Appears at the herd level.
+      VIRUSTEST				= -102,  // Cow event. Appears at the herd level. Blood test (more expensive than TEST). Periodic implementation
       VACCINATION			= -103,  // Redundant by the VACCINATE event
       QUARANTINEEND			= -104,  // Farm event
       JUNGTIER				= -105,  // Not implemented

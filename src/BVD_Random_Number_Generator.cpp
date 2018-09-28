@@ -313,13 +313,15 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
             *conception = true;
             return (time_between_two_inseminations()
                     + time_between_two_inseminations()
-                    + time_between_two_inseminations());  //Drawing thrice from the previous triangular distribution
+                    + time_between_two_inseminations() );  //Drawing thrice from the previous triangular distribution
         } else {
             //time till death takes place 0-14 days
             // Not right, I think. The waiting times between the inseminations have been neglected.
             // Cannot occur with the present model constants
             *conception = false;
-            return ran_unif_double(bvd_const::time_till_death_takes_place, 0);
+            return ran_unif_double( time_between_two_inseminations()  // The animal is to be removed after the failed insemination attempts
+                                   + time_between_two_inseminations()
+                                   + time_between_two_inseminations() + bvd_const::time_till_death_takes_place, 0);
         }
     } else {
         if (index < bvd_const::number_inseminations_cow.zero) {
@@ -339,7 +341,8 @@ double Random_Number_Generator::insemination_result( bool first_pregnancy , bool
             //time till death takes place 0-14 days
             // Not right, I think. The waiting times between the inseminations have been neglected.
             *conception = false;
-            return ran_unif_double(bvd_const::time_till_death_takes_place, 0);
+            return ran_unif_double( time_between_two_inseminations() + time_between_two_inseminations() +
+                                   time_between_two_inseminations() + bvd_const::time_till_death_takes_place, 0);
         }
     }
 }
@@ -433,7 +436,7 @@ double Random_Number_Generator::time_of_next_infection( double rate )
   // The GSL uses the anglo-saxon convention of parametrising the exponential distribution by the average waiting time between two events.
   // Those good old europeans that we are use the inverse, the number of events per time. Thus the 1.0/rate business here.
   if ( rate > 0.0 )
-    return  gsl_ran_exponential ( generator , 1.0/rate );
+    return  gsl_ran_exponential ( generator, 1.0/rate );
   return std::numeric_limits<double>::max();
 }
 
@@ -471,9 +474,11 @@ double Random_Number_Generator::retestTime(){
 	return ran_unif_double( System::getInstance(nullptr)->activeStrategy->retestingTimeBlood , 0.0);
 }
 double Random_Number_Generator::removeTimeAfterFirstTest(){  // between 3-34 days (see schematic)
+//    return ran_unif_double( 0., 0.0);
     return ran_unif_double( 34., 3.0);
 }
 double Random_Number_Generator::removeTimeAfterSecondTest(){  // between  days (see schematic)
+//    return ran_unif_double( 0., 0.0);
 	return ran_unif_double( 23., 3.0); // (22., 6.);
 }
 bool Random_Number_Generator::vaccinationWorks(){

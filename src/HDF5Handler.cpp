@@ -100,7 +100,7 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 		}
 		delete[] calvingTimeData;
 	}
-#ifndef _SUPPRESS_MINOR_OUTPUT_
+//#ifndef _SUPPRESS_MINOR_OUTPUT_
     this->writeSaveToFile(file_id,this->CowData, "BVD_Dead_Cows");
 	this->writeSaveToFile(file_id,this->InfectionData, "BVD_Cows_Infections");
 //#endif
@@ -108,7 +108,7 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 //#ifndef _SUPPRESS_MINOR_OUTPUT_
 	this->writeLivingPIsToFile(file_id);
 //#endif
-#endif
+//#endif
 #endif
 }
 
@@ -148,7 +148,7 @@ void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->vaccDataSave->size()), static_cast<hsize_t>(VaccinationDataPoint::size) };
 
 
-		int * data = NULL;
+		int * data = nullptr;
 		this->createWritableData(this->vaccDataSave, &data);
 		int success = H5LTmake_dataset_int( file_id ,
 						  HDF5FileHandler::vaccinationsTableName.c_str(),
@@ -166,13 +166,13 @@ void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 
 void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
 #ifndef _SUPPRESS_OUTPUT_
-#ifndef _SUPPRESS_MINOR_OUTPUT_
+//#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if(this->infectionResultSave->size() <= 0) return;
 	const int rank = 2;
 	hsize_t dims[rank] = { static_cast<hsize_t>(this->infectionResultSave->size()), static_cast<hsize_t>(InfectionResultDataPoint::size) };
 
 
-	int * data = NULL;
+	int * data = nullptr;
 	this->createWritableData(this->infectionResultSave, &data);
 	int success = H5LTmake_dataset_int( file ,
 					  HDF5FileHandler::infectionResultTabelName.c_str(),
@@ -185,7 +185,7 @@ void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
 		std::cerr << "Failed to create infection result dataset" << std::endl;
 		exit(12);
 	}
-#endif
+//#endif
 #endif
 }
 
@@ -397,7 +397,7 @@ void HDF5FileHandler::writeSaveToFile(const hid_t& file, CowDataSave* save, cons
 		exit(12);
 	}
 
-	if(data != NULL) {
+	if(data != nullptr) {
         delete[] data;
     }
 	else {

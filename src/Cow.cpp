@@ -790,7 +790,7 @@ inline bool Cow::testAgain(){
 inline void Cow::scheduleNextTest(){
 	double retestTime = system->rng.retestTime();    // uniform random number chosen between 20. and the defined
     // retestingTimBlood float (must be > 20.)
-	system->schedule_event( new Event( system->getCurrentTime() + retestTime, Event_Type::VIRUSTEST, this->id() ) ); // If a second round of test is underway
+	system->schedule_event( new Event( system->getCurrentTime() + retestTime, Event_Type::VIRUSTEST, this->id() ) ); // If a second round of testing is underway
 																													// let the second test be VIRUSTEST
 }
 

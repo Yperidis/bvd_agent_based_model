@@ -279,7 +279,7 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
 	Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
 	//TODO The testing prior to trade should be incorporated in the scheduleTrade() function from a design consistency point of view. However, cow is not passed there and there are several dependencies to be considered if this change is to be made.
 	s->schedule_event( new Event ( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule a test before the trade
-	if (cow->knownStatus!=KnownStatus::NEGATIVE){ // if the animal is not tested negative do not commit the trade
+	if ( cow->knownStatus!=KnownStatus::NEGATIVE && d->src->getType()!=FarmType::SLAUGHTERHOUSE ){ // if the animal is not tested negative do not commit the trade unless the destination farm is the slaughterhouse
 		bool ret = false;
 		delete e;
 		(d->numberOfDemandedCows)--;

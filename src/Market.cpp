@@ -1,3 +1,4 @@
+#include <BVDContainmentStrategy.h>
 #include "Market.h"
 #include "System.h"
 #include "Herd.h"
@@ -278,12 +279,19 @@ inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelev
 bool Market::doTheTrading(Cow* cow, Demand* d){
 	Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
 	//TODO The testing prior to trade should be incorporated in the scheduleTrade() function from a design consistency point of view. However, cow is not passed there and there are several dependencies to be considered if this change is to be made.
-	s->schedule_event( new Event ( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule a test before the trade
-	if ( cow->knownStatus!=KnownStatus::NEGATIVE && d->src->getType()!=FarmType::SLAUGHTERHOUSE ){ // if the animal is not tested negative do not commit the trade unless the destination farm is the slaughterhouse
-		bool ret = false;
-		delete e;
-		(d->numberOfDemandedCows)--;
-		return ret;
+	if(s->activeStrategy->usesEartag){
+		if(cow->age() <= 30.) {
+			s->schedule_event( new Event( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule an ear tag test before the trade (less than a month of age)
+		}
+		else{
+			s->schedule_event( new Event( s->getCurrentTime(), Event_Type::VIRUSTEST, cow->id() ) ); // schedule an blood test before the trade (over 1 month of age)
+		}
+		if (cow->knownStatus != KnownStatus::NEGATIVE && d->src->getType() != FarmType::SLAUGHTERHOUSE){ // if the animal is not tested negative do not commit the trade unless the destination farm is the slaughterhouse
+			bool ret = false;
+			delete e;
+			(d->numberOfDemandedCows)--;
+			return ret;
+		}
 	}
 	bool ret = this->scheduleTrade(e);
 	if(ret){

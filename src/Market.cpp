@@ -278,7 +278,7 @@ inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelev
 
 bool Market::doTheTrading(Cow* cow, Demand* d){
 	Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
-	//TODO The testing prior to trade should be incorporated in the scheduleTrade() function from a design consistency point of view. However, cow is not passed there and there are several dependencies to be considered if this change is to be made.
+/*	//TODO The testing prior to trade should be incorporated in the scheduleTrade() function from a design consistency point of view. However, cow is not passed there and there are several dependencies to be considered if this change is to be made.
 	if(s->activeStrategy->usesEartag){
 		if(cow->age() <= 30.) {
 			s->schedule_event( new Event( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule an ear tag test before the trade (less than a month of age)
@@ -292,7 +292,7 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
 			(d->numberOfDemandedCows)--;
 			return ret;
 		}
-	}
+	}*/
 	bool ret = this->scheduleTrade(e);
 	if(ret){
 		#ifdef _MARKET_DEBUG_

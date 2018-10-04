@@ -120,7 +120,7 @@ namespace bvd_const
     double rest_months=210.;
   } conception_result_time;    // The corresponding interval limits in days, where the abortion is scheduled to take place
   struct{
-    double first_year=50.;  // see the implementation of lieftime_PI to make sense of the numbers
+    double first_year=50.;  // see the implementation of lifetime_PI to make sense of the numbers
     double second_year=67.; // 17%
     double third_year=72.;  // 5%
     double fourth_year=73.5;// 1.5%
@@ -158,7 +158,7 @@ struct {
     double min = 4.;
     double max = 30.;
     double mod = 11.;
-  } time_of_first_test ;
+  } time_of_first_test;
 
 }
 

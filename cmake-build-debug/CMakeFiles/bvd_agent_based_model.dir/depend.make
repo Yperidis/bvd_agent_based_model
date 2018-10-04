@@ -308,6 +308,7 @@ CMakeFiles/bvd_agent_based_model.dir/src/Initializer.cpp.o: ../src/Initializer.c
 
 CMakeFiles/bvd_agent_based_model.dir/src/Market.cpp.o: .././projectImports/inih/cpp/INIReader.h
 CMakeFiles/bvd_agent_based_model.dir/src/Market.cpp.o: ../include/AdvancedOutput.h
+CMakeFiles/bvd_agent_based_model.dir/src/Market.cpp.o: ../include/BVDContainmentStrategy.h
 CMakeFiles/bvd_agent_based_model.dir/src/Market.cpp.o: ../include/BVD_Random_Number_Generator.h
 CMakeFiles/bvd_agent_based_model.dir/src/Market.cpp.o: ../include/Cow.h
 CMakeFiles/bvd_agent_based_model.dir/src/Market.cpp.o: ../include/CowWellFarm.h

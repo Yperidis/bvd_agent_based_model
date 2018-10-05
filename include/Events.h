@@ -50,54 +50,56 @@ enum class Destination_Type { COW, HERD, FARM , SYSTEM };
 
 class Event
 {
- public:
-  Event(double exec_time , Event_Type ev_type , int cow_id );
+public:
+    Event(double exec_time , Event_Type ev_type , int cow_id );
 
-  /// Absolute time, when event is to be executed
-  double execution_time;
-  /// Type of event
-  Event_Type type;
-  const int id;     // id of the cow for this event
-  Destination_Type dest;
-  Herd* herd; // Only initialized if dest==HERD
-  Farm* farm; // Only initialized if dest==FARM
-  bool valid;
-   bool is_infection_rate_changing_event()const;
-   bool is_trade_event() const;
+    /// Absolute time, when event is to be executed
+    double execution_time;
+    /// Type of event
+    Event_Type type;
+    const int id;     // id of the cow for this event
+    Destination_Type dest;
+    Herd* herd; // Only initialized if dest==HERD
+    Farm* farm; // Only initialized if dest==FARM
+    bool valid;
+    bool is_infection_rate_changing_event()const;
+    bool is_trade_event() const;
 };
 
 
 class Trade_Event : public Event
 {
- public:
-  Trade_Event( double exec_time, int cow_id , Farm* destination_farm );
+public:
+    Trade_Event( double exec_time, int cow_id , Farm* destination_farm );
 };
 
 class System_Event : public Event
 {
- public:
-  System_Event( double exec_time , Event_Type type );
+public:
+    System_Event( double exec_time , Event_Type type );
 };
+
 class FARM_EVENT: public Event{
-	public:
-	FARM_EVENT(double exec_time, Event_Type type, Farm *farm);
+public:
+    FARM_EVENT(double exec_time, Event_Type type, Farm *farm);
 };
+
 class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's container and sorts them accordingly
 {
- public:
-  bool operator() (Event const * const  e1 , Event const * const e2)    //const pointer to const Event type
-  {
+public:
+    bool operator() (Event const * const  e1 , Event const * const e2)    //const pointer to const Event type
+    {
       ///First sorting criterion for the pair of events: according to their execution time
-    if (e1->execution_time < e2->execution_time) return false;
-    if (e1->execution_time > e2->execution_time) return true;
-    //Reaching this point means that the execution times of e1 and e2 are the same.
+      if (e1->execution_time < e2->execution_time) return false;
+      if (e1->execution_time > e2->execution_time) return true;
+      //Reaching this point means that the execution times of e1 and e2 are the same.
       ///Second sorting criterion for the pair of events: according to their type (see event enumerable class)
-    if (e1->type > e2->type) return false;
-    if (e1->type < e2->type) return true;
-    ///Reaching this point means that the types of e1 and e2 are also the same. In this case the event with the
-    ///smallest (animal) id will be executed first
-    return e1->id < e2->id;
-  }
+      if (e1->type > e2->type) return false;
+      if (e1->type < e2->type) return true;
+      ///Reaching this point means that the types of e1 and e2 are also the same. In this case the event with the
+      ///smallest (animal) id will be executed first
+      return e1->id < e2->id;
+    }
 };
 
 typedef std::priority_queue< Event* , std::vector< Event*> , Event_Pointer_Sort_Criterion > Event_queue;

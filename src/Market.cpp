@@ -277,33 +277,45 @@ inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelev
 }
 
 bool Market::doTheTrading(Cow* cow, Demand* d){
-	Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
-/*	//TODO The testing prior to trade should be incorporated in the scheduleTrade() function from a design consistency point of view. However, cow is not passed there and there are several dependencies to be considered if this change is to be made.
-	if(s->activeStrategy->usesEartag){
-		if(cow->age() <= 30.) {
-			s->schedule_event( new Event( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule an ear tag test before the trade (less than a month of age)
-		}
-		else{
-			s->schedule_event( new Event( s->getCurrentTime(), Event_Type::VIRUSTEST, cow->id() ) ); // schedule an blood test before the trade (over 1 month of age)
-		}
-		if (cow->knownStatus != KnownStatus::NEGATIVE && d->src->getType() != FarmType::SLAUGHTERHOUSE){ // if the animal is not tested negative do not commit the trade unless the destination farm is the slaughterhouse
-			bool ret = false;
-			delete e;
-			(d->numberOfDemandedCows)--;
-			return ret;
-		}
-	}*/
-	bool ret = this->scheduleTrade(e);
-	if(ret){
-		#ifdef _MARKET_DEBUG_
-			std::cout << "Market: schedule new trade" << std::endl;
-		#endif
+    Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
+/*    if(s->activeStrategy->usesEartag){
+        if(cow->knownStatus == KnownStatus::NOSTATUS && cow->age() <= bvd_const::time_of_first_test.max){
+            s->schedule_event( new Event( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule an ear tag test before the trade (for non-tested animals younger than their first test age)
+        }
+        else{
+            s->schedule_event( new Event( s->getCurrentTime(), Event_Type::VIRUSTEST, cow->id() ) ); // schedule a blood test before the trade (for non-tested animals over their first test age)
+        }
 
-	}else{
-		delete e;
-	}
-	(d->numberOfDemandedCows)--;
-	return ret;
+        if (cow->knownStatus != KnownStatus::NEGATIVE && d->src->getType() != FarmType::SLAUGHTERHOUSE){ // if the animal is not tested negative do not commit the trade unless the destination farm is the slaughterhouse
+            bool ret = false;
+            delete e;
+            (d->numberOfDemandedCows)--;
+            return ret;
+        }
+    }*/
+    bool ret = this->scheduleTrade(e);
+    if(ret) {
+#ifdef _MARKET_DEBUG_
+        std::cout << "Market: schedule new trade" << std::endl;
+#endif
+        cow->tradeQuery = e;  // track the scheduled trade event to invalidate it in case of positive test
+        if (d->src->getType() != FarmType::SLAUGHTERHOUSE) {  // animals destined to the slaughterhouse need not be tested
+            if (s->activeStrategy->usesEartag) {  // test only if this is the active strategy
+                if (cow->knownStatus == KnownStatus::NOSTATUS && cow->age() <= bvd_const::time_of_first_test.max) {
+                    s->schedule_event(new Event(s->getCurrentTime(), Event_Type::TEST,
+                                                cow->id())); // schedule an ear tag test before the trade (for non-tested animals younger than their first test age). Has to be smaller than the standard_trade_execution_time (see above)
+                } else {
+                    s->schedule_event(new Event(s->getCurrentTime(), Event_Type::VIRUSTEST,
+                                                cow->id())); // schedule a blood test before the trade (for non-tested animals over their first test age)
+                }
+            }
+        }
+    }else
+    {
+        delete e;
+    }
+    (d->numberOfDemandedCows)--;
+    return ret;
 }
 
 bool Market::scheduleTrade(Trade_Event* event){

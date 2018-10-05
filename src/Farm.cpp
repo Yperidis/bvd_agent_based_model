@@ -109,6 +109,7 @@ std::vector<Herd*>* Farm::getHerds(){
 bool Farm::isUnderQuarantine(){
 	return this->quarantine;
 }
+
 void Farm::putUnderQuarantine(){
 
 	this->quarantine = true;
@@ -315,6 +316,9 @@ void Farm::execute_TRADE_event( Event* e )
     // after an infection rate changing event in the queue.
 
     this->invalidate_next_infection_event();
+
+    // if the tradeQuery pointer has been assigned to an event and the animal got traded in the end, now is the pointer's end of life
+    //delete c->tradeQuery;
 
 
     for ( auto c_e : c->future_irc_events_that_move )

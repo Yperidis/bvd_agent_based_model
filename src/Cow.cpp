@@ -82,6 +82,7 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 	has_been_pregnant_at_all_so_far = false;
 	planned_birth_event = nullptr;
 	planned_abortion_event = nullptr;
+    tradeQuery = nullptr;
 
 	calf_status          =  Calf_Status::NO_CALF;
 	mother               =  my_mother;
@@ -718,6 +719,15 @@ bool Cow::testCow(const Event* e){
 		this->firstTestTime = system->getCurrentTime();
 	lastTestTime = system->getCurrentTime();
 	if(this->isTestedPositive(e)){    // True or false positive
+
+		// If an animal is tested positive prior to it being traded, invalidate the scheduled trade event
+		if (tradeQuery != nullptr) {
+/*        if(this->id() == 244193)
+            std::cout << "Invalidating at t=" << time << std::endl;*/
+			System::getInstance(nullptr)->invalidate_event(tradeQuery);
+			tradeQuery = nullptr;
+		}
+
 		if(System::getInstance(nullptr)->activeStrategy->quarantineAfterPositiveTest)
 			this->herd->farm->putUnderQuarantine();
 

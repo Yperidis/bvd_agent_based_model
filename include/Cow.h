@@ -72,7 +72,7 @@ class Cow_Pointer_Sort_Criterion
 class Cow
 {
 	public:
-		Cow( double birth_time , Cow* my_mother ) ; /// Constructors
+		Cow( double birth_time , Cow* my_mother ); /// Constructors
 		Cow( double birth_time, Cow* mother, bool female);
 		Cow( std::string cowName);
 		~Cow();
@@ -104,6 +104,7 @@ class Cow
 		bool hasBeenTestedPositiveYet;
         Event* planned_birth_event;
 		Event* planned_abortion_event;
+        Trade_Event* tradeQuery;
 
 		double age() const;
 		KnownStatus knownStatus;

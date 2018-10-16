@@ -278,35 +278,30 @@ inline const std::pair<Market::cowqueue*, Market::demandqueue*> Market::getRelev
 
 bool Market::doTheTrading(Cow* cow, Demand* d){
     Trade_Event *e = new Trade_Event( this->s->getCurrentTime() + bvd_const::standard_trade_execution_time, cow->id(), d->src );
-/*    if(s->activeStrategy->usesEartag){
-        if(cow->knownStatus == KnownStatus::NOSTATUS && cow->age() <= bvd_const::time_of_first_test.max){
-            s->schedule_event( new Event( s->getCurrentTime(), Event_Type::TEST, cow->id() ) ); // schedule an ear tag test before the trade (for non-tested animals younger than their first test age)
-        }
-        else{
-            s->schedule_event( new Event( s->getCurrentTime(), Event_Type::VIRUSTEST, cow->id() ) ); // schedule a blood test before the trade (for non-tested animals over their first test age)
-        }
-
-        if (cow->knownStatus != KnownStatus::NEGATIVE && d->src->getType() != FarmType::SLAUGHTERHOUSE){ // if the animal is not tested negative do not commit the trade unless the destination farm is the slaughterhouse
-            bool ret = false;
-            delete e;
-            (d->numberOfDemandedCows)--;
-            return ret;
-        }
-    }*/
     bool ret = this->scheduleTrade(e);
     if(ret) {
 #ifdef _MARKET_DEBUG_
         std::cout << "Market: schedule new trade" << std::endl;
 #endif
-        cow->tradeQuery = e;  // track the scheduled trade event to invalidate it in case of positive test
         if (d->src->getType() != FarmType::SLAUGHTERHOUSE) {  // animals destined to the slaughterhouse need not be tested
+            cow->tradeQuery = e;  // track the scheduled trade event to invalidate it in case of necessary and positive test
             if (s->activeStrategy->usesEartag) {  // test only if this is the active strategy
                 if (cow->knownStatus == KnownStatus::NOSTATUS && cow->age() <= bvd_const::time_of_first_test.max) {
-                    s->schedule_event(new Event(s->getCurrentTime(), Event_Type::TEST,
-                                                cow->id())); // schedule an ear tag test before the trade (for non-tested animals younger than their first test age). Has to be smaller than the standard_trade_execution_time (see above)
-                } else {
-                    s->schedule_event(new Event(s->getCurrentTime(), Event_Type::VIRUSTEST,
-                                                cow->id())); // schedule a blood test before the trade (for non-tested animals over their first test age)
+/*                    if (cow->scheduledTest != nullptr) {
+                        System::getInstance(nullptr)->invalidate_event(cow->scheduledTest); // invalidate a possibly future scheduled test as it is rendered redundant by the current test
+                        cow->scheduledTest == nullptr;
+                    }*/
+                    s->schedule_event(new Event(s->getCurrentTime(), Event_Type::TEST, cow->id() ) );
+                    // schedule an ear tag test before the trade (for non-tested animals younger than their first test age). Has to be smaller than the standard_trade_execution_time (see above)
+                } else if (cow->knownStatus == KnownStatus::NOSTATUS || cow->knownStatus == KnownStatus::NEGATIVE) {
+/*                    if (cow->scheduledTest != nullptr) {
+                        System::getInstance(nullptr)->invalidate_event(cow->scheduledTest); // invalidate a possibly future scheduled test as it is rendered redundant by the current test
+                        cow->scheduledTest == nullptr;
+                    }*/
+                    s->schedule_event(new Event(s->getCurrentTime(), Event_Type::VIRUSTEST, cow->id() ) ); // schedule a blood test before the trade (for non-tested animals over their first test age)
+                } else{  // if the cow has already been tested positive invalidate the trade
+                    System::getInstance(nullptr)->invalidate_event(cow->tradeQuery);
+                    cow->tradeQuery = nullptr;
                 }
             }
         }

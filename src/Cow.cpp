@@ -83,6 +83,7 @@ void Cow::init( const double& time, Cow* my_mother, bool isFemale){
 	planned_birth_event = nullptr;
 	planned_abortion_event = nullptr;
     tradeQuery = nullptr;
+    scheduledTest = nullptr;
 
 	calf_status          =  Calf_Status::NO_CALF;
 	mother               =  my_mother;
@@ -370,8 +371,8 @@ void Cow::execute_BIRTH( const double& time  )
 		                                     // its right scheduled order in respect to the mother
 		if(system->activeStrategy->usesEartag){
 			double firstTestAge = system->rng.timeOfFirstTest();
-			system->schedule_event( new Event( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id() ) );
-
+			scheduledTest = new Event( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id() ); // note the test in case we need to invalidate it in case of prior testing due to trading
+			system->schedule_event( scheduledTest );
 		}
 		this->timeOfLastCalving = time;
 		System::getInstance(nullptr)->addCow(calf);
@@ -486,7 +487,7 @@ void Cow::execute_CONCEPTION(const double& time )
 void Cow::execute_DEATH( const double& time )
 {
 	// FIXME not implemented. However, an equivalent utility is in execute_next_event in System.cpp. Never called due to that. Redundant?
-	std::cout << "WARNING! Tried to execute DEATH but not implemented" << std::endl;
+	//std::cout << "WARNING! Tried to execute DEATH but not implemented" << std::endl;
 }
 
 //This function is intertwined with the function which ends the vaccination effect (execute_END_OF_VACCINATION)
@@ -555,7 +556,7 @@ void Cow::execute_INFECTION( const double& time )
                                 planned_abortion_event = nullptr;
                             }
                         }
-                        system->schedule_event(new Event(execution_time, Event_Type::ABORTION, id()));
+                        system->schedule_event( new Event(execution_time, Event_Type::ABORTION, id() ) );
                     }
                     else if (execution_time < planned_birth_event->execution_time){  // If the abortion is to take place
                         // before the birth, then schedule it at the defined execution time
@@ -722,8 +723,6 @@ bool Cow::testCow(const Event* e){
 
 		// If an animal is tested positive prior to it being traded, invalidate the scheduled trade event
 		if (tradeQuery != nullptr) {
-/*        if(this->id() == 244193)
-            std::cout << "Invalidating at t=" << time << std::endl;*/
 			System::getInstance(nullptr)->invalidate_event(tradeQuery);
 			tradeQuery = nullptr;
 		}

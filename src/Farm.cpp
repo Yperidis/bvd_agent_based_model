@@ -381,13 +381,15 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
 	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){  // selection from an unordered set of animals-->for all intents and purposes random
-		Event * e= new Event(this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id());
+		Event * e= new Event( this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id() );
 
 		if(cow->isTestedPositive(e)){
 			onePositiveTest = true;
+			delete e; // in case the antibody test is positive we don't need it anymore as we are going to test all the animals with a blood-virus test
 			break;
 		}
-		// TODO A log event takes place also at the system at execute_next_event()
+        cow->knownStatus = KnownStatus::NEGATIVE; // if it is not tested positive, the animal should be declared negative
+        // TODO A log event takes place also at the system at execute_next_event()
 		this->system->output->logEvent(e);
 		delete e;
 	}

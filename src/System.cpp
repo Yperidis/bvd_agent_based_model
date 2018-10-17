@@ -304,6 +304,8 @@ void System::execute_next_event()
         if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH && e->type != Event_Type::ABORTION && e->type != Event_Type::TRADE && e->type != Event_Type::TEST)
         {
             std::cerr << "Error, got an event that is invalid and not of type infection, birth, abortion, trade or test. Exiting" << std::endl;
+            Cow* c = Cow::get_address( e->id );
+            Utilities::pretty_print(c, std::cout);
             Utilities::pretty_print(e, std::cout);
         }
     }

@@ -372,7 +372,7 @@ void Cow::execute_BIRTH( const double& time  )
 		if(system->activeStrategy->usesEartag){
 			double firstTestAge = system->rng.timeOfFirstTest();
 			scheduledTest = new Event( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id() ); // note the test in case we need to invalidate it in case of prior testing due to trading
-			system->schedule_event( scheduledTest );
+			system->schedule_event( new Event( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id() ) );
 		}
 		this->timeOfLastCalving = time;
 		System::getInstance(nullptr)->addCow(calf);

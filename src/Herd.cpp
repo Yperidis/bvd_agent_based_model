@@ -284,9 +284,9 @@ Cow::UnorderedSet Herd::getNUnknownCows(int N){
 	Cow* c;
 	while(it != unknownCows.end()){
 		c = *it;
-		if(c->age() >= bvd_const::time_of_first_test.min)  // Ascertain that the picked cows will not be younger than
-			retSet.insert(c);								// the minimum first test age...
-		unknownCows.erase(it);  // ... otherwise erase that iterator and redefine it at the beginning of the unordered set
+		if(c->age() >= bvd_const::duration_of_MA.mod && c->age() <= bvd_const::JTF_max_threshold)  // Ascertain that the picked cows will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
+			retSet.insert(c);								//
+		unknownCows.erase(it);  // erase the iterator pointing to the animal already selected and redefine it at the beginning of the unordered set
 		it=unknownCows.begin();
 
 		if(--N <= 0)
@@ -309,6 +309,6 @@ void Herd::removeCowFromUnknownList(Cow* cow){
 void Herd::testAllCows(){
 	for(auto cow:all_my_cows){
 		System* s = this->farm->system;  // It is assumed that the tests for all the animals will take place within half a day
-		s->schedule_event( new Event( s->getCurrentTime() + 0.5, Event_Type::VIRUSTEST, cow->id() ) );  // from the time
+		s->schedule_event( new Event( s->getCurrentTime() + bvd_const::JTF_virustest_trigger_time, Event_Type::VIRUSTEST, cow->id() ) );  // from the time
 	}						  			// of the infected's identification through the jungtierCheck scheme
 }

@@ -338,8 +338,8 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
                     }*/
                     s->schedule_event( new Event(s->getCurrentTime(), Event_Type::TEST, cow->id() ) );
                     // schedule an ear tag test before the trade (for non-tested animals younger than their first test age). Has to be smaller than the standard_trade_execution_time (see above)
-                } else if (cow->knownStatus == KnownStatus::NOSTATUS) {
-/*                    if (cow->scheduledTest != nullptr) {
+                } else if (cow->knownStatus == KnownStatus::NOSTATUS) {/*
+                    if (cow->scheduledTest != nullptr) {
                         System::getInstance(nullptr)->invalidate_event(cow->scheduledTest); // invalidate a possibly future scheduled test as it is rendered redundant by the current test
                         cow->scheduledTest = nullptr;
                     }*/

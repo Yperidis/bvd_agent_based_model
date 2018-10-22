@@ -385,6 +385,7 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 
 		if(cow->isTestedPositive(e)){
 			onePositiveTest = true;
+			cow->knownStatus == KnownStatus::POSITIVE;  // set the AB tested cow to positive from that test
 			delete e; // in case the antibody test is positive we don't need it anymore as we are going to test all the animals with a blood-virus test
 			break;
 		}

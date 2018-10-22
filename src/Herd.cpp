@@ -284,7 +284,7 @@ Cow::UnorderedSet Herd::getNUnknownCows(int N){
 	Cow* c;
 	while(it != unknownCows.end()){
 		c = *it;
-		if(c->age() >= bvd_const::duration_of_MA.mod && c->age() <= bvd_const::JTF_max_threshold)  // Ascertain that the picked cows will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
+		if(c->age() >= bvd_const::duration_of_MA.min && c->age() <= bvd_const::JTF_max_threshold)  // Ascertain that the picked cows will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
 			retSet.insert(c);								//
 		unknownCows.erase(it);  // erase the iterator pointing to the animal already selected and redefine it at the beginning of the unordered set
 		it=unknownCows.begin();

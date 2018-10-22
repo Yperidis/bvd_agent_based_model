@@ -15,7 +15,7 @@ namespace bvd_const
   const int     time_till_death_takes_place = 14; // 0-14 days
   const double 	standard_trade_execution_time = 0.5; // time that a common trade needs to take place
   const double firstVaccAge = 186.;
-  const double JTF_max_threshold = 450.;  // 15*30 for 15 months as the maximum age for which the JTF testing can take place
+  const double JTF_max_threshold = 730.;  // 15*30 for 15 months as the maximum age for which the JTF testing can take place
   const double JTF_virustest_trigger_time = 0.5;  // the time elapsing between a positive JTF test and the whole herd testing
   //FIXME With the input from the ini file the timeOfVaccinationPersistence is redundant
   const double timeOfVaccinationPersistance = 365.;

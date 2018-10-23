@@ -77,16 +77,17 @@ void TableBasedOutput::logFarms(const double time, const std::vector< Farm* >*fa
 			int numPI = farm->number_of_PI();
 			int numTI = farm->number_of_TI();
 			int numR = farm->number_of_R();
-
+/*			std::vector<Herd*>* herds = farm->getHerds();
+			for (auto herd : *herds){
+				int numY = herd->number_of_younglings();  // this would work well only for one herd per farm*/
 			FarmDataPoint p{};
 			p.id = farm->id;
 			p.numberS = numS;
 			p.numberTI = numTI;
 			p.numberPI = numPI;
 			p.numberR = numR;
-			// {farm->id, numS, numTI, numPI, numR};
+			//p.numYoung = numY;
 			data->push_back(p);
-
 		}
 	}
 

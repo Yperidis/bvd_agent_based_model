@@ -103,6 +103,16 @@ int Herd::total_number()
     this->number_of_S  +
     this->number_of_R;
 }
+
+int Herd::number_of_younglings(){
+    int i=0;
+    for (auto ind : all_my_cows){  // all the animals in the herd
+        if (ind->age() <= bvd_const::age_threshold_calf )  // record them if they fulfill the age requirement
+            i ++;
+    }
+    return i; // the number of younglings in the herd
+}
+
 inline void Herd::add_pi_cow(Cow* cow){this->pi_cows.push_back ( cow );this->number_of_PI_increase();}
 
 inline void Herd::remove_pi_cow(Cow* cow){
@@ -277,21 +287,40 @@ inline void Herd::number_of_TI_decrease(int n){
 }
 
 Cow::UnorderedSet Herd::getNUnknownCows(int N){
-	N = N > unknownCows.size() ? unknownCows.size() : N;
+/*	N = N > unknownCows.size() ? unknownCows.size() : N;  // ascertain that the sample is larger than the herd population, otherwise test the whole herd population
+
+	std::cout << total_number() << " " << unknownCows.size() << " " << all_my_cows.size() << std::endl;
 
 	Cow::UnorderedSet retSet;
 	Cow::UnorderedSet::iterator it = unknownCows.begin();
 	Cow* c;
-	while(it != unknownCows.end()){
+	while( it != unknownCows.end() ){
 		c = *it;
-		if(c->age() >= bvd_const::duration_of_MA.min && c->age() <= bvd_const::JTF_max_threshold)  // Ascertain that the picked cows will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
+        if(c->age() >= bvd_const::duration_of_MA.min & c->age() <= bvd_const::JTF_max_threshold)
+		//if(c->age() >= bvd_const::duration_of_MA.min && c->age() <= bvd_const::JTF_max_threshold)  // Ascertain that the picked cows will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
 			retSet.insert(c);								//
 		unknownCows.erase(it);  // erase the iterator pointing to the animal already selected and redefine it at the beginning of the unordered set
 		it=unknownCows.begin();
 
 		if(--N <= 0)
 			break;
-	}
+	}*/
+    N = N > all_my_cows.size() ? all_my_cows.size() : N;  // ascertain that the sample is larger than the herd population, otherwise test the whole herd population
+
+    Cow::UnorderedSet retSet;
+    Cow::UnorderedSet::iterator it = all_my_cows.begin();
+    Cow* c;
+    while( it != all_my_cows.end() ){
+        c = *it;
+        if(c->age() >= bvd_const::duration_of_MA.min & c->age() <= bvd_const::JTF_max_threshold)
+            //if(c->age() >= bvd_const::duration_of_MA.min && c->age() <= bvd_const::JTF_max_threshold)  // Ascertain that the picked cows will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
+            retSet.insert(c);								//
+        all_my_cows.erase(it);  // erase the iterator pointing to the animal already selected and redefine it at the beginning of the unordered set
+        it=all_my_cows.begin();
+
+        if(--N <= 0)
+            break;
+    }
 
 	return retSet;
 }

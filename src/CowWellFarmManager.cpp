@@ -43,13 +43,13 @@ void CowWellFarmManager::chooseCowsToOfferFromGroupAndAddToSellingGroup(int numb
 		this->myFarm->push_cow(c);
 		
 	}while(this->myFarm->total_number() <= numberOfCowsToSell);
-	for(auto herd: *this->myFarm->getHerds()){
+	for( auto herd: *this->myFarm->getHerds() ){
 		herd->getNRandomCowsFromGroup(numberOfCowsToSell, PREGNANT, cows);
 	}
 //	std::cout << "end" << std::endl;	
 }
 int CowWellFarmManager::getACowId(){
-	Cow* c = new Cow(system->current_time(), NULL);
+	Cow* c = new Cow(system->current_time(), nullptr);
 		c->calf_status = Calf_Status::SUSCEPTIBLE;
 		double percent = system->rng.ran_unif_double(1.0,0.0);
 		if(percent < this->tis){

@@ -42,6 +42,7 @@ struct FarmDataPoint: public DataPoint<int>{
 	int numberTI;
 	int numberPI;
 	int numberR;
+	//int numYoung;
 	int operator[] (int i);
 	operator int*();
 	static const int size;

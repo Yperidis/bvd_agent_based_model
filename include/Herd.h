@@ -29,6 +29,7 @@ class Herd
 	int getNumS();
 	
   int total_number();//Done
+  int number_of_younglings();
   void add_pi_cow(Cow* cow);
   void remove_pi_cow(Cow* cow);
   void add_r_cow(Cow*);

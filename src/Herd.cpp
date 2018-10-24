@@ -287,6 +287,7 @@ inline void Herd::number_of_TI_decrease(int n){
 
 Cow::UnorderedSet Herd::getNUnknownCows(int N){
     N = N > unknownCows.size() ? unknownCows.size() : N;  // ascertain that the sample is larger than the herd population, otherwise test the whole herd population
+    int temp = N;
 
     Cow::UnorderedSet retSet;
     Cow::UnorderedSet::iterator it = unknownCows.begin();
@@ -305,7 +306,7 @@ Cow::UnorderedSet Herd::getNUnknownCows(int N){
     }
 
 /*    if(total_number() < 500)
-        std::cout << unknownCows.size() << " " << retSet.size() << std::endl;*/
+        std::cout << all_my_cows.size() << " " << temp << " " << retSet.size() << std::endl;*/
 
         return retSet;
 }

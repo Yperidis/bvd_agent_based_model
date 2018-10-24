@@ -18,12 +18,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e3a8871b-31be-4651-8530-53f3a68286a5" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iniFiles/Test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/iniFiles/Test.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Cow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cow.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Farm.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Farm.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Herd.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Herd.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/System.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/System.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -49,10 +44,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Farm.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Farm.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Farm.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="604">
+            <state relative-caret-position="502">
               <caret line="408" column="10" selection-start-line="408" selection-start-column="10" selection-end-line="408" selection-end-column="10" />
             </state>
           </provider>
@@ -67,11 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Herd.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Herd.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Herd.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="539">
-              <caret line="308" lean-forward="true" selection-start-line="308" selection-end-line="308" />
+            <state relative-caret-position="522">
+              <caret line="307" column="2" selection-start-line="307" selection-end-line="308" selection-end-column="94" />
             </state>
           </provider>
         </entry>
@@ -450,12 +445,12 @@
       <workItem from="1540224940879" duration="1530000" />
       <workItem from="1540281297959" duration="1322000" />
       <workItem from="1540284032579" duration="21540000" />
-      <workItem from="1540378900079" duration="18934000" />
+      <workItem from="1540378900079" duration="19555000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1239203000" />
+    <option name="totallyTimeSpent" value="1239824000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -997,17 +992,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Farm.cpp">
+    <entry file="file://$PROJECT_DIR$/src/Herd.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="604">
-          <caret line="408" column="10" selection-start-line="408" selection-start-column="10" selection-end-line="408" selection-end-column="10" />
+        <state relative-caret-position="522">
+          <caret line="307" column="2" selection-start-line="307" selection-end-line="308" selection-end-column="94" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Herd.cpp">
+    <entry file="file://$PROJECT_DIR$/src/Farm.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="539">
-          <caret line="308" lean-forward="true" selection-start-line="308" selection-end-line="308" />
+        <state relative-caret-position="502">
+          <caret line="408" column="10" selection-start-line="408" selection-start-column="10" selection-end-line="408" selection-end-column="10" />
         </state>
       </provider>
     </entry>

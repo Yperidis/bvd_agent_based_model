@@ -476,7 +476,7 @@ void System::_execute_event( Event* e )  // System level events
         // 	}
         // 	break;
         case Event_Type::JUNGTIER_EXEC:
-            for (auto farm : farms){
+            for (auto farm : farms) {
 
                 farm->jungtierCheck();
 

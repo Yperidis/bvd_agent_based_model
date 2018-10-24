@@ -380,21 +380,34 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 	// TODO Generalise the test mechanisms of any herds
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
-	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){  // selection from an unordered set of animals-->for all intents and purposes random
-		Event * e= new Event( this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id() );
+    {
+        int i = 0;
+        //TODO The my_herds[0]->total_number() exceeds the my_herds[0]->all_my_cows.size() for some small number. Find out why and fix!
+        for (auto cow : this->my_herds[0]->getNUnknownCows(num)) {  // selection from an unordered set of animals-->for all intents and purposes random
+            Event *e = new Event(this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id());
 
-		if(cow->isTestedPositive(e)){
-			onePositiveTest = true;
-			cow->knownStatus = KnownStatus::POSITIVE;  // set the AB tested cow to positive from that test
+            ++i;
+
+            if(my_herds[0]->total_number() >= 500)
+                //std::cout << "Farm " << id << " selected animals: " << num << std::endl;
+
+            if (cow->isTestedPositive(e)) {
+                onePositiveTest = true;
+                cow->knownStatus = KnownStatus::POSITIVE;  // set the AB tested cow to positive from that test
+                this->system->output->logEvent(e);
+                //delete e; // in case the antibody test is positive we don't need it anymore as we are going to test all the animals with a blood-virus test
+                break;
+            }
+            cow->knownStatus = KnownStatus::NEGATIVE; // if it is not tested positive, the animal should be declared negative
+            // As the event is to end its lifetime now that we have a confirmed status for the animal we need to log it
             this->system->output->logEvent(e);
-			//delete e; // in case the antibody test is positive we don't need it anymore as we are going to test all the animals with a blood-virus test
-			break;
-		}
-        cow->knownStatus = KnownStatus::NEGATIVE; // if it is not tested positive, the animal should be declared negative
-        // TODO A log event takes place also at the system at execute_next_event()
-		this->system->output->logEvent(e);
-		delete e;
-	}
+            delete e;
+
+        }
+        /*if (my_herds[0]->total_number() < my_herds[0]->all_my_cows.size())
+            std::cout << my_herds[0]->total_number() << " " << my_herds[0]->all_my_cows.size() << std::endl;*/
+        //std::cout << "Farm " << id << " with pop: " << my_herds[0]->total_number() << " and " << num << " selected animals, tested animals: " << i << std::endl;
+    }
 	if(onePositiveTest) this->testAllCows();
 }
 

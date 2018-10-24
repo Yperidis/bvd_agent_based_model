@@ -765,7 +765,7 @@ bool Cow::testCow(const Event* e){
         // non PI calf might end up to the slaughterhouse due to its mother's positive status.
         // TODO Consider the effect of the above comment on the calves and the positive mother
 	}
-	this->herd->removeCowFromUnknownList(this);
+	//this->herd->removeCowFromUnknownList(this);  // this would remove animals being already tested from the pool selection for the JTF tests
 	return this->hasBeenTestedPositiveYet;
 }
 

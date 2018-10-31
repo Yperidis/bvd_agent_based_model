@@ -41,7 +41,6 @@ void Herd::pull_cow( Cow* c )
     {
         case Infection_Status::SUSCEPTIBLE:
             remove_cow_from_susceptible( c );
-
             break;
         case Infection_Status::TRANSIENTLY_INFECTED:
             this->remove_ti_cow(c);
@@ -103,16 +102,16 @@ int Herd::total_number()
              this->number_of_R;
 }
 
-int Herd::number_of_younglings(){
+/*int Herd::number_of_younglings(){
     int i=0;
     for (auto ind : all_my_cows){  // all the animals in the herd
         if (ind->age() <= bvd_const::age_threshold_calf )  // record them if they fulfill the age requirement
             i ++;
     }
     return i; // the number of younglings in the herd
-}
+}*/
 
-inline void Herd::add_pi_cow(Cow* cow){this->pi_cows.push_back ( cow );this->number_of_PI_increase();}
+inline void Herd::add_pi_cow(Cow* cow){this->pi_cows.push_back ( cow ); this->number_of_PI_increase();}
 
 inline void Herd::remove_pi_cow(Cow* cow){
     std::vector<Cow*>::iterator it;
@@ -124,6 +123,7 @@ inline void Herd::remove_pi_cow(Cow* cow){
     else
         std::cerr << "Error: Tried removing cow from PI but could not find it. This should not happen!!"<<std::endl;
 }
+
 inline void Herd::add_r_cow(Cow*){this->number_of_R++;}
 inline void Herd::remove_r_cow(Cow*){this->number_of_R--;}
 inline void Herd::add_ti_cow(Cow*){this->number_of_TI_increase();}
@@ -287,12 +287,24 @@ inline void Herd::number_of_TI_decrease(int n){
 
 Cow::UnorderedSet Herd::getNUnknownCows(int N){
     N = N > unknownCows.size() ? unknownCows.size() : N;  // ascertain that the sample is larger than the herd population, otherwise test the whole herd population
-    int temp = N;
+    //int temp = N;
+
+/*    if(total_number() > 1600)
+            std::cout << unknownCows.size() << " " << all_my_cows.size() << " " << total_number() << std::endl;*/
 
     Cow::UnorderedSet retSet;
-    Cow::UnorderedSet::iterator it = unknownCows.begin();
-    Cow* c;
-    while( it != unknownCows.end() ){
+    //Cow::UnorderedSet::iterator it = unknownCows.begin();
+    //Cow* c;
+    for ( auto c : unknownCows ){
+        //c = *it;
+        if(c->age() >= bvd_const::duration_of_MA.min && c->age() <= bvd_const::JTF_max_threshold) {  // Ascertain that the picked animals will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
+            retSet.insert(c);  //
+            --N;  // reduce the index of the sampled animals only if the animal meeting the conditional's criteria is found
+        }
+        if(N <= 0)
+            break;
+    }
+/*    while( it != unknownCows.end() ){
         c = *it;
         if(c->age() >= bvd_const::duration_of_MA.min && c->age() <= bvd_const::JTF_max_threshold) {  // Ascertain that the picked animals will not be younger than their minimum time from which MA starts to wane and older than 15 (i.e. their AB protection will be waning and they will not have entered their reproductive cycle yet)
             retSet.insert(c);  //
@@ -303,10 +315,11 @@ Cow::UnorderedSet Herd::getNUnknownCows(int N){
 
         if(N <= 0)
             break;
-    }
+    }*/
 
-/*    if(total_number() < 500)
-        std::cout << all_my_cows.size() << " " << temp << " " << retSet.size() << std::endl;*/
+/*    if(total_number() > 1600)
+        std::cout << unknownCows.size() << " " << all_my_cows.size() << " " << total_number() << std::endl;*/
+        //std::cout << unknownCows.size() << " " << temp << " " << retSet.size() << std::endl;
 
         return retSet;
 }

@@ -309,6 +309,7 @@ void Farm::execute_TRADE_event( Event* e )
         source->invalidate_next_infection_event();
         source->infection_rate_has_changed( e );
     }
+    //TODO Should the push_cow be in the above source conditional?
     push_cow( c );
 
     // If there is an infection event in either of the farms (which can happen if the trade has been scheduled after the infection has been scheduled)
@@ -381,14 +382,14 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
     {
-        int i = 0;
+        //int i = 0;
         //TODO The my_herds[0]->total_number() exceeds the my_herds[0]->all_my_cows.size() for some small number. Find out why and fix!
         for (auto cow : this->my_herds[0]->getNUnknownCows(num)) {  // selection from an unordered set of animals-->for all intents and purposes random
             Event *e = new Event(this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id());
 
-            ++i;
+            //++i;
 
-            if(my_herds[0]->total_number() >= 500)
+            //if(my_herds[0]->total_number() >= 500)
                 //std::cout << "Farm " << id << " selected animals: " << num << std::endl;
 
             if (cow->isTestedPositive(e)) {
@@ -404,7 +405,7 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
             delete e;
 
         }
-        /*if (my_herds[0]->total_number() < my_herds[0]->all_my_cows.size())
+/*        if (my_herds[0]->total_number() > my_herds[0]->all_my_cows.size())
             std::cout << my_herds[0]->total_number() << " " << my_herds[0]->all_my_cows.size() << std::endl;*/
         //std::cout << "Farm " << id << " with pop: " << my_herds[0]->total_number() << " and " << num << " selected animals, tested animals: " << i << std::endl;
     }

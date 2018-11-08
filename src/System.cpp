@@ -283,6 +283,11 @@ void System::execute_next_event()
         }
         this->output->logEvent(e);
         if( e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ){
+            //Utilities::pretty_print(c, std::cout);
+            if (c != nullptr){
+                if (c->tradeQuery != nullptr)  // reset the tracking of the trade for the test query
+                    c->tradeQuery = nullptr;
+            }
             delete c;    // Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
         }
         //}
@@ -310,7 +315,8 @@ void System::execute_next_event()
         }
     }
 
-    if(e->is_infection_rate_changing_event()) {    // if the current event changed the infection rate, add it to a buffer priority queue
+
+    if( e->is_infection_rate_changing_event() ) {    // if the current event changed the infection rate, add it to a buffer priority queue
         memorySaveQ.push(e);
     }
     else {
@@ -319,8 +325,17 @@ void System::execute_next_event()
 
     Event* event;
     // TODO Consider the necessary time horizon for the condition here. This would free up some stack memory.
-    while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) && (event->execution_time + 500. < this->_current_time )){
-        delete event;    // delete the events of the buffer queue and its elements if they are scheduled for anytime less than the current time
+    while( !memorySaveQ.empty() && ( ( event = memorySaveQ.top() ) != nullptr ) && ( event->execution_time + 500. < this->_current_time ) ){
+/*        if (event->type != Event_Type::DEATH || event->type != Event_Type::CULLING || event->type != Event_Type::SLAUGHTER ){  // this assures that the animal still exists in the system
+            Utilities::pretty_print(e, std::cout);
+            Cow* c = Cow::get_address( e->id );
+            if (c->tradeQuery != nullptr){
+                std::cout << c->tradeQuery->execution_time << std::endl;
+                c->tradeQuery = nullptr;
+            }
+        }*/
+        delete event;
+        // delete the events of the buffer queue and its elements if they are scheduled for anytime less than the current time
                         // plus 500 and they are actual events (not a nullptr)
         memorySaveQ.pop();
     }

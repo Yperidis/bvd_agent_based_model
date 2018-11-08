@@ -19,7 +19,7 @@ bool Event::is_infection_rate_changing_event() const {
     return type >= Event_Type::BIRTH;
 }
 
-bool Event::is_trade_event() const { return type==Event_Type::TRADE; }
+bool Event::is_trade_event() const { return type == Event_Type::TRADE; }
 
 Trade_Event::Trade_Event( double exec_time , int cow_id , Farm* destination_farm ) : 
   Event( exec_time , Event_Type::TRADE , cow_id )

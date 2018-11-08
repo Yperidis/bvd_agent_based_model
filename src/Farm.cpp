@@ -392,11 +392,11 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
             //if(my_herds[0]->total_number() >= 500)
                 //std::cout << "Farm " << id << " selected animals: " << num << std::endl;
 
-            if (cow->isTestedPositive(e)) {
+            if ( cow->isTestedPositive(e) ) {
                 onePositiveTest = true;
                 cow->knownStatus = KnownStatus::POSITIVE;  // set the AB tested cow to positive from that test
                 this->system->output->logEvent(e);
-                //delete e; // in case the antibody test is positive we don't need it anymore as we are going to test all the animals with a blood-virus test
+                delete e; // in case the antibody test is positive, since the event has been logged we don't need it anymore and it does not go to the priority queue to be deleted
                 break;
             }
             cow->knownStatus = KnownStatus::NEGATIVE; // if it is not tested positive, the animal should be declared negative
@@ -409,7 +409,7 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
             std::cout << my_herds[0]->total_number() << " " << my_herds[0]->all_my_cows.size() << std::endl;*/
         //std::cout << "Farm " << id << " with pop: " << my_herds[0]->total_number() << " and " << num << " selected animals, tested animals: " << i << std::endl;
     }
-	if(onePositiveTest) this->testAllCows();
+	if(onePositiveTest) this->testAllCows();  // an animal which is immune by the JTF protocol implicates historically the existence of a BVD-infected animal in the herd
 }
 
 void Farm::testAllCows(){

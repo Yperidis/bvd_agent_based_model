@@ -35,8 +35,12 @@ System_Event::System_Event( double exec_time , Event_Type type ) :
   dest = Destination_Type::SYSTEM;
 }
 
-FARM_EVENT::FARM_EVENT(double exec_time, Event_Type type, Farm *f):Event( exec_time , type , -1 ){
+FARM_EVENT::FARM_EVENT(double exec_time, Event_Type type, Farm *f) : Event( exec_time , type , -1 ){
 	dest = Destination_Type::FARM;
 	farm = f;
-	
+}
+
+TEST_EVENT::TEST_EVENT(double exec_time, Event_Type type, int cow_id, Farm *f) : Event( exec_time , type, cow_id ){
+    dest = Destination_Type::COW;
+    farm = f;
 }

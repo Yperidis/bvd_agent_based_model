@@ -329,7 +329,7 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
         std::cout << "Market: schedule new trade" << std::endl;
 #endif
         if (d->src->getType() != FarmType::SLAUGHTERHOUSE) {  // animals destined to the slaughterhouse need not be tested
-            if (s->activeStrategy->usesEartag) {  // test only if this is the active strategy
+/*            if (s->activeStrategy->usesEartag) {  // test only if this is the active strategy
                 cow->tradeQuery = e;  // track the scheduled trade event to invalidate it in case of necessary and positive test
                 if (cow->knownStatus == KnownStatus::NOSTATUS && cow->age() <= bvd_const::time_of_first_test.max) {
                     if (cow->scheduledTest != nullptr) {
@@ -348,7 +348,7 @@ bool Market::doTheTrading(Cow* cow, Demand* d){
                     System::getInstance(nullptr)->invalidate_event(cow->tradeQuery);
                     cow->tradeQuery = nullptr;
                 } // for animals already tested negative we proceed normally with the trade
-            }
+            }*/
         }
     }else
     {

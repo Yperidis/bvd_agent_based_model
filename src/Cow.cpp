@@ -371,7 +371,7 @@ void Cow::execute_BIRTH( const double& time  )
 		                                     // its right scheduled order in respect to the mother
 		if(system->activeStrategy->usesEartag){
 			double firstTestAge = system->rng.timeOfFirstTest();
-			scheduledTest = new Event( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id() ); // note the test in case we need to invalidate it in case of prior testing due to trading
+			scheduledTest = new TEST_EVENT( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id(), herd->farm ); // note the test in case we need to invalidate it in case of prior testing due to trading
             system->schedule_event( scheduledTest );
 			//system->schedule_event( new Event( system->getCurrentTime() + firstTestAge, Event_Type::TEST, calf->id() ) );
 		}
@@ -800,7 +800,7 @@ inline bool Cow::testAgain(){
 inline void Cow::scheduleNextTest(){
 	double retestTime = system->rng.retestTime();    // uniform random number chosen between 20. and the defined
     // retestingTimBlood float (must be > 20.)
-	system->schedule_event( new Event( system->getCurrentTime() + retestTime, Event_Type::VIRUSTEST, this->id() ) ); // If a second round of testing is underway
+	system->schedule_event( new TEST_EVENT( system->getCurrentTime() + retestTime, Event_Type::VIRUSTEST, this->id(), herd->farm ) ); // If a second round of testing is underway
 																													// let the second test be VIRUSTEST
 }
 

@@ -13,7 +13,7 @@ class Farm;
 struct Data{};
 
 template<typename T>
-struct DataPoint:public Data{
+struct DataPoint : public Data{
 	virtual T operator[] (int i) = 0;
 	//virtual operator const T*() = 0;
 	virtual operator T*() = 0;
@@ -74,7 +74,8 @@ struct TestDataPoint: public DataPoint<double>{
 	double sex;
 	double result;
 	double infectiousState;
-	double knownState;
+	double farm_id;
+//	double knownState;
 	double operator[] (int i);
 	operator double*();
 	operator const double*();

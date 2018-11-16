@@ -385,7 +385,7 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
         //int i = 0;
         //TODO The my_herds[0]->total_number() exceeds the my_herds[0]->all_my_cows.size() for some small number. Find out why and fix!
         for (auto cow : this->my_herds[0]->getNUnknownCows(num)) {  // selection from an unordered set of animals-->for all intents and purposes random
-            Event *e = new Event(this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id());
+            TEST_EVENT *e = new TEST_EVENT( this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id(), this );
 
             //++i;
 
@@ -403,7 +403,6 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
             // As the event is to end its lifetime now that we have a confirmed status for the animal we need to log it
             this->system->output->logEvent(e);
             delete e;
-
         }
 /*        if (my_herds[0]->total_number() > my_herds[0]->all_my_cows.size())
             std::cout << my_herds[0]->total_number() << " " << my_herds[0]->all_my_cows.size() << std::endl;*/

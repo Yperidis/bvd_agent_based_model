@@ -124,7 +124,7 @@ void HDF5FileHandler::writeTestData(const hid_t& file_id){
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->testStorage->size()), static_cast<hsize_t>(TestDataPoint::size) };
 
 
-		double * data = NULL;
+		double * data = nullptr;
 		this->createWritableData(this->testStorage, &data);
 		int success = H5LTmake_dataset_double( file_id,
 						  HDF5FileHandler::testsTableName.c_str(),

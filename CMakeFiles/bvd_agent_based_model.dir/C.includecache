@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.c
+/home/jbassett/bvd_agent_based_model/projectImports/inih/ini.c
 stdio.h
 -
 ctype.h
@@ -14,11 +14,11 @@ ctype.h
 string.h
 -
 ini.h
-/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.h
+/home/jbassett/bvd_agent_based_model/projectImports/inih/ini.h
 stdlib.h
 -
 
-/home/jbassett/bvd_agent_based_model_develop/projectImports/inih/ini.h
+/home/jbassett/bvd_agent_based_model/projectImports/inih/ini.h
 stdio.h
 -
 

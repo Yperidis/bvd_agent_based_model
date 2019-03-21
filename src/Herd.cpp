@@ -336,7 +336,8 @@ void Herd::removeCowFromUnknownList(Cow* cow){
 
 void Herd::testAllCows(){
     for(auto cow : all_my_cows){
-        System* s = this->farm->system;  // It is assumed that the tests for all the animals will take place within half a day
-        s->schedule_event( new TEST_EVENT( s->getCurrentTime() + bvd_const::JTF_virustest_trigger_time, Event_Type::VIRUSTEST, cow->id(), farm ) );  // from the time
+        System* s = farm->system;  // It is assumed that the tests for all the animals will take place within half a day
+        if (!cow->KnownStatus::NEGATIVE )  // since the antigen test aims at spotting PIs and this test is triggered from the YCW, animals that have already been tested negative should be excluded from testing
+            s->schedule_event( new TEST_EVENT( s->getCurrentTime() + bvd_const::JTF_virustest_trigger_time, Event_Type::VIRUSTEST, cow->id(), farm ) );  // from the time
     }						  			// of the infected's identification through the jungtierCheck scheme
 }

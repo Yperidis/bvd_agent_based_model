@@ -82,7 +82,7 @@ void HDF5FileHandler::writeFarmData(const hid_t& file){
 
 void HDF5FileHandler::writeCowData(const hid_t& file_id){
 #ifndef _SUPPRESS_OUTPUT_
-//#ifndef _SUPPRESS_MINOR_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if( this->intermediateCalvingTimes->size() > 0){
 		double *calvingTimeData;// = &((*this->intermediateCalvingTimes)[0]);
 		this->createWritableData(this->intermediateCalvingTimes, &calvingTimeData);
@@ -108,7 +108,7 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 //#ifndef _SUPPRESS_MINOR_OUTPUT_
 	this->writeLivingPIsToFile(file_id);
 //#endif
-//#endif
+#endif
 #endif
 }
 
@@ -118,6 +118,7 @@ void HDF5FileHandler::writeCowData(const hid_t& file_id){
 void HDF5FileHandler::writeTestData(const hid_t& file_id){
 
 #ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if(this->testStorage->size() > 0){
 		const int rank = 2;
 		//note that static_cast is not type-safe. Make sure that the object being converted is a full object of the destination type
@@ -138,11 +139,13 @@ void HDF5FileHandler::writeTestData(const hid_t& file_id){
 		delete[] data;
 	}
 #endif
+#endif
 }
 
 void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 
 #ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if(this->vaccDataSave->size() > 0){
 		const int rank = 2;
 		hsize_t dims[rank] = { static_cast<hsize_t>(this->vaccDataSave->size()), static_cast<hsize_t>(VaccinationDataPoint::size) };
@@ -162,11 +165,12 @@ void HDF5FileHandler::writeVaccinationData(const hid_t& file_id){
 		delete[] data;
 	}
 #endif
+#endif
 }
 
 void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
 #ifndef _SUPPRESS_OUTPUT_
-//#ifndef _SUPPRESS_MINOR_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	if(this->infectionResultSave->size() <= 0) return;
 	const int rank = 2;
 	hsize_t dims[rank] = { static_cast<hsize_t>(this->infectionResultSave->size()), static_cast<hsize_t>(InfectionResultDataPoint::size) };
@@ -185,12 +189,13 @@ void HDF5FileHandler::writeInfectionResultData(const hid_t& file){
 		std::cerr << "Failed to create infection result dataset" << std::endl;
 		exit(12);
 	}
-//#endif
+#endif
 #endif
 }
 
 void HDF5FileHandler::writeTradeData(const hid_t& file_id){
 #ifndef _SUPPRESS_OUTPUT_
+#ifndef _SUPPRESS_MINOR_OUTPUT_
 	const int rank = 2;
 	hsize_t dims[rank] = { this->trades->size(), (hsize_t) TradeDataPoint::size};
 	double * data;
@@ -283,6 +288,7 @@ void HDF5FileHandler::writeTradeData(const hid_t& file_id){
 		delete tradingTimes;
 
 	}
+#endif
 #endif
 }
 

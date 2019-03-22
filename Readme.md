@@ -38,7 +38,7 @@ Use the package manager of your choice to install
 * hdf5
 
 ##### Windows
-At the current state of the project, the easiest build would be through [Cygwin](https://cygwin.com/) to emulate a UNIX-like environment. The following instructions have been tested on Windows 7, 64-bit professional.
+At the current state of the project, the easiest build would be through [Cygwin](https://cygwin.com/) to emulate a UNIX-like environment. The following instructions have been tested on Windows 7, 64-bit professional. According to Cygwin's [FAQ](https://cygwin.com/faq/faq.html) there may be a number of non-transparent causes and failures from other software interferences from the same PC. A list of software known to cause problems is given on the aforementioned website. Try deactivating them if you face problems with the building procedure. Otherwise open an issue about it.
 
 * Make sure the following packages are installed via Cygwin (the debug versions are not necessary).
     * g++ 
@@ -132,8 +132,9 @@ The directory `projectImports` includes libraries provided by other sources. So 
 
 # Research
 
-## Pascal Blunk's master thesis
-[Pascal Blunk's](https://github.com/Gerungofulus/) master thesis is the first milestone of this project and can be found at [git repository](https://github.com/Gerungofulus/Masterarbeit/settings). Inia Steinbach also used a premature form of this code for some results found in her master thesis.
+## Academic theses
+[Pascal Blunk's](https://github.com/Gerungofulus/) master thesis was the first milestone of this project and can be found at his [git repository](https://github.com/Gerungofulus/Masterarbeit/settings). Inia Steinbach also used a premature form of this code for some results found in her master thesis. The project was brought to a conclusion of its inception with [Jason Bassett's](https://github.com/Yperidis/) [doctoral dissertation](http://depositonce.tu-berlin.de/handle/11303/8985).
+
 
 
 # Acknowledgements

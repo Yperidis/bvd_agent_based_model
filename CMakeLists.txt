@@ -168,4 +168,4 @@ else()
     endif()
 endif()
 
-target_link_libraries(bvd_agent_based_model GSL::gsl GSL::gslcblas ${M} ${SQLITE3} ${HDF5} ${HDF5_HL})
+target_link_libraries(bvd_agent_based_model GSL::gsl GSL::gslcblas ${M} ${SQLITE} ${HDF5} ${HDF5_HL})

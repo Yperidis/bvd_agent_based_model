@@ -133,7 +133,7 @@ The directory `projectImports` includes libraries provided by other sources. So 
 # Research
 
 ## Academic theses
-[Pascal Blunk's](https://github.com/Gerungofulus/) master thesis was the first milestone of this project and can be found at his [git repository](https://github.com/Gerungofulus/Masterarbeit/settings). Inia Steinbach also used a premature form of this code for some results found in her master thesis. The project was brought to a conclusion of its inception with [Jason Bassett's](https://github.com/Yperidis/) [doctoral dissertation](http://depositonce.tu-berlin.de/handle/11303/8985).
+[Pascal Blunk's](https://github.com/Gerungofulus/) master thesis was the first milestone of this project and can be found at his [git repository](https://github.com/Gerungofulus/Masterarbeit/settings). Inia Steinbach also used a premature form of this code for some results found in her master thesis. The project was brought to a conclusion of its inception with [Jason Bassett's](https://github.com/Yperidis/) [doctoral dissertation](http://depositonce.tu-berlin.de/handle/11303/8985) (end of 2018) and an exhaustive outline of the model to which the code corresponds, which can be found on [arXiv](https://arxiv.org/abs/1812.06964).
 
 
 

@@ -123,7 +123,7 @@ You can easily contribute to this project by forking it and making pull requests
 ## History
 This project has been developed during a collaboration between Philipp Hövel and his working group at the TU Berlin, and the FLI, which belongs to the German federal ministry of agriculture. The idea has been to implement an event-driven, agent based simulation for the spread of BVD on the German cattle trade network with the cattle serving as agents, so as to emulate the BVD and trading dynamics, and develop and test mitigation strategies for the containment of BVD in Germany in conjunction with a cost-benefit analysis.
 
-The project started in November 2015 by Thomas Isele, Ph.D. and then was continued by Inia Steinbach, M.Sc. and Pascal Blunk, M.Sc.. The data for the simulation (csv farm lists) as well as all information on the disease as well as German legislation was provided by Jörn Gethmann, Ph.D. (FLI) and Hartmut Lentz, Ph.D. (FLI).
+The project started in November 2015 by Thomas Isele, Ph.D. and then was continued by Inia Steinbach, M.Sc. and Pascal Blunk, M.Sc.. The data for the simulation (csv farm lists) as well as all information on the disease as well as German legislation was provided by Jörn Gethmann, Ph.D. (FLI) and Hartmut Lentz, Ph.D. (FLI). The main developer at this point (March 2019) remains Jason Bassett.
 
 
 ## Includes from other projects

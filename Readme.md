@@ -139,3 +139,6 @@ The directory `projectImports` includes libraries provided by other sources. So 
 
 # Acknowledgements
 Special thanks to Bryan Iotti (university of Turin in early 2018) and Denis Nikhitin (ITMO university of Saint Petersburg in early 2018) for their invaluable technical advise and efforts in testing and compiling this project.
+
+# How to cite this code
+If you use this code in your research or find it useful please cite the paper [An Agent-Based Model for Bovine Diarrhea](https://arxiv.org/abs/1812.06964).

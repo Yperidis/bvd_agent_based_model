@@ -26,7 +26,10 @@ set(CMAKE_C_FLAGS_RELEASE "-Wall -g -pedantic -fopenmp -D_FARM_INITIALIZER_DEBUG
 #set(CMAKE_C_FLAGS_RELEASE "-Wall -g -pedantic -fopenmp -D_FARM_INITIALIZER_DEBUG_")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+
+#SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
 
 add_executable(bvd_agent_based_model
         include/AdvancedOutput.h
@@ -163,9 +166,10 @@ else()
     find_library(M "m")
 
     find_library(SQLITE3 "sqlite3")
+    message(STATUS "SQLITE3 at ${SQLITE3}")
     if(NOT SQLITE3)
     message(FATAL_ERROR "sqlite3 library not found")
     endif()
 endif()
 
-target_link_libraries(bvd_agent_based_model GSL::gsl GSL::gslcblas ${M} ${SQLITE} ${HDF5} ${HDF5_HL})
+target_link_libraries(bvd_agent_based_model GSL::gsl GSL::gslcblas ${M} ${SQLITE3} ${HDF5} ${HDF5_HL})

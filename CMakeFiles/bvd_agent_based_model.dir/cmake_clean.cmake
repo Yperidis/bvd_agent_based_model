@@ -34,8 +34,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/bvd_agent_based_model.dir/src/TableBasedOutput.cpp.o"
   "CMakeFiles/bvd_agent_based_model.dir/src/TradeFilter.cpp.o"
   "CMakeFiles/bvd_agent_based_model.dir/src/Utilities.cpp.o"
-  "/home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/build/bvd_agent_based_model.pdb"
-  "/home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/build/bvd_agent_based_model"
+  "/home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/temp/build/bvd_agent_based_model.pdb"
+  "/home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/temp/build/bvd_agent_based_model"
 )
 
 # Per-language clean rules from dependency scanning.

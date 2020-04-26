@@ -84,11 +84,6 @@ public:
     FARM_EVENT(double exec_time, Event_Type type, Farm *farm);
 };
 
-class TEST_EVENT: public Event{
-public:
-    TEST_EVENT(double exec_time, Event_Type type, int cow_id, Farm *farm);
-};
-
 class Event_Pointer_Sort_Criterion    //Compares two elements of the queue's container and sorts them accordingly
 {
 public:

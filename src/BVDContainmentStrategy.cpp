@@ -4,7 +4,7 @@ BVDContainmentStrategy BVDContainmentStrategyFactory::defaultStrategy = {
     false, //usesVaccination
     false, //usesJungtierFenster
     0.0, //startTime
-    0.998, //bloodTestAccuracy
+    0.99, //bloodTestAccuracy
     60.0, //retestingTimeBlood;
     0.985, //vaccinationWorkingProbability;
     42., //vaccinationTimeBeforeInsemination;

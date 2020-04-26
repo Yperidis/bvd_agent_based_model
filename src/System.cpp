@@ -258,39 +258,30 @@ void System::execute_next_event()
         Cow* c = Cow::get_address( e->id );
         _current_time = e->execution_time;    // the current time becomes the execution time of the event from the main queue
         // Calls of events are always logged regardless of what is happening in their member functions
-/*        this->output->logEvent(e);
-        if( e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ){
-            delete c;    // Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
-        }*/
-        //else{
-        switch ( e->dest )
-        {
-            case Destination_Type::COW:
-            {
-                if ( c != nullptr  && c->id() == e->id){    // the cow has to exist and correspond to the event to be executed
-                    c->execute_event( e );
-                } // Event does not pertain to a dead cow. Could  this happen?
-                break;
-            }
-            case Destination_Type::HERD:
-                e->herd->execute_event( e );
-                break;
-            case Destination_Type::FARM:
-                e->farm->execute_event( e );
-                break;
-            case Destination_Type::SYSTEM:
-                _execute_event( e );
-        }
         this->output->logEvent(e);
         if( e->type == Event_Type::DEATH || e->type == Event_Type::CULLING || e->type == Event_Type::SLAUGHTER ){
-            //Utilities::pretty_print(c, std::cout);
-            if (c != nullptr){
-                if (c->tradeQuery != nullptr)  // reset the tracking of the trade for the test query
-                    c->tradeQuery = nullptr;
-            }
             delete c;    // Freeing the reserved memory of a born animal upon its culling, slaughter or other cause of death
         }
-        //}
+        else{
+            switch ( e->dest )
+            {
+                case Destination_Type::COW:
+                {
+                    if ( c != nullptr  && c->id() == e->id){    // the cow has to exist and correspond to the event to be executed
+                        c->execute_event( e );
+                    } // Event does not pertain to a dead cow. Could  this happen?
+                    break;
+                }
+                case Destination_Type::HERD:
+                    e->herd->execute_event( e );
+                    break;
+                case Destination_Type::FARM:
+                    e->farm->execute_event( e );
+                    break;
+                case Destination_Type::SYSTEM:
+                    _execute_event( e );
+            }
+        }
         //According to Cow.cpp an event can only be invalid if
         //(1) A planned_birth_event in not nullptr with calf_status = Calf_Status::NO_CALF, i.e. a birth from a
         //    non pregnant cow has been scheduled.
@@ -305,18 +296,15 @@ void System::execute_next_event()
         // In both cases the INFECTION event is what can be invalidated
     }
     else{
-        // Only infections, abortions, births and trades can be invalid events due to irc events, abortions upon infections and infections prior to trade respectively. Also invalidated tests scheduled upon birth due to prior scheduled tests due to trade
-        if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH && e->type != Event_Type::ABORTION && e->type != Event_Type::TRADE && e->type != Event_Type::TEST)
+        // Only infections, abortions and births can be invalid events due to irc events and abortions upon infections respectively
+        if (e->type != Event_Type::INFECTION && e->type != Event_Type::BIRTH && e->type != Event_Type::ABORTION)
         {
-            std::cerr << "Error, got an event that is invalid and not of type infection, birth, abortion, trade or test. Exiting" << std::endl;
-            Cow* c = Cow::get_address( e->id );
-            Utilities::pretty_print(c, std::cout);
+            std::cerr << "Error, got an event that is invalid and not of type infection, birth or abortion. Exiting" << std::endl;
             Utilities::pretty_print(e, std::cout);
         }
     }
 
-
-    if( e->is_infection_rate_changing_event() ) {    // if the current event changed the infection rate, add it to a buffer priority queue
+    if(e->is_infection_rate_changing_event()) {    // if the current event changed the infection rate, add it to a buffer priority queue
         memorySaveQ.push(e);
     }
     else {
@@ -325,17 +313,8 @@ void System::execute_next_event()
 
     Event* event;
     // TODO Consider the necessary time horizon for the condition here. This would free up some stack memory.
-    while( !memorySaveQ.empty() && ( ( event = memorySaveQ.top() ) != nullptr ) && ( event->execution_time + 500. < this->_current_time ) ){
-/*        if (event->type != Event_Type::DEATH || event->type != Event_Type::CULLING || event->type != Event_Type::SLAUGHTER ){  // this assures that the animal still exists in the system
-            Utilities::pretty_print(e, std::cout);
-            Cow* c = Cow::get_address( e->id );
-            if (c->tradeQuery != nullptr){
-                std::cout << c->tradeQuery->execution_time << std::endl;
-                c->tradeQuery = nullptr;
-            }
-        }*/
-        delete event;
-        // delete the events of the buffer queue and its elements if they are scheduled for anytime less than the current time
+    while(memorySaveQ.size() > 0 && ( (event = memorySaveQ.top()) != nullptr) && (event->execution_time + 500. < this->_current_time )){
+        delete event;    // delete the events of the buffer queue and its elements if they are scheduled for anytime less than the current time
                         // plus 500 and they are actual events (not a nullptr)
         memorySaveQ.pop();
     }
@@ -491,7 +470,7 @@ void System::_execute_event( Event* e )  // System level events
         // 	}
         // 	break;
         case Event_Type::JUNGTIER_EXEC:
-            for (auto farm : farms) {
+            for (auto farm : farms){
 
                 farm->jungtierCheck();
 

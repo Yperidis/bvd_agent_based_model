@@ -59,7 +59,7 @@ class Farm{
   // Thus, if there is an infection event in the queue, it is always the next event for the Farm.
   // However, when a trade happens there can be an infection event waiting in the queue of the destination farm.
   // This infection event needs to be invalidated and infection_rate_has_changed called afterwards.
-  void  invalidate_next_infection_event();
+  void   invalidate_next_infection_event();
   void 	getManaged();
   void 	holdSize();
   void jungtierCheck();
@@ -81,7 +81,7 @@ class Farm{
  	
   	
   	Event_queue future_infection_rate_changing_events;
-	std::vector<Herd*> my_herds;
+  	std::vector<Herd*> my_herds;
   	std::unordered_map< Herd* , std::unordered_map< Herd*, double > > 	inter_herd_transmission_coefficients; // Convention: transmission_coefficients[to][from]
   	void execute_TRADE_event( Event *e );
   	

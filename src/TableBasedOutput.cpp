@@ -77,17 +77,16 @@ void TableBasedOutput::logFarms(const double time, const std::vector< Farm* >*fa
 			int numPI = farm->number_of_PI();
 			int numTI = farm->number_of_TI();
 			int numR = farm->number_of_R();
-/*			std::vector<Herd*>* herds = farm->getHerds();
-			for (auto herd : *herds){
-				int numY = herd->number_of_younglings();  // this would work well only for one herd per farm*/
+
 			FarmDataPoint p{};
 			p.id = farm->id;
 			p.numberS = numS;
 			p.numberTI = numTI;
 			p.numberPI = numPI;
 			p.numberR = numR;
-			//p.numYoung = numY;
+			// {farm->id, numS, numTI, numPI, numR};
 			data->push_back(p);
+
 		}
 	}
 
@@ -107,7 +106,7 @@ void TableBasedOutput::logEvent(const Event *e){
 		if(c != nullptr){
 			switch(e->type){
 				case Event_Type::TRADE:
-					this->logTrade( (Trade_Event*) e );
+					this->logTrade((Trade_Event*) e);
 				break;
 				case Event_Type::DEATH:
 				case Event_Type::SLAUGHTER:
@@ -176,7 +175,7 @@ void TableBasedOutput::logTrade(const Trade_Event* event){
 	double destFarmID = (double) event->farm->id;
 	double srcFarmID;
 //	std::cout << " g" << std::endl;
-	if(c->herd != nullptr && c->herd->farm != nullptr)
+	if(c->herd != NULL && c->herd->farm != nullptr)
 		srcFarmID = (double) c->herd->farm->id;
 	else
 		srcFarmID = -1.0;
@@ -221,9 +220,8 @@ TestDataPoint TableBasedOutput::testEventToDataPoint(const Event*e, const Cow* c
 	point.sex = c->female;
 	point.result = (int) c->knownStatus;
 	point.infectiousState = (double) c->infection_status;
-	point.farm_id = e->farm->id;
-/*	// TODO No additional information with this point. Redundant?
-	point.knownState = (double) c->knownStatus;*/
+	// TODO No additional information with this point. Redundant?
+	point.knownState = (double) c->knownStatus;
 	return point;
 }
 
@@ -597,8 +595,7 @@ double TestDataPoint::operator[] (int i){
 			retVal = this->infectiousState;
 			break;
 		case 7:
-			retVal = this->farm_id;
-//			retVal = this->knownState;
+			retVal = this->knownState;
 			break;
 		default:
 			std::cerr << "Error: Asked TestDataPoint for index " << i << std::endl;

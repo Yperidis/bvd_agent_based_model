@@ -104,7 +104,6 @@ class Cow
 		bool hasBeenTestedPositiveYet;
         Event* planned_birth_event;
 		Event* planned_abortion_event;
-		Event* scheduledTest;
         Trade_Event* tradeQuery;
 
 		double age() const;

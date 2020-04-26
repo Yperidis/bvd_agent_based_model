@@ -309,7 +309,6 @@ void Farm::execute_TRADE_event( Event* e )
         source->invalidate_next_infection_event();
         source->infection_rate_has_changed( e );
     }
-    //TODO Should the push_cow be in the above source conditional?
     push_cow( c );
 
     // If there is an infection event in either of the farms (which can happen if the trade has been scheduled after the infection has been scheduled)
@@ -381,34 +380,18 @@ void Farm::jungtierCheck(){  // This thing is so quick and dirty that even your 
 	// TODO Generalise the test mechanisms of any herds
 	int num = this->getNumberOfCowsToTest();
 	bool onePositiveTest = false;
-    {
-        //int i = 0;
-        //TODO The my_herds[0]->total_number() exceeds the my_herds[0]->all_my_cows.size() for some small number. Find out why and fix!
-        for (auto cow : this->my_herds[0]->getNUnknownCows(num)) {  // selection from an unordered set of animals-->for all intents and purposes random
-            TEST_EVENT *e = new TEST_EVENT( this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id(), this );
+	for (auto cow : this->my_herds[0]->getNUnknownCows(num)){  // selection from an unordered set of animals-->for all intents and purposes random
+		Event * e= new Event(this->system->getCurrentTime(), Event_Type::JUNGTIER_SMALL_GROUP, cow->id());
 
-            //++i;
-
-            //if(my_herds[0]->total_number() >= 500)
-                //std::cout << "Farm " << id << " selected animals: " << num << std::endl;
-
-            if ( cow->isTestedPositive(e) ) {
-                onePositiveTest = true;
-                cow->knownStatus = KnownStatus::POSITIVE;  // set the AB tested cow to positive from that test
-                this->system->output->logEvent(e);
-                delete e; // in case the antibody test is positive, since the event has been logged we don't need it anymore and it does not go to the priority queue to be deleted
-                break;
-            }
-            cow->knownStatus = KnownStatus::NEGATIVE; // if it is not tested positive, the animal should be declared negative
-            // As the event is to end its lifetime now that we have a confirmed status for the animal we need to log it
-            this->system->output->logEvent(e);
-            delete e;
-        }
-/*        if (my_herds[0]->total_number() > my_herds[0]->all_my_cows.size())
-            std::cout << my_herds[0]->total_number() << " " << my_herds[0]->all_my_cows.size() << std::endl;*/
-        //std::cout << "Farm " << id << " with pop: " << my_herds[0]->total_number() << " and " << num << " selected animals, tested animals: " << i << std::endl;
-    }
-	if(onePositiveTest) this->testAllCows();  // an animal which is immune by the JTF protocol implicates historically the existence of a BVD-infected animal in the herd
+		if(cow->isTestedPositive(e)){
+			onePositiveTest = true;
+			break;
+		}
+		// TODO A log event takes place also at the system at execute_next_event()
+		this->system->output->logEvent(e);
+		delete e;
+	}
+	if(onePositiveTest) this->testAllCows();
 }
 
 void Farm::testAllCows(){

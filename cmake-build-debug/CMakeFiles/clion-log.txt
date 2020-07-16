@@ -1,8 +1,0 @@
-/snap/clion/82/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/bvd_agent_based_model
--- Cmake EXECUTABLE OUTPUT DIR is /home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/build
--- Cmake binary dir is /home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/bvd_agent_based_model
--- System identified as Linux, version Ubuntu
--- SQLITE3 at /usr/lib/x86_64-linux-gnu/libsqlite3.so
--- Configuring done
--- Generating done
--- Build files have been written to: /home/stavrogin/Documents/TU_Berlin/Group_material/BVD_project/BVD_AB_model/bvd_agent_based_model
